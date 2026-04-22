@@ -1,0 +1,5396 @@
+openapi: 3.0.3
+info:
+  title: Wokelo API
+  version: 1.0.0
+  description: |-
+    Wokelo's API suite is purpose-built for developers building dealmaking AI infrastructure. It delivers structured, processed intelligence at the quality standard investment and advisory workflows demand.
+
+    - Entities resolved across a proprietary database of 20M+ public and private companies.
+    - News signals deduplicated across 1,000+ curated sources.
+    - Every output is agent-native, source-traced, and ready to plug directly into your models, agents, and workflows without additional processing.
+  contact:
+    name: Wokelo
+    url: https://wokelo.ai
+    email: support@wokelo.ai
+  license:
+    name: Proprietary
+    url: https://wokelo.ai/terms
+servers:
+  - url: https://api.wokelo.ai
+    description: Production
+security:
+  - bearerAuth: []
+tags:
+  - name: Company Instant Enrichment
+    description: Instant fundamentals and alternative data on cached companies (20M+).
+  - name: Company Deep Intelligence
+    description: On-demand deep intelligence with custom parameters on any company.
+  - name: Industry Deep Intelligence
+    description: On-demand intelligence with custom parameters on any industry.
+  - name: Market Map
+    description: Ranked company discovery within a market category.
+  - name: Target Screening
+    description: Scored acquisition targets for a defined acquirer.
+  - name: Buyer Screening
+    description: Scored buyers for a defined target company.
+  - name: Company News Monitoring
+    description: News retrieval, enrichment, and filtering for a specific company.
+  - name: Company Research
+    description: End-to-end company research report.
+  - name: Industry Research
+    description: End-to-end sector coverage report.
+  - name: Peer Comparison
+    description: Multi-company comparative analysis across chosen dimensions.
+  - name: Custom Workflows
+    description: Trigger custom research workflows built in Wokelo.
+  - name: Company Search
+    description: Search and resolve company identifiers.
+  - name: File Upload
+    description: Upload assets used by other workflows.
+  - name: Request Lifecycle
+    description: Check status, cancel, or fetch results of async requests.
+  - name: Report Lifecycle
+    description: Check status of and download generated reports.
+  - name: Report Configuration
+    description: Configure and retrieve report metadata.
+paths:
+  /api/assets/download_report/:
+    post:
+      tags:
+        - Report Lifecycle
+      operationId: downloadReport
+      summary: Download a completed report
+      description: |
+        Download a completed report in one of the supported export formats:
+        `pdf`, `docx`, `ppt`, or `json`.
+
+        The documentation notes that `ppt` is only supported for company research
+        and industry research reports.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadReportRequest'
+            example:
+              report_id: 109196
+              file_type: json
+      responses:
+        '200':
+          description: Report download payload returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                report_id: 109196
+                file_type: json
+                url: https://api.wokelo.ai/downloads/report-109196.json
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+  /api/assets/get_notebook_status/:
+    get:
+      tags:
+        - Report Lifecycle
+      operationId: getReportStatus
+      summary: Check report status
+      description: |
+        Get the status of a report created using workflow APIs such as
+        Company Research, Industry Research, Peer Comparison, or Custom workflows.
+      parameters:
+        - name: report_id
+          in: query
+          required: true
+          description: Report identifier.
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+          example: 109196
+      responses:
+        '200':
+          description: Report status returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportStatusResponse'
+              example:
+                report_id: 109196
+                status: COMPLETED
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+  /api/assets/upload/:
+    post:
+      tags:
+        - File Upload
+      operationId: uploadAssets
+      summary: Upload files for research workflows
+      description: |
+        Upload proprietary files to Wokelo to supplement research reports
+        with internal data.
+
+        Each uploaded file receives a unique identifier that can be referenced
+        in custom workflow inputs. The documentation examples send multipart
+        form data with repeated `files` parts plus a `fileUUID` JSON-string field.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileUploadRequest'
+            encoding:
+              files:
+                style: form
+                explode: true
+              fileUUID:
+                style: form
+            example:
+              fileUUID: '["k3m8n5p1q6", "a7f4b9e2c3"]'
+      responses:
+        '200':
+          description: Files uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: success
+                data:
+                  - fileName: k3m8n5p1q6
+                    originalName: lemonade_diligence.pdf
+                  - fileName: a7f4b9e2c3
+                    originalName: lemonade.pdf
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+  /api/company_primer/v3/start/:
+    post:
+      tags:
+        - Company Research
+      operationId: startCompanyResearchDirect
+      summary: Start company research report directly
+      description: |
+        Starts an in-depth company intelligence report using the direct company primer endpoint.
+
+        Either `website` or `permalink` is required according to the documentation.
+        `industry` is optional and may be auto-detected if omitted.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyResearchDirectRequest'
+            example:
+              industry: Artificial Intelligence
+              website: https://wokelo.ai
+      responses:
+        '200':
+          description: Company research report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResearchResponse'
+              example:
+                Quick Snapshot:
+                  Quick Snapshot:
+                    quick_snapshot:
+                      company_firmographics:
+                        organization:
+                          name: Salesforce
+                          logo: https://wklogo.blob.core.windows.net/logos-thumbnail/salesforce.png
+                          url: https://app.wokelo.ai/dashboard/workflows/company-deep-dive-new-v2/?company=salesforce
+                        details:
+                          industry: Artificial Intelligence (AI), Cloud Computing, CRM, SaaS
+                          founded_year: '1999'
+                          website: https://www.salesforce.com
+                          hq: San Francisco, United States
+                          operating_status: active
+                          company_type: public
+                          employees_in_crunchbase: 10000+
+                          employees_in_linkedin: 87189
+                          ticker: NYSE:CRM
+                      product_details:
+                        product_category: Cloud CRM Software
+                        summary: Salesforce provides a cloud-based platform for customer relationship management.
+                    sources:
+                      - id: 1
+                        title: Crunchbase
+                        url: ''
+                        publisher: ''
+                        date: ''
+                Executive Summary:
+                  Executive Summary:
+                    summary: Overview, strategic positioning, recent developments, and key capabilities.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResearchErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: website
+                      message: Either website or permalink is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResearchErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResearchErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResearchErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+  /api/enterprise/buyer-screening/enrich/:
+    post:
+      tags:
+        - Buyer Screening
+      operationId: screenBuyers
+      summary: Generate scored buyers for a target company
+      description: |
+        Returns a ranked list of potential buyers for a specified target company.
+
+        Use `company` to identify the target company, and `parameters` to refine
+        the buyer search using a descriptive query, buyer type, company type,
+        and geographic scope.
+
+        The response includes firmographic and financial information for candidate buyers,
+        along with ranking metrics such as overall score, deal feasibility,
+        product synergy, deal precedent, and synergy potential where available.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuyerScreeningRequest'
+            example:
+              company: acme-security
+              parameters:
+                detailed_query: Looking for strategic acquirers in enterprise software
+                buyer_type:
+                  - strategic
+                company_type: public
+                geography:
+                  - USA
+      responses:
+        '200':
+          description: Buyer screening completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerScreeningResponse'
+              example:
+                request_id: c685171e-ce46-474b-b0de-f17123b3085a
+                status: COMPLETED
+                result:
+                  - Permalink: wright-express
+                    Name: Wex
+                    Website: wexinc.com
+                    HQ City: Portland
+                    HQ Country: United States
+                    HQ Continent: North America
+                    Founded: '1983'
+                    Type: Public
+                    Operating Status: IPO
+                    Buyer Type: Strategic
+                    Product Category: Financial technology solutions
+                    Core Offering: WEX provides financial technology solutions for payment processing, employee benefits,
+                      fleet management, and corporate payments.
+                    Product Catalog: Fuel Cards, Business Payments Solutions, Employee Benefits Platforms
+                    Employees (Crunchbase): 5001-10000
+                    Employees (LinkedIn): 4981
+                    Funding Stage: ''
+                    Total Funding: ''
+                    Last Funding Date: ''
+                    Key Investors:
+                      - Warburg Pincus
+                    Revenue: 2660800000.0
+                    Ticker: NYSE:WEX
+                    EBITDA: 874400000.0
+                    Net Income: 304100000.0
+                    EBITDA Margin (%): 32.8622
+                    Net Income Margin (%): 11.4288
+                    EPS Diluted: 8.47
+                    ROA (%): 3.0387
+                    Unlevered FCF: 1249487500.0
+                    D/E: 398.6958
+                    Market Cap: 5158944522.0
+                    Enterprise Value: 4842144522.0
+                    EV/Revenue (LTM): 1.819808
+                    EV/EBITDA (LTM): 5.537677
+                    P/E (LTM): 17.752066
+                    Acquisitions: Payzer (2023), Benefitexpress (2021)
+                    Investments: ''
+                    Overall Score: 9.0
+                    Overall Score Rationale: Strong strategic fit with product adjacency and proven M&A capability.
+                    Commentary: WEX's business payments suite and acquisition track record position it as a strong strategic
+                      buyer.
+                    Deal Feasibility Score: 8.0
+                    Deal Feasibility Rationale: Revenue and EBITDA profile provide capacity for a transaction of this size.
+                    Product Synergy Score: 9.0
+                    Product Synergy Rationale: Target extends existing business payments and spend management workflows.
+                    Deal Precedent Score: 9.0
+                    Deal Precedent Rationale: Prior acquisitions in payments and benefits demonstrate relevant precedent.
+                    Synergy Potential Score: 8.0
+                    Synergy Potential Rationale: Cross-sell and workflow integration opportunities are strong.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: company
+                      message: Company is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+  /api/enterprise/company/enrich/:
+    post:
+      tags:
+        - Company Deep Intelligence
+        - Company Instant Enrichment
+      operationId: getCompanyDeepIntelligence
+      summary: Generate deep intelligence for one or more companies / Enrich one or more companies
+      description: |-
+        This endpoint dispatches to multiple behaviors based on the request body.
+
+        **Mode: Company Deep Intelligence**
+
+        Returns AI-synthesized company intelligence for one or more companies
+        across the requested intelligence sections.
+
+        This endpoint supports use cases such as:
+        - product and service intelligence
+        - launch and roadmap tracking
+        - strategic initiative analysis
+        - partnership ecosystem mapping
+        - revenue model and monetization analysis
+        - customer base assessment
+        - management profile synthesis
+        - employee and product sentiment analysis
+
+        The request accepts one or more company identifiers, which may be
+        permalinks or company URLs, and a set of supported deep intelligence sections.
+
+        ---
+
+        **Mode: Company Instant Enrichment**
+
+        Returns structured company data for one or more companies across the
+        requested sections.
+
+        Typical use cases include:
+        - firmographic lookup
+        - product catalog enrichment
+        - funding and investor history
+        - acquisitions and investments
+        - headcount and traffic enrichment
+        - AI-computed custom fields
+
+        The request accepts company identifiers (for example permalinks such as
+        `tesla-motors`) and a list of sections to retrieve.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/DeepIntelligenceRequest'
+                - $ref: '#/components/schemas/CompanyEnrichRequest'
+            examples:
+              Company Deep Intelligence:
+                summary: Company Deep Intelligence
+                value:
+                  companies:
+                    - zendesk
+                    - freshworks
+                    - intercom
+                  sections:
+                    - products_and_services
+                    - product_launches
+                    - strategic_initiatives
+              Company Instant Enrichment:
+                summary: Company Instant Enrichment
+                value:
+                  companies:
+                    - tesla-motors
+                  sections:
+                    - firmographics
+                    - products
+                  parameters:
+                    custom_fields:
+                      - field_name: Flagship Products
+                        type: text
+                        prompt: List Tesla’s main products, including key vehicle models and energy offerings, in a concise
+                          format.
+                      - field_name: Primary Revenue Source
+                        type: text
+                        prompt: What is Tesla’s main source of revenue? Provide a brief 1-2 line answer.
+      responses:
+        '200':
+          description: Dispatched operation completed successfully.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DeepIntelligenceResponse'
+                  - $ref: '#/components/schemas/CompanyEnrichResponse'
+              examples:
+                Company Deep Intelligence:
+                  summary: Company Deep Intelligence
+                  value:
+                    request_id: c2ad9d34-f432-4b9b-b5a2-46fbd124db5f
+                    status: COMPLETED
+                    result:
+                      zendesk:
+                        firmographics:
+                          name: Zendesk
+                          website: http://zendesk.com
+                          location: San Francisco, United States
+                          founded: 2007
+                          type: private
+                          operating_status: Acquired
+                          ticker: NYSE:ZEN
+                        CP enrichment:
+                          products_and_services:
+                            product_overview:
+                              source:
+                                - id: 1
+                                  title: Sourced from Wokelo Synthesis
+                                  url: ''
+                                  publisher: ''
+                                  date: ''
+                              summary: Overview of Zendesk products and services.
+                              screenshot_url: https://files.test.wokelo.ai/notebook/example/assets/example.png
+                            products_and_services:
+                              - product_area: Customer Service AI Solutions
+                                details:
+                                  - title: AI Agents
+                                    summary: Autonomous AI-powered bots for customer support.
+                                sources: 1-3
+                          product_launches:
+                            product_launches_and_initiatives:
+                              released_products:
+                                - date: 26-Mar-2025
+                                  initiative: Resolution Platform
+                                  sources:
+                                    - url: https://www.prnewswire.com/example
+                                      title: Zendesk launches Resolution Platform
+                                      publisher: PR Newswire
+                                      publishedDate: '2025-03-26'
+                                  summary:
+                                    - AI-powered resolution platform with workflow automation.
+                              future_announcements: []
+                          strategic_initiatives:
+                            strategic_moves:
+                              - Area: Office expansion
+                                Details:
+                                  - point: Zendesk moved its headquarters to 181 Fremont Street.
+                                    sources:
+                                      - url: https://therealdeal.com/example
+                                        title: Zendesk becomes latest tech firm to leave SF’s Mid-Market
+                                        publisher: The Real Deal
+                                        publishedDate: '2024-11-12'
+                        meta:
+                          report_id: 1008951
+                          title: Zendesk - API Insights
+                          user: saish.kapadi@wokelo.ai
+                          dt_createdon: '2026-04-06 07:16:56'
+                Company Instant Enrichment:
+                  summary: Company Instant Enrichment
+                  value:
+                    request_id: 00a3df02-89f8-410d-adb3-f0e185b2be50
+                    status: COMPLETED
+                    result:
+                      canva:
+                        firmographics:
+                          name: Canva
+                          website: http://www.canva.com
+                          location: Sydney, Australia
+                          founded: 2013
+                          type: private
+                          operating_status: Operating
+                          ticker: null
+                        funding:
+                          overall:
+                            funding_stage: Secondary Market
+                            total_funding: 2508450682
+                            last_funding_date: '2025-08-20'
+                            num_funding_rounds: '21'
+                            key_investors:
+                              - Blackbird Ventures
+                              - Felicis
+                              - General Catalyst
+                          funding_rounds:
+                            - date: '2025-08-20'
+                              round: Venture
+                              amount: 0
+                              total_investors: 3
+                              lead_investors:
+                                - Fidelity
+                              investors:
+                                - J.P. Morgan Asset Management
+                                - Dominari Securities
+                              pre_money_valuation: null
+                        acquisitions:
+                          - acquisition_date: '2025-06-17'
+                            name: MagicBrief acquired by Canva
+                            amount: null
+                            amount_usd: null
+                            description: Canva acquires MagicBrief on 2025-06-17 for an undisclosed amount
+                            acquiree_name: MagicBrief
+                            acquiree_permalink: magicbrief
+                        investments:
+                          - announcement_date: '2023-12-11'
+                            amount: null
+                            amount_usd: null
+                            description: Canva investment in Seed Round - Clove
+                            lead_investor: false
+                            funding_round_id: clove-b407-seed--d3e417c3
+                            investee_name: Clove
+                            investee_permalink: clove-b407
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDeepErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: sections
+                      message: At least one supported section must be provided.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDeepErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDeepErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDeepErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+  /api/enterprise/company/news/:
+    get:
+      tags:
+        - Company News Monitoring
+      operationId: getCompanyNews
+      summary: Fetch company news articles
+      description: |
+        Returns recent news articles for a specified company, enriched with AI-generated
+        summaries, event categories, metadata, and scraped article text.
+
+        Supports filtering by date range, category, publisher allowlist, publisher
+        blacklist, pagination, and result limit.
+
+        Note: the documentation examples encode some multi-value filters directly
+        into query strings. This spec models those filters conservatively as strings
+        rather than assuming a repeated-parameter or array-based wire format.
+      parameters:
+        - name: company
+          in: query
+          required: true
+          description: Company permalink or identifier to monitor.
+          schema:
+            type: string
+          example: tesla
+        - name: blacklisted
+          in: query
+          required: false
+          description: |
+            Blacklisted publisher URL or encoded value. Documentation shows URL-encoded
+            string input rather than a formally typed array.
+          schema:
+            type: string
+          example: https://www.prnewswire.com/
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of results to return.
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+          example: 100
+        - name: start_date
+          in: query
+          required: false
+          description: Start date filter in YYYY-MM-DD format.
+          schema:
+            type: string
+            format: date
+          example: 2025-01-01
+        - name: end_date
+          in: query
+          required: false
+          description: End date filter in YYYY-MM-DD format.
+          schema:
+            type: string
+            format: date
+          example: 2026-03-15
+        - name: category
+          in: query
+          required: false
+          description: |
+            News category filter. Documentation examples show comma-separated values
+            in a single query string.
+          schema:
+            type: string
+          example: PARTNERSHIPS
+        - name: offset
+          in: query
+          required: false
+          description: Pagination offset.
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          example: 0
+        - name: publishers
+          in: query
+          required: false
+          description: |
+            Publisher URL filter. Documentation shows URL string values in the query.
+          schema:
+            type: string
+          example: https://www.bloomberg.com/
+      responses:
+        '200':
+          description: Company news fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyNewsResponse'
+              example:
+                status: success
+                data:
+                  - ai_summary: Tesla Inc.'s energy division was granted a license to supply electricity in the UK.
+                    type: Partnerships & Alliances
+                    url: https://www.bloomberg.com/news/articles/2026-03-12/tesla-s-energy-division-gets-uk-license-to-supply-electricity
+                    title: Tesla’s Energy Division Gets UK License to Supply Electricity
+                    scraped_text: Tesla Inc.’s energy division has been granted a license to supply electricity in the UK.
+                    company_name: Tesla
+                    publisher: bloomberg
+                    published_date: '2026-03-12 07:55:50'
+                    source: Wokelo
+                    author: Priscila Azevedo Rocha
+                    countries:
+                      - GBR
+                    sentiment: Neutral
+                    company_names:
+                      - name: Tesla
+                        website: http://tesla-pa.com/
+                    primary_tag: Partnerships & Alliances
+                    original_language: EN
+                    secondary_tags: []
+                    newsworthiness_impact: Medium
+                    primary_industry: C&I Renewable Supply & Green Tariffs
+                    secondary_industry: []
+                count: 1
+                total: 1
+                limit: 100
+                offset: 0
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid query parameters.
+                  details:
+                    - field: company
+                      message: Company is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+  /api/enterprise/company/search:
+    get:
+      tags:
+        - Company Search
+      operationId: searchCompanies
+      summary: Search companies in the Wokelo database
+      description: |
+        Search the Wokelo database by company name, website, or ticker symbol
+        to retrieve permalinks and key attributes used by other API calls.
+
+        If a company cannot be found in the Wokelo database, other APIs
+        (except Monitoring API) can still use the full company website URL
+        instead of the permalink.
+      parameters:
+        - name: query
+          in: query
+          required: true
+          description: Search term such as a company name, website, or ticker.
+          schema:
+            type: string
+          example: wokelo
+        - name: search_by
+          in: query
+          required: true
+          description: Field used to perform the search.
+          schema:
+            type: string
+            enum:
+              - name
+              - website
+              - ticker
+          example: name
+        - name: company_type
+          in: query
+          required: false
+          description: Company type filter.
+          schema:
+            type: string
+            enum:
+              - all
+              - private
+              - public
+              - startup
+          example: all
+      responses:
+        '200':
+          description: Company search completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanySearchResponse'
+              example:
+                status: success
+                data:
+                  - name: Wokelo AI
+                    permalink: wokelo-ai
+                    short_description: Wokelo builds purpose-built AI agents...
+                    founded_year: '2023'
+                    ipo_status: private
+                    hq: Seattle, United States
+                    website: https://www.wokelo.ai/
+                    ticker: ''
+                    country_code: US
+                    last_funding_round: Seed
+                count: 1
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid query parameters.
+                  details:
+                    - field: query
+                      message: Query is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+  /api/enterprise/industry/enrich/:
+    post:
+      tags:
+        - Industry Deep Intelligence
+      operationId: getIndustryDeepIntelligence
+      summary: Generate deep intelligence for an industry topic
+      description: |
+        Returns AI-synthesized industry intelligence for a specific topic across
+        one or more requested sections.
+
+        Typical use cases include:
+        - market sizing and growth analysis
+        - trend and innovation mapping
+        - M&A and fundraising activity tracking
+        - IPO transaction tracking
+        - partnership landscape analysis
+        - tier-1 curated intelligence synthesis
+        - case study generation
+        - regulatory environment review
+
+        Use `topic` to define the industry, and optional `parameters` to refine
+        the scope with keywords, geography, custom definition, and sample companies.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndustryDeepIntelligenceRequest'
+            example:
+              topic: Enterprise SaaS security
+              sections:
+                - market_size
+                - trends_and_innovations
+                - transactions_mna
+              parameters:
+                keywords:
+                  - zero trust
+                  - SIEM
+                geography:
+                  - USA
+                definition: B2B software focused on enterprise cybersecurity
+                sample_companies:
+                  - crowdstrike
+                  - sentinel
+      responses:
+        '200':
+          description: Industry deep intelligence generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryDeepIntelligenceResponse'
+              example:
+                request_id: 68555bdd-a11e-45df-97ab-a0cc6e6408a1
+                status: COMPLETED
+                result:
+                  IP enrichment:
+                    market_size:
+                      charts:
+                        market_size_chart:
+                          title: Market Size Range
+                          projection_year: 2034
+                          period_start_year: 2024
+                          period_end_year: 2034
+                          data:
+                            - publisher: Artificial Intelligence in Drug Discovery Market
+                              company: Reports and Data
+                              currency: USD
+                              cagr: '17.5'
+                              end_year: 2034
+                              start_year: 2024
+                              start_value:
+                                value: 2.5
+                                multiplier: 1000000000
+                              end_value:
+                                value: 12.5
+                                multiplier: 1000000000
+                              estimated_value:
+                                value: 12.5
+                                multiplier: 1000000000
+                          source: Wokelo generated chart, extracted ranges from publishers, projections calculated based on
+                            estimated growth rates
+                          note: CAGR and projections calculated based on market size ranges
+                          url: https://files.test.wokelo.ai/notebook/example/assets/example/market_size_chart.png
+                    trends_and_innovations:
+                      trend_and_innovations:
+                        source:
+                          - id: 1
+                            title: Yahoo AI in Life Sciences Market
+                            url: https://finance.yahoo.com/news/example
+                            publisher: ''
+                            date: ''
+                        summary: AI is transforming drug discovery through virtual screening, predictive modeling, and de
+                          novo drug design.
+                meta:
+                  report_id: 1009016
+                  title: AI in drug discovery - API Insights
+                  user: saish.kapadi@wokelo.ai
+                  dt_createdon: '2026-04-08 18:47:45'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryDeepErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: sections
+                      message: At least one supported section must be provided.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryDeepErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryDeepErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryDeepErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+  /api/enterprise/market-map/enrich/:
+    post:
+      tags:
+        - Market Map
+      operationId: getMarketMap
+      summary: Generate a ranked market map of companies
+      description: |
+        Returns a ranked list of companies discovered within a market category.
+
+        Use `topic` to define the market or product category, and `parameters`
+        to refine the search with a detailed query, keywords, sample companies,
+        geography, company type, headcount, founding year, funding stage,
+        and optional financial filters.
+
+        The response returns a ranked list of companies with firmographic,
+        funding, and relevance commentary fields.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarketMapRequest'
+            example:
+              topic: AI-powered CRM software
+              parameters:
+                detailed_query: B2B CRM tools leveraging AI for sales automation
+                keywords:
+                  - AI
+                  - CRM
+                  - sales automation
+                sample_companies:
+                  - salesforce
+                  - hubspot
+                geography:
+                  - USA
+                company_type: private
+                employee_count:
+                  - 11-50
+                founded_year:
+                  from: 2015
+                funding_stage:
+                  - Series A
+                  - Series B
+                total_funding:
+                  from: '5000000'
+                last_funding_round: {}
+                revenue: {}
+                ebitda: {}
+                net_income: {}
+                ev_ebitda: {}
+      responses:
+        '200':
+          description: Market map generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketMapResponse'
+              example:
+                request_id: a57a9100-e7e1-4c6c-9b29-cdd064516ba7
+                status: COMPLETED
+                result:
+                  - Permalink: esub-construction-software
+                    Name: eSUB Construction Software
+                    Website: esub.com
+                    HQ City: San Diego
+                    HQ Country: United States
+                    HQ Continent: North America
+                    Founded: '2008'
+                    Type: Private
+                    Operating Status: Operating
+                    Product Category: Construction Project Management Software
+                    Core Offering: Cloud-based project management solutions for subcontractors.
+                    Product Catalog: Construction Management Software, Project Management Tools
+                    Employees (Crunchbase): 51-100
+                    Employees (LinkedIn): 34
+                    Funding Stage: Series B
+                    Total Funding: 22000000.0
+                    Last Funding Date: '2023-05-01'
+                    Key Investors:
+                      - Autodesk
+                      - Revolution
+                    Revenue: ''
+                    Ticker: ''
+                    EBITDA: ''
+                    Net Income: ''
+                    EBITDA Margin (%): ''
+                    Net Income Margin (%): ''
+                    EPS Diluted: ''
+                    ROA (%): ''
+                    Unlevered FCF: ''
+                    D/E: ''
+                    Market Cap: ''
+                    Enterprise Value: ''
+                    EV/Revenue (LTM): ''
+                    EV/EBITDA (LTM): ''
+                    P/E (LTM): ''
+                    Acquisitions: ''
+                    Investments: ''
+                    Overall Score: 7.0
+                    Commentary: Strong direct fit for field service management workflows.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketMapErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: topic
+                      message: Topic is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketMapErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketMapErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketMapErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+  /api/enterprise/request/cancel:
+    post:
+      tags:
+        - Request Lifecycle
+      operationId: cancelRequest
+      summary: Cancel an asynchronous request
+      description: |
+        Cancel a request that is already placed and currently in `PENDING`
+        or `PROCESSING` state.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelRequestBody'
+            example:
+              request_id: 5b8eff600-366f-465c-b795-68837043a2d3
+      responses:
+        '200':
+          description: Request cancelled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                status: success
+                request_id: 5b8eff600-366f-465c-b795-68837043a2d3
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+  /api/enterprise/request/result/:
+    get:
+      tags:
+        - Request Lifecycle
+      operationId: getRequestResult
+      summary: Retrieve completed asynchronous request result
+      description: |
+        Retrieve the result of an asynchronous request after its status is `COMPLETED`.
+      parameters:
+        - name: request_id
+          in: query
+          required: true
+          description: Unique request identifier.
+          schema:
+            type: string
+          example: d7a78d10-663a-493f-9b79-be1e6094f3bb
+      responses:
+        '200':
+          description: Request result returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                request_id: d7a78d10-663a-493f-9b79-be1e6094f3bb
+                status: COMPLETED
+                result:
+                  data: {}
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+  /api/enterprise/request/status/:
+    get:
+      tags:
+        - Request Lifecycle
+      operationId: getRequestStatus
+      summary: Check asynchronous request status
+      description: |
+        Check the status of an asynchronous Enrichment, Insights, or Company Grid request.
+      parameters:
+        - name: request_id
+          in: query
+          required: true
+          description: Unique request identifier.
+          schema:
+            type: string
+          example: b1f10ebf-a251-4e2d-b867-8482ac701987
+      responses:
+        '200':
+          description: Request status returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestStatusResponse'
+              example:
+                request_id: b1f10ebf-a251-4e2d-b867-8482ac701987
+                status: COMPLETED
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+  /api/enterprise/target-screening/enrich/:
+    post:
+      tags:
+        - Target Screening
+      operationId: screenTargets
+      summary: Generate scored acquisition targets for an acquirer
+      description: |
+        Returns a ranked list of acquisition targets for a specified acquiring company.
+
+        Use `company` to identify the acquirer, and `parameters` to refine the target
+        search using a detailed query, keywords, sample companies, geography,
+        company type, headcount, founding year, funding stage, and financial filters.
+
+        The response includes ranking metrics such as overall score, query relevance,
+        deal feasibility, deal precedent, and synergy potential, along with rationales.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TargetScreeningRequest'
+            example:
+              company: microsoft
+              parameters:
+                detailed_query: Looking for B2B SaaS companies in the cybersecurity space
+                keywords:
+                  - zero trust
+                  - endpoint security
+                sample_companies:
+                  - crowdstrike
+                  - sentinel
+                geography:
+                  - USA
+                company_type: private
+                employee_count: []
+                founded_year: {}
+                funding_stage: []
+                total_funding: {}
+                revenue: {}
+      responses:
+        '200':
+          description: Target screening completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetScreeningResponse'
+              example:
+                request_id: f525ae70-b6aa-4b6e-b0af-c40efaf9681c
+                status: COMPLETED
+                result:
+                  - Permalink: postscript
+                    Name: Postscript
+                    Website: postscript.io
+                    HQ City: Scottsdale
+                    HQ Country: United States
+                    HQ Continent: North America
+                    Founded: '2018'
+                    Type: Private
+                    Operating Status: Operating
+                    Product Category: SMS Marketing Platform
+                    Core Offering: Postscript provides SMS marketing solutions aimed at ecommerce brands.
+                    Product Catalog: SMS marketing platform, AI-powered features for SMS
+                    Employees (Crunchbase): 251-500
+                    Employees (LinkedIn): 336
+                    Funding Stage: Series C
+                    Total Funding: 106200000.0
+                    Last Funding Date: '2022-06-15'
+                    Key Investors:
+                      - Beyond Capital
+                      - Twilio
+                    Revenue: ''
+                    Ticker: ''
+                    EBITDA: ''
+                    Net Income: ''
+                    EBITDA Margin (%): ''
+                    Net Income Margin (%): ''
+                    EPS Diluted: ''
+                    ROA (%): ''
+                    Unlevered FCF: ''
+                    D/E: ''
+                    Market Cap: ''
+                    Enterprise Value: ''
+                    EV/Revenue (LTM): ''
+                    EV/EBITDA (LTM): ''
+                    P/E (LTM): ''
+                    Acquisitions: ''
+                    Investments: ''
+                    Overall Score: 7.0
+                    Overall Score Rationale: Strong strategic fit and product synergies offset by significant financial stretch
+                      and integration complexity for this scale of acquisition.
+                    Commentary: Postscript acquisition would eliminate Klaviyo's primary SMS competitor while adding superior
+                      AI-powered automation and deliverability infrastructure.
+                    Query Relevance Score: 9.0
+                    Query Relevance Rationale: Postscript directly provides SMS marketing and push notification infrastructure.
+                    Deal Feasibility Score: 3.0
+                    Deal Feasibility Rationale: Target valuation likely represents substantial financial stretch.
+                    Deal Precedent Score: 6.0
+                    Deal Precedent Rationale: Similar marketing automation focus, though larger than prior acquisitions.
+                    Synergy Potential Score: 8.0
+                    Synergy Potential Rationale: Strong SMS platform integration and cross-sell potential.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: company
+                      message: Company is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+  /api/industry_primer/v3/start/:
+    post:
+      tags:
+        - Industry Research
+      operationId: startIndustryResearchDirect
+      summary: Start industry research report directly
+      description: |
+        Starts an end-to-end industry intelligence report using the direct
+        industry primer endpoint.
+
+        The request requires a specific industry name.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndustryResearchDirectRequest'
+            example:
+              industry: gaming
+      responses:
+        '200':
+          description: Industry research report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryResearchResponse'
+              example:
+                Executive Summary:
+                  Executive Summary:
+                    summary:
+                      source:
+                        - id: 1
+                          title: Electronic Manufacturing Services Market Set to Reach USD 820.71 Billion
+                          url: https://www.prnewswire.com/news-releases/example
+                          publisher: ''
+                          date: ''
+                      summary: The global EMS industry represents a critical segment of the electronics ecosystem.
+                Key Insights:
+                  key_insights:
+                    - insight:
+                        title: Profit Centers Shift to Industrial & EV Segments
+                        paragraph: Profit pools pivot toward high-margin industrial and EV electronics.
+                        sources:
+                          - id: 1
+                            title: Example source
+                            url: https://example.com
+                            publisher: ''
+                            date: ''
+                Overview:
+                  Overview:
+                    industry_overview_details:
+                      summary: Electronic Manufacturing Services represents a specialized industry where companies provide
+                        comprehensive manufacturing and supply chain solutions.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryResearchErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: industry
+                      message: Industry is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryResearchErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryResearchErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryResearchErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+  /api/wkl/notebook/configuration/:
+    post:
+      tags:
+        - Report Lifecycle
+      operationId: getReportConfiguration
+      summary: Retrieve report configuration
+      description: |
+        Retrieve the settings originally used to trigger a report.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportConfigurationRequest'
+            example:
+              notebook_id: 103737
+      responses:
+        '200':
+          description: Report configuration returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+              example:
+                notebook_id: 103737
+                configuration:
+                  workflow: company_primer
+                  permalink: salesforce
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportErrorResponse'
+  /api/workflow_manager/start/:
+    post:
+      tags:
+        - Company Research
+        - Custom Workflows
+        - Industry Research
+        - Peer Comparison
+      operationId: startCompanyResearchWorkflow
+      summary: Start company research report via workflow manager / Start a custom workflow / Start industry research report
+        via workflow manager / Start peer comparison report
+      description: |-
+        This endpoint dispatches to multiple behaviors based on the request body.
+
+        **Mode: Company Research**
+
+        Starts an in-depth company intelligence report using the workflow manager.
+
+        The documentation shows this endpoint being called with
+        `workflow: company_primer` and a company `permalink`.
+
+        ---
+
+        **Mode: Custom Workflows**
+
+        Starts a custom Wokelo workflow using the workflow manager.
+
+        The request must include a `workflow` identifier. Additional request
+        fields depend on the selected workflow. For example:
+        - `industry_research___custom_a842447` uses `industry_research_topic`
+        - `value_creation_e469641` uses `permalink`
+
+        The response structure is workflow-specific and generally returns a
+        nested research report or workbook-like JSON object.
+
+        ---
+
+        **Mode: Industry Research**
+
+        Starts an end-to-end industry intelligence report using the workflow manager.
+
+        The documentation shows this endpoint being called with
+        `workflow: industry_primer` and an `industry` field.
+
+        ---
+
+        **Mode: Peer Comparison**
+
+        Starts a side-by-side peer benchmarking report for up to 5 companies.
+
+        The request uses the workflow manager with `workflow: player_comparison`
+        and accepts a list of company websites plus an optional workbook name.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CompanyResearchWorkflowRequest'
+                - $ref: '#/components/schemas/CustomWorkflowRequest'
+                - $ref: '#/components/schemas/IndustryResearchWorkflowRequest'
+                - $ref: '#/components/schemas/PeerComparisonRequest'
+            examples:
+              Company Research:
+                summary: Company Research
+                value:
+                  workflow: company_primer
+                  permalink: salesforce
+              Custom Workflows:
+                summary: Custom Workflows
+                value:
+                  workflow: industry_research___custom_a842447
+                  industry_research_topic: Electric vehicles
+              Industry Research:
+                summary: Industry Research
+                value:
+                  workflow: industry_primer
+                  industry: Electronics Manufacturing Services
+              Peer Comparison:
+                summary: Peer Comparison
+                value:
+                  workflow: player_comparison
+                  websites:
+                    - https://we.are.expensify.com/
+                    - https://ramp.com/
+                    - https://www.airbase.com/
+                    - http://www.expensya.com/
+                    - https://payhawk.com/
+                  workbook_name: Peer Comparison
+      responses:
+        '200':
+          description: Dispatched operation completed successfully.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CompanyResearchResponse'
+                  - $ref: '#/components/schemas/CustomWorkflowResponse'
+                  - $ref: '#/components/schemas/IndustryResearchResponse'
+                  - $ref: '#/components/schemas/PeerComparisonResponse'
+              examples:
+                Company Research:
+                  summary: Company Research
+                  value:
+                    Quick Snapshot:
+                      Quick Snapshot:
+                        quick_snapshot:
+                          company_firmographics:
+                            organization:
+                              name: Salesforce
+                              logo: https://wklogo.blob.core.windows.net/logos-thumbnail/salesforce.png
+                              url: https://app.wokelo.ai/dashboard/workflows/company-deep-dive-new-v2/?company=salesforce
+                            details:
+                              industry: Artificial Intelligence (AI), Cloud Computing, CRM, SaaS
+                              founded_year: '1999'
+                              website: https://www.salesforce.com
+                              hq: San Francisco, United States
+                              operating_status: active
+                              company_type: public
+                              employees_in_crunchbase: 10000+
+                              employees_in_linkedin: 87189
+                              ticker: NYSE:CRM
+                          product_details:
+                            product_category: Cloud CRM Software
+                            summary: Salesforce provides a cloud-based platform for customer relationship management.
+                        sources:
+                          - id: 1
+                            title: Crunchbase
+                            url: ''
+                            publisher: ''
+                            date: ''
+                    Executive Summary:
+                      Executive Summary:
+                        summary: Overview, strategic positioning, recent developments, and key capabilities.
+                Custom Workflows:
+                  summary: Custom Workflows
+                  value:
+                    Investment Prioritization Scorecard:
+                      Opportunity Prioritization Scorecard:
+                        source:
+                          - id: 1
+                            title: Private Equity Insights TravelPerk acquires Yokoy following $200m equity raise to strengthen
+                              travel tech expansion
+                            url: https://pe-insights.com/travelperk-acquires-yokoy-following-200m-equity-raise-to-strengthen-travel-tech-expansion/
+                            publisher: ''
+                            date: ''
+                          - id: 44
+                            title: Sourced from Wokelo Database
+                            url: ''
+                            publisher: ''
+                            date: ''
+                        summary: |
+                          | **Theme** | **Business Value** | **Overall Attractiveness** |
+                          | --- | --- | --- |
+                          | Mid-Market Corporate Travel Platform | High | Strong |
+                          | Cargo Digitization and Freighter Capacity | High | Strong |
+                    'Step 1: Company Information':
+                      CP - Quick snapshot_3b3f08c6-d285-4bb6-9b50-93c7e87cea9d:
+                        quick_snapshot:
+                          company_firmographics:
+                            organization:
+                              name: Air Canada
+                              logo: https://files.wokelo.ai/logo/thumbnail/air-canada.png
+                              url: https://app.wokelo.ai/dashboard/workflows/company-deep-dive-new-v2/?company=air-canada
+                            details:
+                              industry: Aerospace, Transportation, Travel
+                              founded_year: '1937'
+                              website: http://www.aircanada.com
+                              hq: Montréal, Canada
+                              operating_status: active
+                              company_type: public
+                              employees_in_crunchbase: 10000+
+                              last_funding_round:
+                                currency: USD
+                                round: Public
+                              ticker: TSX:AC
+                              financials:
+                                revenue:
+                                  currency: USD
+                                  value: 16299350852.78
+                                  period: '2025'
+                          product_details:
+                            product_category: Airline Transportation Services
+                            summary: Air Canada provides scheduled passenger and cargo air transport services across domestic
+                              and international routes.
+                        sources:
+                          - id: 1
+                            title: S&P CapIQ
+                            url: ''
+                            publisher: ''
+                            date: ''
+                    'Step 2: Company Intent Identification':
+                      Company Intent Identification:
+                        summary: |
+                          Air Canada's inorganic strategy is fundamentally driven by
+                          international network expansion, margin defense, cargo and
+                          logistics capability buildout, and loyalty/digital platform bolt-ons.
+                Industry Research:
+                  summary: Industry Research
+                  value:
+                    Executive Summary:
+                      Executive Summary:
+                        summary:
+                          source:
+                            - id: 1
+                              title: Electronic Manufacturing Services Market Set to Reach USD 820.71 Billion
+                              url: https://www.prnewswire.com/news-releases/example
+                              publisher: ''
+                              date: ''
+                          summary: The global EMS industry represents a critical segment of the electronics ecosystem.
+                    Key Insights:
+                      key_insights:
+                        - insight:
+                            title: Profit Centers Shift to Industrial & EV Segments
+                            paragraph: Profit pools pivot toward high-margin industrial and EV electronics.
+                            sources:
+                              - id: 1
+                                title: Example source
+                                url: https://example.com
+                                publisher: ''
+                                date: ''
+                    Overview:
+                      Overview:
+                        industry_overview_details:
+                          summary: Electronic Manufacturing Services represents a specialized industry where companies provide
+                            comprehensive manufacturing and supply chain solutions.
+                Peer Comparison:
+                  summary: Peer Comparison
+                  value:
+                    Firmographics:
+                      Firmographic:
+                        firmographics:
+                          firmographics:
+                            - organization:
+                                name: Expensify
+                                logo: https://wklogo.blob.core.windows.net/logos-thumbnail/expensify-com.png
+                                url: https://app.wokelo.ai/dashboard/workflows/company-deep-dive-new-v2/?company=expensify-com
+                              details:
+                                industry: Accounting, Enterprise Software, FinTech
+                                product_category: Online Expense Management Service
+                                founded_year: '2008'
+                                hq: San Francisco, United States
+                                company_type: public
+                                employees_in_crunchbase: 101-250
+                                website: https://we.are.expensify.com
+                                total_funding: 138200000
+                                last_funding_round:
+                                  currency: USD
+                                  round: Public
+                              description: Expensify is a financial services startup that provides an online expense management
+                                service.
+                        sources:
+                          - id: 1
+                            title: Sourced from Crunchbase
+                            url: ''
+                            publisher: ''
+                            date: ''
+                    Product offerings:
+                      Product offerings:
+                        product_offerings:
+                          - area: Expense Management & Reporting
+                            details:
+                              - permalink: expensify-com
+                                area_details: Comprehensive online expense management platform with automated expense reporting.
+                                company_name: Expensify
+                    Business model:
+                      Business model:
+                        business_model:
+                          - area: Revenue & Pricing
+                            details:
+                              - permalink: ramp-financial
+                                area_details: Revenue from interchange fees, value-added services, and tiered paid plans.
+                                company_name: Ramp
+                    Strategic moves:
+                      Strategic moves:
+                        strategic_moves:
+                          - area: Product / Service Expansion
+                            details:
+                              - company_name: Payhawk
+                                permalink: payhawk
+                                area_details: Launched Fall '25 Product Edition with 4 AI agents.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResearchErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: workflow
+                      message: Workflow must be company_primer.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResearchErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResearchErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResearchErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token sent in the Authorization header.
+  schemas:
+    BuyerScreeningRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - company
+      properties:
+        company:
+          type: string
+          description: Permalink or URL of the target company.
+          example: brex
+        parameters:
+          $ref: '#/components/schemas/BuyerScreeningParameters'
+    BuyerScreeningParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        detailed_query:
+          type: string
+          description: A descriptive query to refine the buyer search scope and strategic criteria.
+          example: Looking for companies in spend management, corporate cards, and CFO workflow software with mid-market and
+            enterprise distribution
+        buyer_type:
+          description: |
+            Type of buyer to target. The documentation shows this inconsistently
+            as either a single string or an array, so both forms are allowed here.
+          oneOf:
+            - type: string
+              enum:
+                - strategic
+                - financial
+            - type: array
+              items:
+                type: string
+                enum:
+                  - strategic
+                  - financial
+          example: strategic
+        company_type:
+          type: string
+          description: Type of company to include.
+          enum:
+            - private
+            - public
+            - all
+          example: public
+        geography:
+          type: array
+          description: Geographic scope. Docs describe ISO country codes, though an example also uses full country names.
+          items:
+            type: string
+          example:
+            - USA
+    BuyerScreeningResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+        - status
+        - result
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier.
+          example: c685171e-ce46-474b-b0de-f17123b3085a
+        status:
+          type: string
+          description: Processing status.
+          example: COMPLETED
+        result:
+          type: array
+          description: Ranked list of scored buyer candidates.
+          items:
+            $ref: '#/components/schemas/BuyerCandidate'
+    BuyerCandidate:
+      type: object
+      additionalProperties: true
+      properties:
+        Permalink:
+          type: string
+          nullable: true
+        Name:
+          type: string
+          nullable: true
+        Website:
+          type: string
+          nullable: true
+        HQ City:
+          type: string
+          nullable: true
+        HQ Country:
+          type: string
+          nullable: true
+        HQ Continent:
+          type: string
+          nullable: true
+        Founded:
+          type: string
+          nullable: true
+        Type:
+          type: string
+          nullable: true
+        Operating Status:
+          type: string
+          nullable: true
+        Buyer Type:
+          type: string
+          nullable: true
+        Product Category:
+          type: string
+          nullable: true
+        Core Offering:
+          type: string
+          nullable: true
+        Product Catalog:
+          type: string
+          nullable: true
+        Employees (Crunchbase):
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        Employees (LinkedIn):
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        Funding Stage:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Total Funding:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Last Funding Date:
+          type: string
+          nullable: true
+        Key Investors:
+          oneOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+          nullable: true
+        Revenue:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Ticker:
+          type: string
+          nullable: true
+        EBITDA:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Net Income:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        EBITDA Margin (%):
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Net Income Margin (%):
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        EPS Diluted:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        ROA (%):
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Unlevered FCF:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        D/E:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Market Cap:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Enterprise Value:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        EV/Revenue (LTM):
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        EV/EBITDA (LTM):
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        P/E (LTM):
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Acquisitions:
+          type: string
+          nullable: true
+        Investments:
+          type: string
+          nullable: true
+        Overall Score:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Overall Score Rationale:
+          type: string
+          nullable: true
+        Commentary:
+          type: string
+          nullable: true
+        Deal Feasibility Score:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Deal Feasibility Rationale:
+          type: string
+          nullable: true
+        Product Synergy Score:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Product Synergy Rationale:
+          type: string
+          nullable: true
+        Deal Precedent Score:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Deal Precedent Rationale:
+          type: string
+          nullable: true
+        Synergy Potential Score:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        Synergy Potential Rationale:
+          type: string
+          nullable: true
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/ErrorDetail'
+    CompanyDeepErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompanyDeepErrorDetail'
+    CompanyInstantErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompanyInstantErrorDetail'
+    NewsErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid query parameters.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/NewsErrorDetail'
+    CompanyResearchErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompanyResearchErrorDetail'
+    CustomWFErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/CustomWFErrorDetail'
+    IndustryDeepErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/IndustryDeepErrorDetail'
+    IndustryResearchErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/IndustryResearchErrorDetail'
+    MarketMapErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/MarketMapErrorDetail'
+    PeerErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/PeerErrorDetail'
+    SupportErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/SupportErrorDetail'
+    TargetErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/TargetErrorDetail'
+    ErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: company
+        message:
+          type: string
+          example: Company is required.
+    CompanyDeepErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: sections
+        message:
+          type: string
+          example: At least one supported section must be provided.
+    CompanyInstantErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: sections
+        message:
+          type: string
+          example: At least one supported section must be provided.
+    NewsErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: company
+        message:
+          type: string
+          example: Company is required.
+    CompanyResearchErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: website
+        message:
+          type: string
+          example: Either website or permalink is required.
+    CustomWFErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: workflow
+        message:
+          type: string
+          example: A valid workflow identifier is required.
+    IndustryDeepErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: sections
+        message:
+          type: string
+          example: At least one supported section must be provided.
+    IndustryResearchErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: industry
+        message:
+          type: string
+          example: Industry is required.
+    MarketMapErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: topic
+        message:
+          type: string
+          example: Topic is required.
+    PeerErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: websites
+        message:
+          type: string
+          example: Provide between 1 and 5 company websites.
+    SupportErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: query
+        message:
+          type: string
+          example: Query is required.
+    TargetErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: company
+        message:
+          type: string
+          example: Company is required.
+    DeepIntelligenceRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - companies
+        - sections
+      properties:
+        companies:
+          type: array
+          description: |
+            List of company identifiers to analyze. The documentation shows both
+            permalinks such as `zendesk` and URLs such as `https://tesla.com`.
+          minItems: 1
+          items:
+            type: string
+          example:
+            - https://tesla.com
+        sections:
+          type: array
+          description: List of deep intelligence sections to generate.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/DeepIntelligenceSection'
+          example:
+            - products_and_services
+            - product_launches
+    DeepIntelligenceSection:
+      type: string
+      enum:
+        - products_and_services
+        - product_launches
+        - strategic_initiatives
+        - partnerships
+        - business_model
+        - key_customers
+        - management_profiles
+        - employee_sentiment
+        - product_sentiment
+      description: Supported deep intelligence section values.
+    DeepIntelligenceResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+        - status
+        - result
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier.
+          example: c2ad9d34-f432-4b9b-b5a2-46fbd124db5f
+        status:
+          type: string
+          description: Processing status.
+          example: COMPLETED
+        result:
+          type: object
+          description: Map of company identifier to deep intelligence output.
+          additionalProperties:
+            $ref: '#/components/schemas/DeepIntelligenceCompanyResult'
+    DeepIntelligenceCompanyResult:
+      type: object
+      additionalProperties: true
+      properties:
+        firmographics:
+          $ref: '#/components/schemas/Firmographics'
+        CP enrichment:
+          $ref: '#/components/schemas/CPEnrichment'
+        meta:
+          $ref: '#/components/schemas/Meta'
+    CPEnrichment:
+      type: object
+      additionalProperties: true
+      properties:
+        products_and_services:
+          $ref: '#/components/schemas/ProductsAndServicesSection'
+        product_launches:
+          $ref: '#/components/schemas/ProductLaunchesSection'
+        strategic_initiatives:
+          $ref: '#/components/schemas/StrategicInitiativesSection'
+        partnerships:
+          type: object
+          additionalProperties: true
+          description: Partnership ecosystem intelligence.
+        business_model:
+          type: object
+          additionalProperties: true
+          description: Revenue model, pricing, and monetization analysis.
+        key_customers:
+          type: object
+          additionalProperties: true
+          description: Key customer and deal context analysis.
+        management_profiles:
+          type: object
+          additionalProperties: true
+          description: Leadership background, track record, and tenure analysis.
+        employee_sentiment:
+          type: object
+          additionalProperties: true
+          description: Employee review and workplace sentiment synthesis.
+        product_sentiment:
+          type: object
+          additionalProperties: true
+          description: Product review and market perception synthesis.
+    Firmographics:
+      type: object
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+          format: uri
+        location:
+          type: string
+          nullable: true
+        founded:
+          type: integer
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        operating_status:
+          type: string
+          nullable: true
+        ticker:
+          type: string
+          nullable: true
+    ProductsAndServicesSection:
+      type: object
+      additionalProperties: false
+      properties:
+        product_overview:
+          $ref: '#/components/schemas/ProductOverview'
+        products_and_services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductArea'
+    ProductOverview:
+      type: object
+      additionalProperties: false
+      properties:
+        source:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyResearchSourceReference'
+        summary:
+          type: string
+          nullable: true
+        screenshot_url:
+          type: string
+          nullable: true
+          format: uri
+    ProductArea:
+      type: object
+      additionalProperties: false
+      properties:
+        product_area:
+          type: string
+          nullable: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/TitledSummary'
+        sources:
+          type: string
+          nullable: true
+    CompanyResearchProductArea:
+      type: object
+      additionalProperties: false
+      properties:
+        product_area:
+          type: string
+          nullable: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDetail'
+        sources:
+          type: string
+          nullable: true
+    ProductLaunchesSection:
+      type: object
+      additionalProperties: false
+      properties:
+        product_launches_and_initiatives:
+          $ref: '#/components/schemas/ProductLaunchesAndInitiatives'
+    ProductLaunchesAndInitiatives:
+      type: object
+      additionalProperties: false
+      properties:
+        released_products:
+          type: array
+          items:
+            $ref: '#/components/schemas/InitiativeItem'
+        future_announcements:
+          type: array
+          items:
+            $ref: '#/components/schemas/InitiativeItem'
+    InitiativeItem:
+      type: object
+      additionalProperties: false
+      properties:
+        date:
+          type: string
+          nullable: true
+        initiative:
+          type: string
+          nullable: true
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyResearchPublishedSource'
+        summary:
+          type: array
+          items:
+            type: string
+    StrategicInitiativesSection:
+      type: object
+      additionalProperties: false
+      properties:
+        strategic_moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/StrategicMove'
+    StrategicMove:
+      type: object
+      additionalProperties: false
+      properties:
+        Area:
+          type: string
+          nullable: true
+        Details:
+          type: array
+          items:
+            $ref: '#/components/schemas/StrategicDetail'
+    StrategicDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        point:
+          type: string
+          nullable: true
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishedSource'
+    TitledSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          nullable: true
+        summary:
+          type: string
+          nullable: true
+    SourceReference:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        date:
+          type: string
+          nullable: true
+    CompanyResearchSourceReference:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        date:
+          type: string
+          nullable: true
+    CustomWFSourceReference:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        date:
+          type: string
+          nullable: true
+    IndustryDeepSourceReference:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        date:
+          type: string
+          nullable: true
+    IndustryResearchSourceReference:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        date:
+          type: string
+          nullable: true
+    PeerSourceReference:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        date:
+          type: string
+          nullable: true
+    PublishedSource:
+      type: object
+      additionalProperties: false
+      properties:
+        url:
+          type: string
+          nullable: true
+          format: uri
+        title:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        publishedDate:
+          type: string
+          nullable: true
+          format: date
+    CompanyResearchPublishedSource:
+      type: object
+      additionalProperties: false
+      properties:
+        url:
+          type: string
+          nullable: true
+          format: uri
+        title:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        publishedDate:
+          type: string
+          nullable: true
+    Meta:
+      type: object
+      additionalProperties: false
+      properties:
+        report_id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        user:
+          type: string
+          nullable: true
+          format: email
+        dt_createdon:
+          type: string
+          nullable: true
+    CompanyEnrichRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - companies
+        - sections
+      properties:
+        companies:
+          type: array
+          description: List of company identifiers to enrich, typically company permalinks.
+          minItems: 1
+          items:
+            type: string
+          example:
+            - tesla-motors
+        sections:
+          type: array
+          description: List of sections to retrieve for each company.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/EnrichmentSection'
+          example:
+            - firmographics
+            - products
+        parameters:
+          $ref: '#/components/schemas/EnrichmentParameters'
+    EnrichmentParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        custom_fields:
+          type: array
+          description: Optional AI-computed custom fields to evaluate for each company.
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinition'
+    CustomFieldDefinition:
+      type: object
+      additionalProperties: false
+      required:
+        - field_name
+        - type
+        - prompt
+      properties:
+        field_name:
+          type: string
+          description: Display name of the custom field.
+          example: AI Readiness Score
+        type:
+          type: string
+          description: Output type for the custom field.
+          enum:
+            - text
+          example: text
+        prompt:
+          type: string
+          description: Natural-language instruction used to compute the field.
+          example: Rate this company's AI readiness on a scale of 1-10 with detailed reasoning.
+    EnrichmentSection:
+      type: string
+      enum:
+        - firmographics
+        - products
+        - headcount
+        - funding
+        - public_company_financials
+        - acquisitions
+        - investments
+        - website_traffic
+        - uk_private_compay_financials
+      description: Supported enrichment section values.
+    CompanyEnrichResponse:
+      type: object
+      additionalProperties: true
+      required:
+        - request_id
+        - status
+        - result
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier.
+          example: 00a3df02-89f8-410d-adb3-f0e185b2be50
+        status:
+          type: string
+          description: Processing status of the enrichment request.
+          example: COMPLETED
+        result:
+          type: object
+          description: |
+            Map of company identifier to enriched section payloads.
+            The exact keys present for each company depend on the requested sections.
+          additionalProperties:
+            $ref: '#/components/schemas/CompanyEnrichmentResult'
+    CompanyEnrichmentResult:
+      type: object
+      additionalProperties: true
+      properties:
+        firmographics:
+          $ref: '#/components/schemas/Firmographics'
+        products:
+          type: array
+          description: Product catalog with descriptions and categories.
+          items:
+            $ref: '#/components/schemas/Product'
+        headcount:
+          $ref: '#/components/schemas/Headcount'
+        funding:
+          $ref: '#/components/schemas/Funding'
+        public_company_financials:
+          $ref: '#/components/schemas/PublicCompanyFinancials'
+        acquisitions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Acquisition'
+        investments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Investment'
+        website_traffic:
+          $ref: '#/components/schemas/WebsiteTraffic'
+        uk_private_compay_financials:
+          $ref: '#/components/schemas/UkPrivateCompanyFinancials'
+      description: Container for section-wise enrichment output for a company.
+    Product:
+      type: object
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+    Headcount:
+      type: object
+      additionalProperties: true
+      description: Employee count, LinkedIn headcount, and headcount growth trends.
+    Funding:
+      type: object
+      additionalProperties: false
+      properties:
+        overall:
+          $ref: '#/components/schemas/FundingOverall'
+        funding_rounds:
+          type: array
+          items:
+            $ref: '#/components/schemas/FundingRound'
+        key_investors:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyInvestor'
+    FundingOverall:
+      type: object
+      additionalProperties: true
+      properties:
+        funding_stage:
+          type: string
+          nullable: true
+        total_funding:
+          type: number
+          nullable: true
+        last_funding_date:
+          type: string
+          nullable: true
+          format: date
+        num_funding_rounds:
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        key_investors:
+          type: array
+          items:
+            type: string
+    FundingRound:
+      type: object
+      additionalProperties: true
+      properties:
+        date:
+          type: string
+          nullable: true
+          format: date
+        round:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          nullable: true
+        total_investors:
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        lead_investors:
+          type: array
+          items:
+            type: string
+        investors:
+          type: array
+          items:
+            type: string
+        pre_money_valuation:
+          type: number
+          nullable: true
+        news:
+          $ref: '#/components/schemas/NewsBundle'
+    KeyInvestor:
+      type: object
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          nullable: true
+        permalink:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        first_entry_date:
+          type: string
+          nullable: true
+          format: date
+        rounds_participated:
+          type: array
+          items:
+            type: string
+    NewsBundle:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          nullable: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewsItem'
+    NewsItem:
+      type: object
+      additionalProperties: true
+      properties:
+        publisher:
+          type: string
+          nullable: true
+        news_url:
+          type: string
+          nullable: true
+          format: uri
+        news_title:
+          type: string
+          nullable: true
+    PublicCompanyFinancials:
+      type: object
+      additionalProperties: true
+      description: Revenue, margins, market cap, and trading multiples for public companies.
+    Acquisition:
+      type: object
+      additionalProperties: true
+      properties:
+        acquisition_date:
+          type: string
+          nullable: true
+          format: date
+        name:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          nullable: true
+        amount_usd:
+          type: number
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        acquiree_name:
+          type: string
+          nullable: true
+        acquiree_permalink:
+          type: string
+          nullable: true
+    Investment:
+      type: object
+      additionalProperties: true
+      properties:
+        announcement_date:
+          type: string
+          nullable: true
+          format: date
+        amount:
+          type: number
+          nullable: true
+        amount_usd:
+          type: number
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        lead_investor:
+          type: boolean
+          nullable: true
+        funding_round_id:
+          type: string
+          nullable: true
+        investee_name:
+          type: string
+          nullable: true
+        investee_permalink:
+          type: string
+          nullable: true
+    WebsiteTraffic:
+      type: object
+      additionalProperties: true
+      description: Monthly visits, traffic sources, and geographic distribution.
+    UkPrivateCompanyFinancials:
+      type: object
+      additionalProperties: true
+      description: Financial statements and related metrics for UK-based private companies.
+    CompanyNewsResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - data
+        - count
+        - total
+        - limit
+        - offset
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyNewsArticle'
+        count:
+          type: integer
+          example: 4
+        total:
+          type: integer
+          example: 4
+        limit:
+          type: integer
+          example: 100
+        offset:
+          type: integer
+          example: 0
+    CompanyNewsArticle:
+      type: object
+      additionalProperties: true
+      properties:
+        ai_summary:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+          format: uri
+        title:
+          type: string
+          nullable: true
+        scraped_text:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        published_date:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        author:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          nullable: true
+        countries:
+          type: array
+          items:
+            type: string
+        sentiment:
+          type: string
+          nullable: true
+        company_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReferencedCompany'
+        primary_tag:
+          type: string
+          nullable: true
+        original_language:
+          type: string
+          nullable: true
+        secondary_tags:
+          type: array
+          items:
+            type: string
+        newsworthiness_impact:
+          type: string
+          nullable: true
+        primary_industry:
+          type: string
+          nullable: true
+        secondary_industry:
+          type: array
+          items:
+            type: string
+    ReferencedCompany:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+          format: uri
+    CompanyResearchDirectRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        industry:
+          type: string
+          description: Optional company industry. Auto-detected if omitted.
+          example: Artificial Intelligence
+        website:
+          type: string
+          description: Complete company website URL.
+          format: uri
+          example: https://tesla.com
+        permalink:
+          type: string
+          description: Company permalink identifier.
+          example: salesforce
+      description: Either `website` or `permalink` should be provided.
+    CompanyResearchWorkflowRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - workflow
+      properties:
+        workflow:
+          type: string
+          description: Workflow identifier.
+          enum:
+            - company_primer
+          example: company_primer
+        permalink:
+          type: string
+          description: Company permalink identifier.
+          example: salesforce
+        website:
+          type: string
+          description: Optional company website URL if supported by the workflow manager.
+          format: uri
+          example: https://wokelo.ai
+        industry:
+          type: string
+          description: Optional company industry.
+          example: Artificial Intelligence
+    CompanyResearchResponse:
+      type: object
+      additionalProperties: true
+      description: |
+        The company research response is a large nested intelligence report with
+        sections such as Quick Snapshot, Executive Summary, Key Insights,
+        Product Insights, Transaction Highlights, and Strategic Moves and News.
+
+        The documentation provides a very large example rather than a strict formal
+        schema. This response is therefore modeled with shared nested section
+        components where structure is clear, while leaving some parts permissive.
+      properties:
+        Quick Snapshot:
+          $ref: '#/components/schemas/QuickSnapshotSectionContainer'
+        Executive Summary:
+          $ref: '#/components/schemas/ExecutiveSummarySectionContainer'
+        Key Insights:
+          $ref: '#/components/schemas/KeyInsightsSectionContainer'
+        Product insights:
+          $ref: '#/components/schemas/ProductInsightsSectionContainer'
+        Transaction highlights:
+          $ref: '#/components/schemas/TransactionHighlightsSectionContainer'
+        Strategic moves and news:
+          $ref: '#/components/schemas/StrategicMovesSectionContainer'
+    QuickSnapshotSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Quick Snapshot:
+          type: object
+          additionalProperties: false
+          properties:
+            quick_snapshot:
+              type: object
+              additionalProperties: false
+              properties:
+                company_firmographics:
+                  $ref: '#/components/schemas/CompanyFirmographics'
+                product_details:
+                  $ref: '#/components/schemas/ProductDetails'
+            sources:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompanyResearchSourceReference'
+    CompanyFirmographics:
+      type: object
+      additionalProperties: false
+      properties:
+        organization:
+          $ref: '#/components/schemas/OrganizationRef'
+        details:
+          $ref: '#/components/schemas/CustomWFFirmographicDetails'
+    OrganizationRef:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+        logo:
+          type: string
+          nullable: true
+          format: uri
+        url:
+          type: string
+          nullable: true
+          format: uri
+    FirmographicDetails:
+      type: object
+      additionalProperties: true
+      properties:
+        industry:
+          type: string
+          nullable: true
+        founded_year:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+          format: uri
+        hq:
+          type: string
+          nullable: true
+        operating_status:
+          type: string
+          nullable: true
+        company_type:
+          type: string
+          nullable: true
+        employees_in_crunchbase:
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        employees_in_linkedin:
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        last_funding_round:
+          $ref: '#/components/schemas/FundingRoundSummary'
+        ticker:
+          type: string
+          nullable: true
+        financials:
+          $ref: '#/components/schemas/FinancialSummary'
+    CustomWFFirmographicDetails:
+      type: object
+      additionalProperties: true
+      properties:
+        industry:
+          type: string
+          nullable: true
+        founded_year:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+          format: uri
+        hq:
+          type: string
+          nullable: true
+        operating_status:
+          type: string
+          nullable: true
+        company_type:
+          type: string
+          nullable: true
+        employees_in_crunchbase:
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        last_funding_round:
+          $ref: '#/components/schemas/CustomWFFundingRoundSummary'
+        ticker:
+          type: string
+          nullable: true
+        financials:
+          $ref: '#/components/schemas/FinancialSummary'
+    FundingRoundSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        currency:
+          type: string
+          nullable: true
+        round:
+          type: string
+          nullable: true
+        value:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        date:
+          type: string
+          nullable: true
+    CustomWFFundingRoundSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        currency:
+          type: string
+          nullable: true
+        round:
+          type: string
+          nullable: true
+        value:
+          oneOf:
+            - type: string
+            - type: number
+          nullable: true
+        date:
+          type: string
+          nullable: true
+    PeerFundingRoundSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        currency:
+          type: string
+          nullable: true
+        round:
+          type: string
+          nullable: true
+        value:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        date:
+          type: string
+          nullable: true
+    FinancialSummary:
+      type: object
+      additionalProperties: true
+      properties:
+        revenue:
+          $ref: '#/components/schemas/FinancialMetric'
+        ebitda:
+          $ref: '#/components/schemas/FinancialMetric'
+        pat:
+          $ref: '#/components/schemas/FinancialMetric'
+        market_cap:
+          $ref: '#/components/schemas/FinancialMetric'
+    FinancialMetric:
+      type: object
+      additionalProperties: false
+      properties:
+        currency:
+          type: string
+          nullable: true
+        value:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        period:
+          type: string
+          nullable: true
+    ProductDetails:
+      type: object
+      additionalProperties: false
+      properties:
+        product_category:
+          type: string
+          nullable: true
+        summary:
+          type: string
+          nullable: true
+    ExecutiveSummarySectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Executive Summary:
+          type: object
+          additionalProperties: true
+          properties:
+            source:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompanyResearchSourceReference'
+            summary:
+              type: string
+              nullable: true
+    IndustryResearchExecutiveSummarySectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Executive Summary:
+          type: object
+          additionalProperties: true
+          properties:
+            summary:
+              $ref: '#/components/schemas/SourcedSummaryBlock'
+    KeyInsightsSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        key_insights:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyInsightItem'
+    KeyInsightItem:
+      type: object
+      additionalProperties: false
+      properties:
+        insight:
+          $ref: '#/components/schemas/TitledParagraphWithSources'
+        commentary:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParagraphWithSources'
+    ProductInsightsSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Product and services:
+          type: object
+          additionalProperties: true
+          properties:
+            product_overview:
+              $ref: '#/components/schemas/ProductOverview'
+            products_and_services:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompanyResearchProductArea'
+        Product launches and initiatives:
+          type: object
+          additionalProperties: true
+          properties:
+            product_launches_and_initiatives:
+              $ref: '#/components/schemas/ProductLaunchesAndInitiatives'
+    ProductDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          nullable: true
+        summary:
+          type: string
+          nullable: true
+    TransactionHighlightsSectionContainer:
+      type: object
+      additionalProperties: true
+      description: Transaction highlights including M&A maps, acquisition strategy, and venture investment strategy.
+    StrategicMovesSectionContainer:
+      type: object
+      additionalProperties: true
+      description: Strategic moves, timelines, partnerships, and related news sections.
+    PeerStrategicMovesSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Strategic moves:
+          type: object
+          additionalProperties: false
+          properties:
+            strategic_moves:
+              type: array
+              items:
+                $ref: '#/components/schemas/StrategicMoveArea'
+            strategic_moves_key_take_aways:
+              type: array
+              items:
+                $ref: '#/components/schemas/LabeledNarrative'
+    TitledParagraphWithSources:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          nullable: true
+        paragraph:
+          type: string
+          nullable: true
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyResearchSourceReference'
+    ParagraphWithSources:
+      type: object
+      additionalProperties: false
+      properties:
+        paragraph:
+          type: string
+          nullable: true
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyResearchSourceReference'
+    CustomWorkflowRequest:
+      type: object
+      additionalProperties: true
+      required:
+        - workflow
+      properties:
+        workflow:
+          type: string
+          description: |
+            Workflow identifier. The documentation lists multiple custom workflow IDs,
+            such as `industry_research___custom_a842447`, `value_creation_e469641`,
+            `week_0_cdd_fact_pack_c0fd566`, and `company_teaser_ad4f4ca`.
+          example: industry_research___custom_a842447
+        industry_research_topic:
+          type: string
+          description: Representative workflow-specific input used by the Industry Attractiveness workflow.
+          example: Electric vehicles
+        permalink:
+          type: string
+          description: Representative workflow-specific input used by company-oriented workflows.
+          example: air-canada
+      description: |
+        Flexible request schema for the workflow manager. The only stable field
+        across all custom workflows is `workflow`; all other input fields are
+        workflow-specific and therefore allowed via additionalProperties.
+    CustomWorkflowResponse:
+      type: object
+      additionalProperties: true
+      description: |
+        Flexible workflow-specific response object.
+
+        The documentation shows a nested report structure for the example
+        `value_creation_e469641` workflow, with sections such as:
+        - Investment Prioritization Scorecard
+        - Step 1: Company Information
+        - Step 2: Company Intent Identification
+        - Step 3: Opportunity Mapping
+        - Step 4: Deep Dive into Individual Theme
+
+        Since different custom workflows can return materially different output
+        structures, this response is intentionally permissive, while selected
+        shared nested patterns are typed below.
+      properties:
+        Investment Prioritization Scorecard:
+          $ref: '#/components/schemas/SourcedSummarySectionContainer'
+        'Step 1: Company Information':
+          type: object
+          additionalProperties: true
+          properties:
+            CP - Quick snapshot_3b3f08c6-d285-4bb6-9b50-93c7e87cea9d:
+              $ref: '#/components/schemas/QuickSnapshotSection'
+        'Step 2: Company Intent Identification':
+          $ref: '#/components/schemas/SourcedSummarySectionContainer'
+        'Step 3: Opportunity Mapping':
+          $ref: '#/components/schemas/SourcedSummarySectionContainer'
+        'Step 4: Deep Dive into Individual Theme':
+          $ref: '#/components/schemas/SourcedSummarySectionContainer'
+    SourcedSummarySectionContainer:
+      type: object
+      additionalProperties: true
+      description: Generic report section container with nested sourced summary blocks.
+    QuickSnapshotSection:
+      type: object
+      additionalProperties: true
+      properties:
+        quick_snapshot:
+          type: object
+          additionalProperties: false
+          properties:
+            company_firmographics:
+              $ref: '#/components/schemas/CompanyFirmographics'
+            product_details:
+              $ref: '#/components/schemas/ProductDetails'
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomWFSourceReference'
+    IndustryDeepIntelligenceRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - topic
+        - sections
+      properties:
+        topic:
+          type: string
+          description: Industry topic to analyze.
+          example: Enterprise SaaS security
+        sections:
+          type: array
+          description: List of industry intelligence sections to generate.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/IndustrySection'
+          example:
+            - market_size
+            - trends_and_innovations
+        parameters:
+          $ref: '#/components/schemas/IndustryParameters'
+    IndustryParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        keywords:
+          type: array
+          description: Focus keywords to narrow the analysis.
+          items:
+            type: string
+          example:
+            - zero trust
+            - SIEM
+        geography:
+          type: array
+          description: |
+            Geographic scope as 3-letter ISO country codes.
+          items:
+            type: string
+            minLength: 3
+            maxLength: 3
+          example:
+            - USA
+            - GBR
+        definition:
+          type: string
+          description: Custom definition of the industry to guide the analysis.
+          example: B2B software focused on enterprise cybersecurity
+        sample_companies:
+          type: array
+          description: Example companies used to anchor the analysis.
+          items:
+            type: string
+          example:
+            - crowdstrike
+            - sentinel
+    IndustrySection:
+      type: string
+      enum:
+        - market_size
+        - quant_insights
+        - trends_and_innovations
+        - transactions_mna
+        - transactions_fundraising
+        - transactions_ipo
+        - partnerships
+        - tier1_intelligence
+        - case_studies
+        - industry_regulations
+      description: Supported industry deep intelligence section values.
+    IndustryDeepIntelligenceResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+        - status
+        - result
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier.
+          example: 68555bdd-a11e-45df-97ab-a0cc6e6408a1
+        status:
+          type: string
+          description: Processing status of the request.
+          example: COMPLETED
+        result:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/IndustryEnrichmentResult'
+          description: Container for generated industry intelligence output.
+    IndustryEnrichmentResult:
+      type: object
+      additionalProperties: true
+      properties:
+        market_size:
+          $ref: '#/components/schemas/MarketSizeSection'
+        quant_insights:
+          type: object
+          additionalProperties: true
+          description: Quantitative growth, adoption, and benchmark insights.
+        trends_and_innovations:
+          $ref: '#/components/schemas/TrendsAndInnovationsSection'
+        transactions_mna:
+          type: object
+          additionalProperties: true
+          description: M&A transaction intelligence.
+        transactions_fundraising:
+          type: object
+          additionalProperties: true
+          description: Fundraising and investor activity intelligence.
+        transactions_ipo:
+          type: object
+          additionalProperties: true
+          description: IPO transaction intelligence.
+        partnerships:
+          type: object
+          additionalProperties: true
+          description: Partnership landscape intelligence.
+        tier1_intelligence:
+          type: object
+          additionalProperties: true
+          description: Curated tier-1 intelligence from strategy and finance publishers.
+        case_studies:
+          type: object
+          additionalProperties: true
+          description: Company case studies and strategy timelines.
+        industry_regulations:
+          type: object
+          additionalProperties: true
+          description: Regulatory environment and compliance requirements.
+    MarketSizeSection:
+      type: object
+      additionalProperties: false
+      properties:
+        charts:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MarketSizeChart'
+          description: Chart objects keyed by chart name.
+    MarketSizeChart:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          nullable: true
+        projection_year:
+          type: integer
+          nullable: true
+        period_start_year:
+          type: integer
+          nullable: true
+        period_end_year:
+          type: integer
+          nullable: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarketSizeDataPoint'
+        source:
+          type: string
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+          format: uri
+    MarketSizeDataPoint:
+      type: object
+      additionalProperties: false
+      properties:
+        publisher:
+          type: string
+          nullable: true
+        company:
+          type: string
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        cagr:
+          type: string
+          nullable: true
+        end_year:
+          type: integer
+          nullable: true
+        start_year:
+          type: integer
+          nullable: true
+        start_value:
+          $ref: '#/components/schemas/NumericValueWithMultiplier'
+        end_value:
+          $ref: '#/components/schemas/NumericValueWithMultiplier'
+        estimated_value:
+          $ref: '#/components/schemas/NumericValueWithMultiplier'
+    NumericValueWithMultiplier:
+      type: object
+      additionalProperties: false
+      properties:
+        value:
+          type: number
+          nullable: true
+        multiplier:
+          type: number
+          nullable: true
+    TrendsAndInnovationsSection:
+      type: object
+      additionalProperties: false
+      properties:
+        trend_and_innovations:
+          $ref: '#/components/schemas/SourcedNarrative'
+    SourcedNarrative:
+      type: object
+      additionalProperties: false
+      properties:
+        source:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndustryDeepSourceReference'
+        summary:
+          type: string
+          nullable: true
+    IndustryResearchDirectRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - industry
+      properties:
+        industry:
+          type: string
+          description: Specific industry name on which the report should be prepared.
+          example: gaming
+    IndustryResearchWorkflowRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - workflow
+        - industry
+      properties:
+        workflow:
+          type: string
+          description: Workflow identifier.
+          enum:
+            - industry_primer
+          example: industry_primer
+        industry:
+          type: string
+          description: Specific industry name on which the report should be prepared.
+          example: Electronics Manufacturing Services
+    IndustryResearchResponse:
+      type: object
+      additionalProperties: true
+      description: |
+        The industry research response is a large nested intelligence report with
+        sections such as Executive Summary, Key Insights, Overview, Trends and
+        Innovations, Select Transactions, Recent Strategic Moves, and Competitive Landscape.
+
+        The documentation provides a very large example rather than a strict formal
+        schema. This response is therefore modeled with shared nested section
+        components where structure is clear, while leaving some parts permissive.
+      properties:
+        Executive Summary:
+          $ref: '#/components/schemas/IndustryResearchExecutiveSummarySectionContainer'
+        Key Insights:
+          $ref: '#/components/schemas/KeyInsightsSectionContainer'
+        Overview:
+          $ref: '#/components/schemas/OverviewSectionContainer'
+        Trends and innovations:
+          $ref: '#/components/schemas/TrendsSectionContainer'
+        Select transactions:
+          $ref: '#/components/schemas/SelectTransactionsSectionContainer'
+        Recent strategic moves:
+          $ref: '#/components/schemas/RecentStrategicMovesSectionContainer'
+        Competitive landscape:
+          $ref: '#/components/schemas/CompetitiveLandscapeSectionContainer'
+    OverviewSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Overview:
+          type: object
+          additionalProperties: true
+          properties:
+            industry_overview_details:
+              $ref: '#/components/schemas/SourcedSummaryBlock'
+    TrendsSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Key trends and innovations:
+          type: object
+          additionalProperties: true
+          properties:
+            trend_and_innovations:
+              $ref: '#/components/schemas/SourcedSummaryBlock'
+    SelectTransactionsSectionContainer:
+      type: object
+      additionalProperties: true
+      description: |
+        Select transactions including fundraising, key investors, M&A activities,
+        and IPO exits. The doc provides extensive nested examples but not a fully
+        formal contract, so this section remains permissive.
+    RecentStrategicMovesSectionContainer:
+      type: object
+      additionalProperties: true
+      description: |
+        Recent company initiatives, partnerships, news, and trend charts.
+    CompetitiveLandscapeSectionContainer:
+      type: object
+      additionalProperties: true
+      description: |
+        Competitive landscape including key peers, archetypes, and other players.
+    SourcedSummaryBlock:
+      type: object
+      additionalProperties: true
+      properties:
+        source:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndustryResearchSourceReference'
+        summary:
+          type: string
+          nullable: true
+    MarketMapRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - topic
+      properties:
+        topic:
+          type: string
+          description: The market or product category to map.
+          example: AI-powered CRM software
+        parameters:
+          $ref: '#/components/schemas/MarketMapParameters'
+    MarketMapParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        detailed_query:
+          type: string
+          description: More descriptive query to refine market map scope.
+          example: B2B CRM tools leveraging AI for sales automation
+        keywords:
+          type: array
+          description: Keywords used to identify and filter relevant companies.
+          items:
+            type: string
+          example:
+            - AI
+            - CRM
+            - sales automation
+        sample_companies:
+          type: array
+          description: Permalinks or URLs of representative companies to anchor the market map.
+          items:
+            type: string
+          example:
+            - salesforce
+            - hubspot
+        geography:
+          type: array
+          description: Geographic scope as ISO country codes.
+          items:
+            type: string
+            minLength: 3
+            maxLength: 3
+          example:
+            - USA
+            - GBR
+        company_type:
+          type: string
+          description: Type of company to include.
+          enum:
+            - private
+            - public
+            - all
+          example: private
+        employee_count:
+          type: array
+          description: Headcount range filters. Empty array means all.
+          items:
+            type: string
+          example:
+            - 11-50
+            - 51-100
+        founded_year:
+          $ref: '#/components/schemas/RangeFilterIntegerFlexible'
+        funding_stage:
+          type: array
+          description: Funding stage filters. Empty array means all.
+          items:
+            type: string
+          example:
+            - Seed
+            - Series A
+            - Series B
+        total_funding:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        last_funding_round:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        revenue:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        ebitda:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        net_income:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        ev_ebitda:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+    RangeFilterIntegerFlexible:
+      type: object
+      additionalProperties: false
+      description: |
+        Flexible integer range filter. The documentation shows both `from`/`to`
+        and `min`/`max` styles for founded year examples, so both are supported here.
+      properties:
+        from:
+          type: integer
+          nullable: true
+        to:
+          type: integer
+          nullable: true
+        min:
+          type: integer
+          nullable: true
+        max:
+          type: integer
+          nullable: true
+    RangeFilterNumberString:
+      type: object
+      additionalProperties: false
+      description: Range filter with optional from/to values as numbers or numeric strings.
+      properties:
+        from:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        to:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+    TargetRangeFilterNumberString:
+      type: object
+      additionalProperties: false
+      properties:
+        from:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        to:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+    MarketMapResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+        - status
+        - result
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier.
+          example: a57a9100-e7e1-4c6c-9b29-cdd064516ba7
+        status:
+          type: string
+          description: Processing status of the request.
+          example: COMPLETED
+        result:
+          type: array
+          description: Ranked list of matched companies.
+          items:
+            $ref: '#/components/schemas/MarketMapCompany'
+    MarketMapCompany:
+      type: object
+      additionalProperties: true
+      properties:
+        Permalink:
+          type: string
+          nullable: true
+        Name:
+          type: string
+          nullable: true
+        Website:
+          type: string
+          nullable: true
+        HQ City:
+          type: string
+          nullable: true
+        HQ Country:
+          type: string
+          nullable: true
+        HQ Continent:
+          type: string
+          nullable: true
+        Founded:
+          type: string
+          nullable: true
+        Type:
+          type: string
+          nullable: true
+        Operating Status:
+          type: string
+          nullable: true
+        Product Category:
+          type: string
+          nullable: true
+        Core Offering:
+          type: string
+          nullable: true
+        Product Catalog:
+          type: string
+          nullable: true
+        Employees (Crunchbase):
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        Employees (LinkedIn):
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        Funding Stage:
+          type: string
+          nullable: true
+        Total Funding:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        Last Funding Date:
+          type: string
+          nullable: true
+          format: date
+        Key Investors:
+          type: array
+          items:
+            type: string
+        Revenue:
+          type: string
+          nullable: true
+        Ticker:
+          type: string
+          nullable: true
+        EBITDA:
+          type: string
+          nullable: true
+        Net Income:
+          type: string
+          nullable: true
+        EBITDA Margin (%):
+          type: string
+          nullable: true
+        Net Income Margin (%):
+          type: string
+          nullable: true
+        EPS Diluted:
+          type: string
+          nullable: true
+        ROA (%):
+          type: string
+          nullable: true
+        Unlevered FCF:
+          type: string
+          nullable: true
+        D/E:
+          type: string
+          nullable: true
+        Market Cap:
+          type: string
+          nullable: true
+        Enterprise Value:
+          type: string
+          nullable: true
+        EV/Revenue (LTM):
+          type: string
+          nullable: true
+        EV/EBITDA (LTM):
+          type: string
+          nullable: true
+        P/E (LTM):
+          type: string
+          nullable: true
+        Acquisitions:
+          type: string
+          nullable: true
+        Investments:
+          type: string
+          nullable: true
+        Overall Score:
+          type: number
+          nullable: true
+        Commentary:
+          type: string
+          nullable: true
+    PeerComparisonRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - workflow
+        - websites
+      properties:
+        workflow:
+          type: string
+          description: Workflow identifier.
+          enum:
+            - player_comparison
+          example: player_comparison
+        websites:
+          type: array
+          description: List of company websites to compare. The documentation states up to 5 companies.
+          minItems: 1
+          maxItems: 5
+          items:
+            type: string
+            format: uri
+          example:
+            - https://stripe.com
+            - https://paypal.com
+            - https://square.com
+        workbook_name:
+          type: string
+          description: Optional workbook/report title.
+          example: Payments Competitive Landscape
+    PeerComparisonResponse:
+      type: object
+      additionalProperties: true
+      description: |
+        The peer comparison response is a large nested benchmarking report with
+        sections such as Firmographics, Product Offerings, Business Model,
+        Strategic Moves, Management Profiles, and other benchmarking modules.
+
+        The documentation provides a large example response rather than a strict
+        contract, so clearly structured sections are modeled while more variable
+        sections remain permissive.
+      properties:
+        Firmographics:
+          $ref: '#/components/schemas/FirmographicsSectionContainer'
+        Product offerings:
+          $ref: '#/components/schemas/ProductOfferingsSectionContainer'
+        Business model:
+          $ref: '#/components/schemas/BusinessModelSectionContainer'
+        Strategic moves:
+          $ref: '#/components/schemas/PeerStrategicMovesSectionContainer'
+        Management profiles:
+          $ref: '#/components/schemas/ManagementProfilesSectionContainer'
+    FirmographicsSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Firmographic:
+          type: object
+          additionalProperties: false
+          properties:
+            firmographics:
+              type: object
+              additionalProperties: false
+              properties:
+                firmographics:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ComparedCompanyFirmographic'
+            sources:
+              type: array
+              items:
+                $ref: '#/components/schemas/PeerSourceReference'
+    ComparedCompanyFirmographic:
+      type: object
+      additionalProperties: false
+      properties:
+        organization:
+          $ref: '#/components/schemas/OrganizationRef'
+        details:
+          $ref: '#/components/schemas/ComparedCompanyDetails'
+        description:
+          type: string
+          nullable: true
+    ComparedCompanyDetails:
+      type: object
+      additionalProperties: true
+      properties:
+        industry:
+          type: string
+          nullable: true
+        product_category:
+          type: string
+          nullable: true
+        founded_year:
+          type: string
+          nullable: true
+        hq:
+          type: string
+          nullable: true
+        company_type:
+          type: string
+          nullable: true
+        employees_in_crunchbase:
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        website:
+          type: string
+          nullable: true
+          format: uri
+        total_funding:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        last_funding_round:
+          $ref: '#/components/schemas/PeerFundingRoundSummary'
+        financials:
+          type: object
+          additionalProperties:
+            oneOf:
+              - type: string
+              - type: number
+              - $ref: '#/components/schemas/FinancialMetricAlt'
+    FinancialMetricAlt:
+      type: object
+      additionalProperties: false
+      properties:
+        period:
+          type: string
+          nullable: true
+        v:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+    ProductOfferingsSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Product offerings:
+          type: object
+          additionalProperties: false
+          properties:
+            product_offerings:
+              type: array
+              items:
+                $ref: '#/components/schemas/BenchmarkArea'
+            key_product_features:
+              $ref: '#/components/schemas/KeyProductFeatures'
+    BenchmarkArea:
+      type: object
+      additionalProperties: false
+      properties:
+        area:
+          type: string
+          nullable: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyAreaDetail'
+    CompanyAreaDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/PeerSourceReference'
+        permalink:
+          type: string
+          nullable: true
+        area_details:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+    KeyProductFeatures:
+      type: object
+      additionalProperties: false
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureComparisonRow'
+        columns:
+          type: array
+          items:
+            type: string
+    FeatureComparisonRow:
+      type: object
+      additionalProperties: false
+      properties:
+        commentary:
+          type: string
+          nullable: true
+        category_name:
+          type: string
+          nullable: true
+        company_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyFeatureResult'
+        company_result_mapping:
+          type: object
+          additionalProperties:
+            type: string
+    CompanyFeatureResult:
+      type: object
+      additionalProperties: false
+      properties:
+        result:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        company_permalink:
+          type: string
+          nullable: true
+    BusinessModelSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Business model:
+          type: object
+          additionalProperties: false
+          properties:
+            business_model:
+              type: array
+              items:
+                $ref: '#/components/schemas/BenchmarkArea'
+            business_model_key_take_aways:
+              type: array
+              items:
+                $ref: '#/components/schemas/LabeledNarrative'
+    StrategicMoveArea:
+      type: object
+      additionalProperties: false
+      properties:
+        area:
+          type: string
+          nullable: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/StrategicMoveDetail'
+    StrategicMoveDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        company_name:
+          type: string
+          nullable: true
+        permalink:
+          type: string
+          nullable: true
+        area_details:
+          type: string
+          nullable: true
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/PeerSourceReference'
+    LabeledNarrative:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          nullable: true
+        value:
+          type: string
+          nullable: true
+    ManagementProfilesSectionContainer:
+      type: object
+      additionalProperties: true
+      properties:
+        Management Profiles:
+          type: object
+          additionalProperties: false
+          properties:
+            management_profile:
+              type: array
+              items:
+                $ref: '#/components/schemas/ManagementProfile'
+    ManagementProfile:
+      type: object
+      additionalProperties: false
+      properties:
+        organization:
+          type: string
+          nullable: true
+        permalink:
+          type: string
+          nullable: true
+        key_roles_and_previous_experience:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExecutiveProfile'
+        recent_strategic_hires:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    ExecutiveProfile:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+        designation:
+          type: string
+          nullable: true
+        organization:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        positions:
+          type: array
+          items:
+            type: string
+        profile_picture:
+          type: string
+          nullable: true
+          format: uri
+    CompanySearchResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - data
+        - count
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanySearchResult'
+        count:
+          type: integer
+          example: 1
+    CompanySearchResult:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          nullable: true
+        permalink:
+          type: string
+          nullable: true
+        short_description:
+          type: string
+          nullable: true
+        founded_year:
+          type: string
+          nullable: true
+        ipo_status:
+          type: string
+          nullable: true
+        hq:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+          format: uri
+        ticker:
+          type: string
+          nullable: true
+        country_code:
+          type: string
+          nullable: true
+        last_funding_round:
+          type: string
+          nullable: true
+    FileUploadRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - files
+      properties:
+        files:
+          type: array
+          description: One or more files uploaded as multipart form-data parts.
+          items:
+            type: string
+            format: binary
+        fileUUID:
+          type: string
+          description: JSON-encoded array of UUID-like identifiers associated with the uploaded files.
+          example: '["k3m8n5p1q6", "a7f4b9e2c3"]'
+    RequestStatusResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        request_id:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/AsyncStatus'
+    ReportStatusResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        report_id:
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/AsyncStatus'
+    AsyncStatus:
+      type: string
+      enum:
+        - PENDING
+        - PROCESSING
+        - COMPLETED
+        - FAILED
+        - CANCELLED
+      description: |
+        Possible asynchronous job statuses:
+        - PENDING: request received and queued
+        - PROCESSING: request is being processed
+        - COMPLETED: request finished successfully
+        - FAILED: request failed
+        - CANCELLED: request was cancelled by the user
+    CancelRequestBody:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+      properties:
+        request_id:
+          type: string
+          example: 5b8eff600-366f-465c-b795-68837043a2d3
+    DownloadReportRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - report_id
+        - file_type
+      properties:
+        report_id:
+          oneOf:
+            - type: integer
+            - type: string
+          example: 109196
+        file_type:
+          type: string
+          enum:
+            - pdf
+            - docx
+            - ppt
+            - json
+          example: json
+    ReportConfigurationRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - notebook_id
+      properties:
+        notebook_id:
+          oneOf:
+            - type: integer
+            - type: string
+          example: 103737
+    TargetScreeningRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - company
+      properties:
+        topic:
+          type: string
+          description: |
+            Industry or product domain. Defaults to the product category of the
+            acquiring company when omitted.
+          example: cybersecurity software
+        company:
+          type: string
+          description: Permalink or URL of the acquiring company.
+          example: microsoft
+        parameters:
+          $ref: '#/components/schemas/TargetScreeningParameters'
+    TargetScreeningParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        detailed_query:
+          type: string
+          description: A descriptive query to refine the target search scope.
+          example: Looking for B2B SaaS companies in the cybersecurity space
+        keywords:
+          type: array
+          description: Keywords used to identify and filter relevant target companies.
+          items:
+            type: string
+          example:
+            - zero trust
+            - endpoint security
+        sample_companies:
+          type: array
+          description: Representative company permalinks used to anchor the target search.
+          items:
+            type: string
+          example:
+            - crowdstrike
+            - sentinel
+        geography:
+          type: array
+          description: Geographic scope. Documentation examples show ISO codes like USA, though one example also uses country
+            names.
+          items:
+            type: string
+          example:
+            - USA
+        company_type:
+          type: string
+          description: Type of company to include.
+          enum:
+            - private
+            - public
+            - all
+          example: private
+        employee_count:
+          type: array
+          description: Headcount range filters. Empty array means all.
+          items:
+            type: string
+          example:
+            - 11-50
+            - 51-100
+        founded_year:
+          $ref: '#/components/schemas/RangeFilterInteger'
+        funding_stage:
+          type: array
+          description: Funding stage filters. Empty array means all.
+          items:
+            type: string
+          example:
+            - Series A
+            - Series B
+        total_funding:
+          $ref: '#/components/schemas/TargetRangeFilterNumberString'
+        revenue:
+          $ref: '#/components/schemas/TargetRangeFilterNumberString'
+    RangeFilterInteger:
+      type: object
+      additionalProperties: false
+      properties:
+        from:
+          type: integer
+          nullable: true
+        to:
+          type: integer
+          nullable: true
+    TargetScreeningResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+        - status
+        - result
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier.
+          example: f525ae70-b6aa-4b6e-b0af-c40efaf9681c
+        status:
+          type: string
+          description: Processing status.
+          example: COMPLETED
+        result:
+          type: array
+          description: Ranked list of scored target companies.
+          items:
+            $ref: '#/components/schemas/TargetCompany'
+    TargetCompany:
+      type: object
+      additionalProperties: true
+      properties:
+        Permalink:
+          type: string
+          nullable: true
+        Name:
+          type: string
+          nullable: true
+        Website:
+          type: string
+          nullable: true
+        HQ City:
+          type: string
+          nullable: true
+        HQ Country:
+          type: string
+          nullable: true
+        HQ Continent:
+          type: string
+          nullable: true
+        Founded:
+          type: string
+          nullable: true
+        Type:
+          type: string
+          nullable: true
+        Operating Status:
+          type: string
+          nullable: true
+        Product Category:
+          type: string
+          nullable: true
+        Core Offering:
+          type: string
+          nullable: true
+        Product Catalog:
+          type: string
+          nullable: true
+        Employees (Crunchbase):
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        Employees (LinkedIn):
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        Funding Stage:
+          type: string
+          nullable: true
+        Total Funding:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        Last Funding Date:
+          type: string
+          nullable: true
+          format: date
+        Key Investors:
+          oneOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+          nullable: true
+        Revenue:
+          type: string
+          nullable: true
+        Ticker:
+          type: string
+          nullable: true
+        EBITDA:
+          type: string
+          nullable: true
+        Net Income:
+          type: string
+          nullable: true
+        EBITDA Margin (%):
+          type: string
+          nullable: true
+        Net Income Margin (%):
+          type: string
+          nullable: true
+        EPS Diluted:
+          type: string
+          nullable: true
+        ROA (%):
+          type: string
+          nullable: true
+        Unlevered FCF:
+          type: string
+          nullable: true
+        D/E:
+          type: string
+          nullable: true
+        Market Cap:
+          type: string
+          nullable: true
+        Enterprise Value:
+          type: string
+          nullable: true
+        EV/Revenue (LTM):
+          type: string
+          nullable: true
+        EV/EBITDA (LTM):
+          type: string
+          nullable: true
+        P/E (LTM):
+          type: string
+          nullable: true
+        Acquisitions:
+          type: string
+          nullable: true
+        Investments:
+          type: string
+          nullable: true
+        Overall Score:
+          type: number
+          nullable: true
+        Overall Score Rationale:
+          type: string
+          nullable: true
+        Commentary:
+          type: string
+          nullable: true
+        Query Relevance Score:
+          type: number
+          nullable: true
+        Query Relevance Rationale:
+          type: string
+          nullable: true
+        Deal Feasibility Score:
+          type: number
+          nullable: true
+        Deal Feasibility Rationale:
+          type: string
+          nullable: true
+        Deal Precedent Score:
+          type: number
+          nullable: true
+        Deal Precedent Rationale:
+          type: string
+          nullable: true
+        Synergy Potential Score:
+          type: number
+          nullable: true
+        Synergy Potential Rationale:
+          type: string
+          nullable: true

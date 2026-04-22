@@ -1,0 +1,22 @@
+{
+  "name": "wokelo-openapi",
+  "version": "1.0.0",
+  "description": "OpenAPI specification for the Wokelo API suite",
+  "private": true,
+  "scripts": {
+    "lint": "redocly lint openapi.yaml",
+    "bundle": "redocly bundle openapi.yaml -o dist/wokelo-openapi.yaml",
+    "preview": "redocly preview openapi.yaml",
+    "build-docs": "redocly build-docs openapi.yaml -o dist/index.html",
+    "build": "npm run lint && npm run bundle && npm run build-docs"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.3.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wokelo-ai/openapi.git"
+  },
+  "author": "Wokelo",
+  "license": "UNLICENSED"
+}

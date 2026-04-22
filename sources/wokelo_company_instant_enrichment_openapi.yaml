@@ -1,0 +1,587 @@
+openapi: 3.1.0
+info:
+  title: Wokelo Company Instant Enrichment API
+  version: 1.0.0
+  description: |
+    Instant fundamentals and alternative data on cached companies.
+
+    This API enriches one or more companies across supported sections such as
+    firmographics, products, funding, headcount, acquisitions, investments,
+    website traffic, and more.
+
+servers:
+  - url: https://api.wokelo.ai
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Company Instant Enrichment
+    description: Instant enrichment for one or more companies.
+
+paths:
+  /api/enterprise/company/enrich/:
+    post:
+      tags:
+        - Company Instant Enrichment
+      operationId: enrichCompanies
+      summary: Enrich one or more companies
+      description: |
+        Returns structured company data for one or more companies across the
+        requested sections.
+
+        Typical use cases include:
+        - firmographic lookup
+        - product catalog enrichment
+        - funding and investor history
+        - acquisitions and investments
+        - headcount and traffic enrichment
+        - AI-computed custom fields
+
+        The request accepts company identifiers (for example permalinks such as
+        `tesla-motors`) and a list of sections to retrieve.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyEnrichRequest'
+            example:
+              companies:
+                - tesla-motors
+              sections:
+                - firmographics
+                - products
+              parameters:
+                custom_fields:
+                  - field_name: Flagship Products
+                    type: text
+                    prompt: List Tesla’s main products, including key vehicle models and energy offerings, in a concise format.
+                  - field_name: Primary Revenue Source
+                    type: text
+                    prompt: What is Tesla’s main source of revenue? Provide a brief 1-2 line answer.
+      responses:
+        '200':
+          description: Company enrichment completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyEnrichResponse'
+              example:
+                request_id: 00a3df02-89f8-410d-adb3-f0e185b2be50
+                status: COMPLETED
+                result:
+                  canva:
+                    firmographics:
+                      name: Canva
+                      website: http://www.canva.com
+                      location: Sydney, Australia
+                      founded: 2013
+                      type: private
+                      operating_status: Operating
+                      ticker: null
+                    funding:
+                      overall:
+                        funding_stage: Secondary Market
+                        total_funding: 2508450682
+                        last_funding_date: '2025-08-20'
+                        num_funding_rounds: '21'
+                        key_investors:
+                          - Blackbird Ventures
+                          - Felicis
+                          - General Catalyst
+                      funding_rounds:
+                        - date: '2025-08-20'
+                          round: Venture
+                          amount: 0
+                          total_investors: 3
+                          lead_investors:
+                            - Fidelity
+                          investors:
+                            - J.P. Morgan Asset Management
+                            - Dominari Securities
+                          pre_money_valuation: null
+                    acquisitions:
+                      - acquisition_date: '2025-06-17'
+                        name: MagicBrief acquired by Canva
+                        amount: null
+                        amount_usd: null
+                        description: Canva acquires MagicBrief on 2025-06-17 for an undisclosed amount
+                        acquiree_name: MagicBrief
+                        acquiree_permalink: magicbrief
+                    investments:
+                      - announcement_date: '2023-12-11'
+                        amount: null
+                        amount_usd: null
+                        description: Canva investment in Seed Round - Clove
+                        lead_investor: false
+                        funding_round_id: clove-b407-seed--d3e417c3
+                        investee_name: Clove
+                        investee_permalink: clove-b407
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: sections
+                      message: At least one supported section must be provided.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token passed in the Authorization header.
+
+  schemas:
+    CompanyEnrichRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - companies
+        - sections
+      properties:
+        companies:
+          type: array
+          description: List of company identifiers to enrich, typically company permalinks.
+          minItems: 1
+          items:
+            type: string
+          example:
+            - tesla-motors
+        sections:
+          type: array
+          description: List of sections to retrieve for each company.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/EnrichmentSection'
+          example:
+            - firmographics
+            - products
+        parameters:
+          $ref: '#/components/schemas/EnrichmentParameters'
+
+    EnrichmentParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        custom_fields:
+          type: array
+          description: Optional AI-computed custom fields to evaluate for each company.
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinition'
+
+    CustomFieldDefinition:
+      type: object
+      additionalProperties: false
+      required:
+        - field_name
+        - type
+        - prompt
+      properties:
+        field_name:
+          type: string
+          description: Display name of the custom field.
+          example: AI Readiness Score
+        type:
+          type: string
+          description: Output type for the custom field.
+          enum:
+            - text
+          example: text
+        prompt:
+          type: string
+          description: Natural-language instruction used to compute the field.
+          example: Rate this company's AI readiness on a scale of 1-10 with detailed reasoning.
+
+    EnrichmentSection:
+      type: string
+      enum:
+        - firmographics
+        - products
+        - headcount
+        - funding
+        - public_company_financials
+        - acquisitions
+        - investments
+        - website_traffic
+        - uk_private_compay_financials
+      description: Supported enrichment section values.
+
+    CompanyEnrichResponse:
+      type: object
+      additionalProperties: true
+      required:
+        - request_id
+        - status
+        - result
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier.
+          example: 00a3df02-89f8-410d-adb3-f0e185b2be50
+        status:
+          type: string
+          description: Processing status of the enrichment request.
+          example: COMPLETED
+        result:
+          type: object
+          description: |
+            Map of company identifier to enriched section payloads.
+            The exact keys present for each company depend on the requested sections.
+          additionalProperties:
+            $ref: '#/components/schemas/CompanyEnrichmentResult'
+
+    CompanyEnrichmentResult:
+      type: object
+      additionalProperties: true
+      properties:
+        firmographics:
+          $ref: '#/components/schemas/Firmographics'
+        products:
+          type: array
+          description: Product catalog with descriptions and categories.
+          items:
+            $ref: '#/components/schemas/Product'
+        headcount:
+          $ref: '#/components/schemas/Headcount'
+        funding:
+          $ref: '#/components/schemas/Funding'
+        public_company_financials:
+          $ref: '#/components/schemas/PublicCompanyFinancials'
+        acquisitions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Acquisition'
+        investments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Investment'
+        website_traffic:
+          $ref: '#/components/schemas/WebsiteTraffic'
+        uk_private_compay_financials:
+          $ref: '#/components/schemas/UkPrivateCompanyFinancials'
+      description: Container for section-wise enrichment output for a company.
+
+    Firmographics:
+      type: object
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+          format: uri
+        location:
+          type: string
+          nullable: true
+        founded:
+          type: integer
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        operating_status:
+          type: string
+          nullable: true
+        ticker:
+          type:
+            - string
+            - 'null'
+          nullable: true
+
+    Product:
+      type: object
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+
+    Headcount:
+      type: object
+      additionalProperties: true
+      description: Employee count, LinkedIn headcount, and headcount growth trends.
+
+    Funding:
+      type: object
+      additionalProperties: false
+      properties:
+        overall:
+          $ref: '#/components/schemas/FundingOverall'
+        funding_rounds:
+          type: array
+          items:
+            $ref: '#/components/schemas/FundingRound'
+        key_investors:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyInvestor'
+
+    FundingOverall:
+      type: object
+      additionalProperties: true
+      properties:
+        funding_stage:
+          type: string
+          nullable: true
+        total_funding:
+          type: number
+          nullable: true
+        last_funding_date:
+          type: string
+          nullable: true
+          format: date
+        num_funding_rounds:
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        key_investors:
+          type: array
+          items:
+            type: string
+
+    FundingRound:
+      type: object
+      additionalProperties: true
+      properties:
+        date:
+          type: string
+          nullable: true
+          format: date
+        round:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          nullable: true
+        total_investors:
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        lead_investors:
+          type: array
+          items:
+            type: string
+        investors:
+          type: array
+          items:
+            type: string
+        pre_money_valuation:
+          type:
+            - number
+            - 'null'
+          nullable: true
+        news:
+          $ref: '#/components/schemas/NewsBundle'
+
+    KeyInvestor:
+      type: object
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          nullable: true
+        permalink:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        first_entry_date:
+          type: string
+          nullable: true
+          format: date
+        rounds_participated:
+          type: array
+          items:
+            type: string
+
+    NewsBundle:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          nullable: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewsItem'
+
+    NewsItem:
+      type: object
+      additionalProperties: true
+      properties:
+        publisher:
+          type: string
+          nullable: true
+        news_url:
+          type: string
+          nullable: true
+          format: uri
+        news_title:
+          type: string
+          nullable: true
+
+    PublicCompanyFinancials:
+      type: object
+      additionalProperties: true
+      description: Revenue, margins, market cap, and trading multiples for public companies.
+
+    Acquisition:
+      type: object
+      additionalProperties: true
+      properties:
+        acquisition_date:
+          type: string
+          nullable: true
+          format: date
+        name:
+          type: string
+          nullable: true
+        amount:
+          type:
+            - number
+            - 'null'
+          nullable: true
+        amount_usd:
+          type:
+            - number
+            - 'null'
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        acquiree_name:
+          type: string
+          nullable: true
+        acquiree_permalink:
+          type: string
+          nullable: true
+
+    Investment:
+      type: object
+      additionalProperties: true
+      properties:
+        announcement_date:
+          type: string
+          nullable: true
+          format: date
+        amount:
+          type:
+            - number
+            - 'null'
+          nullable: true
+        amount_usd:
+          type:
+            - number
+            - 'null'
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        lead_investor:
+          type: boolean
+          nullable: true
+        funding_round_id:
+          type: string
+          nullable: true
+        investee_name:
+          type: string
+          nullable: true
+        investee_permalink:
+          type: string
+          nullable: true
+
+    WebsiteTraffic:
+      type: object
+      additionalProperties: true
+      description: Monthly visits, traffic sources, and geographic distribution.
+
+    UkPrivateCompanyFinancials:
+      type: object
+      additionalProperties: true
+      description: Financial statements and related metrics for UK-based private companies.
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/ErrorDetail'
+
+    ErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: sections
+        message:
+          type: string
+          example: At least one supported section must be provided.

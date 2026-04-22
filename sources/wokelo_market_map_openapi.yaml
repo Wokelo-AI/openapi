@@ -1,0 +1,479 @@
+openapi: 3.1.0
+info:
+  title: Wokelo Market Map API
+  version: 1.0.0
+  description: |
+    Ranked company discovery within a market category.
+
+    This API returns a ranked list of companies relevant to a market topic,
+    using filters such as geography, company type, employee count, funding stage,
+    founding year, financial metrics, and anchor companies.
+
+servers:
+  - url: https://api.wokelo.ai
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Market Map
+    description: Ranked company discovery and market mapping.
+
+paths:
+  /api/enterprise/market-map/enrich/:
+    post:
+      tags:
+        - Market Map
+      operationId: getMarketMap
+      summary: Generate a ranked market map of companies
+      description: |
+        Returns a ranked list of companies discovered within a market category.
+
+        Use `topic` to define the market or product category, and `parameters`
+        to refine the search with a detailed query, keywords, sample companies,
+        geography, company type, headcount, founding year, funding stage,
+        and optional financial filters.
+
+        The response returns a ranked list of companies with firmographic,
+        funding, and relevance commentary fields.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarketMapRequest'
+            example:
+              topic: AI-powered CRM software
+              parameters:
+                detailed_query: B2B CRM tools leveraging AI for sales automation
+                keywords:
+                  - AI
+                  - CRM
+                  - sales automation
+                sample_companies:
+                  - salesforce
+                  - hubspot
+                geography:
+                  - USA
+                company_type: private
+                employee_count:
+                  - 11-50
+                founded_year:
+                  from: 2015
+                funding_stage:
+                  - Series A
+                  - Series B
+                total_funding:
+                  from: "5000000"
+                last_funding_round: {}
+                revenue: {}
+                ebitda: {}
+                net_income: {}
+                ev_ebitda: {}
+      responses:
+        '200':
+          description: Market map generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketMapResponse'
+              example:
+                request_id: a57a9100-e7e1-4c6c-9b29-cdd064516ba7
+                status: COMPLETED
+                result:
+                  - Permalink: esub-construction-software
+                    Name: eSUB Construction Software
+                    Website: esub.com
+                    HQ City: San Diego
+                    HQ Country: United States
+                    HQ Continent: North America
+                    Founded: "2008"
+                    Type: Private
+                    Operating Status: Operating
+                    Product Category: Construction Project Management Software
+                    Core Offering: Cloud-based project management solutions for subcontractors.
+                    Product Catalog: Construction Management Software, Project Management Tools
+                    Employees (Crunchbase): 51-100
+                    Employees (LinkedIn): 34
+                    Funding Stage: Series B
+                    Total Funding: 22000000.0
+                    Last Funding Date: '2023-05-01'
+                    Key Investors:
+                      - Autodesk
+                      - Revolution
+                    Revenue: ""
+                    Ticker: ""
+                    EBITDA: ""
+                    Net Income: ""
+                    EBITDA Margin (%): ""
+                    Net Income Margin (%): ""
+                    EPS Diluted: ""
+                    ROA (%): ""
+                    Unlevered FCF: ""
+                    D/E: ""
+                    Market Cap: ""
+                    Enterprise Value: ""
+                    EV/Revenue (LTM): ""
+                    EV/EBITDA (LTM): ""
+                    P/E (LTM): ""
+                    Acquisitions: ""
+                    Investments: ""
+                    Overall Score: 7.0
+                    Commentary: Strong direct fit for field service management workflows.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: topic
+                      message: Topic is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token sent in the Authorization header.
+
+  schemas:
+    MarketMapRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - topic
+      properties:
+        topic:
+          type: string
+          description: The market or product category to map.
+          example: AI-powered CRM software
+        parameters:
+          $ref: '#/components/schemas/MarketMapParameters'
+
+    MarketMapParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        detailed_query:
+          type: string
+          description: More descriptive query to refine market map scope.
+          example: B2B CRM tools leveraging AI for sales automation
+        keywords:
+          type: array
+          description: Keywords used to identify and filter relevant companies.
+          items:
+            type: string
+          example:
+            - AI
+            - CRM
+            - sales automation
+        sample_companies:
+          type: array
+          description: Permalinks or URLs of representative companies to anchor the market map.
+          items:
+            type: string
+          example:
+            - salesforce
+            - hubspot
+        geography:
+          type: array
+          description: Geographic scope as ISO country codes.
+          items:
+            type: string
+            minLength: 3
+            maxLength: 3
+          example:
+            - USA
+            - GBR
+        company_type:
+          type: string
+          description: Type of company to include.
+          enum:
+            - private
+            - public
+            - all
+          example: private
+        employee_count:
+          type: array
+          description: Headcount range filters. Empty array means all.
+          items:
+            type: string
+          example:
+            - 11-50
+            - 51-100
+        founded_year:
+          $ref: '#/components/schemas/RangeFilterIntegerFlexible'
+        funding_stage:
+          type: array
+          description: Funding stage filters. Empty array means all.
+          items:
+            type: string
+          example:
+            - Seed
+            - Series A
+            - Series B
+        total_funding:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        last_funding_round:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        revenue:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        ebitda:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        net_income:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+        ev_ebitda:
+          $ref: '#/components/schemas/RangeFilterNumberString'
+
+    RangeFilterIntegerFlexible:
+      type: object
+      additionalProperties: false
+      description: |
+        Flexible integer range filter. The documentation shows both `from`/`to`
+        and `min`/`max` styles for founded year examples, so both are supported here.
+      properties:
+        from:
+          type: integer
+          nullable: true
+        to:
+          type: integer
+          nullable: true
+        min:
+          type: integer
+          nullable: true
+        max:
+          type: integer
+          nullable: true
+
+    RangeFilterNumberString:
+      type: object
+      additionalProperties: false
+      description: Range filter with optional from/to values as numbers or numeric strings.
+      properties:
+        from:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        to:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+
+    MarketMapResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+        - status
+        - result
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier.
+          example: a57a9100-e7e1-4c6c-9b29-cdd064516ba7
+        status:
+          type: string
+          description: Processing status of the request.
+          example: COMPLETED
+        result:
+          type: array
+          description: Ranked list of matched companies.
+          items:
+            $ref: '#/components/schemas/MarketMapCompany'
+
+    MarketMapCompany:
+      type: object
+      additionalProperties: true
+      properties:
+        Permalink:
+          type: string
+          nullable: true
+        Name:
+          type: string
+          nullable: true
+        Website:
+          type: string
+          nullable: true
+        HQ City:
+          type: string
+          nullable: true
+        HQ Country:
+          type: string
+          nullable: true
+        HQ Continent:
+          type: string
+          nullable: true
+        Founded:
+          type: string
+          nullable: true
+        Type:
+          type: string
+          nullable: true
+        Operating Status:
+          type: string
+          nullable: true
+        Product Category:
+          type: string
+          nullable: true
+        Core Offering:
+          type: string
+          nullable: true
+        Product Catalog:
+          type: string
+          nullable: true
+        Employees (Crunchbase):
+          oneOf:
+            - type: string
+            - type: integer
+          nullable: true
+        Employees (LinkedIn):
+          oneOf:
+            - type: integer
+            - type: string
+          nullable: true
+        Funding Stage:
+          type: string
+          nullable: true
+        Total Funding:
+          oneOf:
+            - type: number
+            - type: string
+          nullable: true
+        Last Funding Date:
+          type: string
+          nullable: true
+          format: date
+        Key Investors:
+          type: array
+          items:
+            type: string
+        Revenue:
+          type: string
+          nullable: true
+        Ticker:
+          type: string
+          nullable: true
+        EBITDA:
+          type: string
+          nullable: true
+        Net Income:
+          type: string
+          nullable: true
+        EBITDA Margin (%):
+          type: string
+          nullable: true
+        Net Income Margin (%):
+          type: string
+          nullable: true
+        EPS Diluted:
+          type: string
+          nullable: true
+        ROA (%):
+          type: string
+          nullable: true
+        Unlevered FCF:
+          type: string
+          nullable: true
+        D/E:
+          type: string
+          nullable: true
+        Market Cap:
+          type: string
+          nullable: true
+        Enterprise Value:
+          type: string
+          nullable: true
+        EV/Revenue (LTM):
+          type: string
+          nullable: true
+        EV/EBITDA (LTM):
+          type: string
+          nullable: true
+        P/E (LTM):
+          type: string
+          nullable: true
+        Acquisitions:
+          type: string
+          nullable: true
+        Investments:
+          type: string
+          nullable: true
+        Overall Score:
+          type: number
+          nullable: true
+        Commentary:
+          type: string
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/ErrorDetail'
+
+    ErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: topic
+        message:
+          type: string
+          example: Topic is required.

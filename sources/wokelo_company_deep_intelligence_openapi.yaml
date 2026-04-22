@@ -1,0 +1,533 @@
+openapi: 3.1.0
+info:
+  title: Wokelo Company Deep Intelligence API
+  version: 1.0.0
+  description: |
+    On-demand custom intelligence on any company.
+
+    This API returns AI-synthesized intelligence that goes beyond basic enrichment
+    data. While enrichment returns raw data such as firmographics and metrics,
+    deep intelligence returns analyzed narratives such as products and services,
+    product launches, strategic initiatives, partnerships, business model,
+    customer base, management profiles, and sentiment analysis.
+
+servers:
+  - url: https://api.wokelo.ai
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Company Deep Intelligence
+    description: AI-synthesized company intelligence and narrative insights.
+
+paths:
+  /api/enterprise/company/enrich/:
+    post:
+      tags:
+        - Company Deep Intelligence
+      operationId: getCompanyDeepIntelligence
+      summary: Generate deep intelligence for one or more companies
+      description: |
+        Returns AI-synthesized company intelligence for one or more companies
+        across the requested intelligence sections.
+
+        This endpoint supports use cases such as:
+        - product and service intelligence
+        - launch and roadmap tracking
+        - strategic initiative analysis
+        - partnership ecosystem mapping
+        - revenue model and monetization analysis
+        - customer base assessment
+        - management profile synthesis
+        - employee and product sentiment analysis
+
+        The request accepts one or more company identifiers, which may be
+        permalinks or company URLs, and a set of supported deep intelligence sections.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeepIntelligenceRequest'
+            example:
+              companies:
+                - zendesk
+                - freshworks
+                - intercom
+              sections:
+                - products_and_services
+                - product_launches
+                - strategic_initiatives
+      responses:
+        '200':
+          description: Deep intelligence generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeepIntelligenceResponse'
+              example:
+                request_id: c2ad9d34-f432-4b9b-b5a2-46fbd124db5f
+                status: COMPLETED
+                result:
+                  zendesk:
+                    firmographics:
+                      name: Zendesk
+                      website: http://zendesk.com
+                      location: San Francisco, United States
+                      founded: 2007
+                      type: private
+                      operating_status: Acquired
+                      ticker: NYSE:ZEN
+                    CP enrichment:
+                      products_and_services:
+                        product_overview:
+                          source:
+                            - id: 1
+                              title: Sourced from Wokelo Synthesis
+                              url: ""
+                              publisher: ""
+                              date: ""
+                          summary: Overview of Zendesk products and services.
+                          screenshot_url: https://files.test.wokelo.ai/notebook/example/assets/example.png
+                        products_and_services:
+                          - product_area: Customer Service AI Solutions
+                            details:
+                              - title: AI Agents
+                                summary: Autonomous AI-powered bots for customer support.
+                            sources: "1-3"
+                      product_launches:
+                        product_launches_and_initiatives:
+                          released_products:
+                            - date: '26-Mar-2025'
+                              initiative: Resolution Platform
+                              sources:
+                                - url: https://www.prnewswire.com/example
+                                  title: Zendesk launches Resolution Platform
+                                  publisher: PR Newswire
+                                  publishedDate: '2025-03-26'
+                              summary:
+                                - AI-powered resolution platform with workflow automation.
+                          future_announcements: []
+                      strategic_initiatives:
+                        strategic_moves:
+                          - Area: Office expansion
+                            Details:
+                              - point: Zendesk moved its headquarters to 181 Fremont Street.
+                                sources:
+                                  - url: https://therealdeal.com/example
+                                    title: Zendesk becomes latest tech firm to leave SF’s Mid-Market
+                                    publisher: The Real Deal
+                                    publishedDate: '2024-11-12'
+                    meta:
+                      report_id: 1008951
+                      title: Zendesk - API Insights
+                      user: saish.kapadi@wokelo.ai
+                      dt_createdon: '2026-04-06 07:16:56'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: bad_request
+                  message: Invalid request payload.
+                  details:
+                    - field: sections
+                      message: At least one supported section must be provided.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: unauthorized
+                  message: Missing or invalid bearer token.
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Please retry later.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: internal_server_error
+                  message: An unexpected error occurred.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token sent in the Authorization header.
+
+  schemas:
+    DeepIntelligenceRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - companies
+        - sections
+      properties:
+        companies:
+          type: array
+          description: |
+            List of company identifiers to analyze. The documentation shows both
+            permalinks such as `zendesk` and URLs such as `https://tesla.com`.
+          minItems: 1
+          items:
+            type: string
+          example:
+            - https://tesla.com
+        sections:
+          type: array
+          description: List of deep intelligence sections to generate.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/DeepIntelligenceSection'
+          example:
+            - products_and_services
+            - product_launches
+
+    DeepIntelligenceSection:
+      type: string
+      enum:
+        - products_and_services
+        - product_launches
+        - strategic_initiatives
+        - partnerships
+        - business_model
+        - key_customers
+        - management_profiles
+        - employee_sentiment
+        - product_sentiment
+      description: Supported deep intelligence section values.
+
+    DeepIntelligenceResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+        - status
+        - result
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier.
+          example: c2ad9d34-f432-4b9b-b5a2-46fbd124db5f
+        status:
+          type: string
+          description: Processing status.
+          example: COMPLETED
+        result:
+          type: object
+          description: Map of company identifier to deep intelligence output.
+          additionalProperties:
+            $ref: '#/components/schemas/DeepIntelligenceCompanyResult'
+
+    DeepIntelligenceCompanyResult:
+      type: object
+      additionalProperties: true
+      properties:
+        firmographics:
+          $ref: '#/components/schemas/Firmographics'
+        CP enrichment:
+          $ref: '#/components/schemas/CPEnrichment'
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    CPEnrichment:
+      type: object
+      additionalProperties: true
+      properties:
+        products_and_services:
+          $ref: '#/components/schemas/ProductsAndServicesSection'
+        product_launches:
+          $ref: '#/components/schemas/ProductLaunchesSection'
+        strategic_initiatives:
+          $ref: '#/components/schemas/StrategicInitiativesSection'
+        partnerships:
+          type: object
+          additionalProperties: true
+          description: Partnership ecosystem intelligence.
+        business_model:
+          type: object
+          additionalProperties: true
+          description: Revenue model, pricing, and monetization analysis.
+        key_customers:
+          type: object
+          additionalProperties: true
+          description: Key customer and deal context analysis.
+        management_profiles:
+          type: object
+          additionalProperties: true
+          description: Leadership background, track record, and tenure analysis.
+        employee_sentiment:
+          type: object
+          additionalProperties: true
+          description: Employee review and workplace sentiment synthesis.
+        product_sentiment:
+          type: object
+          additionalProperties: true
+          description: Product review and market perception synthesis.
+
+    Firmographics:
+      type: object
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+          format: uri
+        location:
+          type: string
+          nullable: true
+        founded:
+          type: integer
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        operating_status:
+          type: string
+          nullable: true
+        ticker:
+          type:
+            - string
+            - 'null'
+          nullable: true
+
+    ProductsAndServicesSection:
+      type: object
+      additionalProperties: false
+      properties:
+        product_overview:
+          $ref: '#/components/schemas/ProductOverview'
+        products_and_services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductArea'
+
+    ProductOverview:
+      type: object
+      additionalProperties: false
+      properties:
+        source:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceReference'
+        summary:
+          type: string
+          nullable: true
+        screenshot_url:
+          type: string
+          nullable: true
+          format: uri
+
+    ProductArea:
+      type: object
+      additionalProperties: false
+      properties:
+        product_area:
+          type: string
+          nullable: true
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/TitledSummary'
+        sources:
+          type: string
+          nullable: true
+
+    ProductLaunchesSection:
+      type: object
+      additionalProperties: false
+      properties:
+        product_launches_and_initiatives:
+          $ref: '#/components/schemas/ProductLaunchesAndInitiatives'
+
+    ProductLaunchesAndInitiatives:
+      type: object
+      additionalProperties: false
+      properties:
+        released_products:
+          type: array
+          items:
+            $ref: '#/components/schemas/InitiativeItem'
+        future_announcements:
+          type: array
+          items:
+            $ref: '#/components/schemas/InitiativeItem'
+
+    InitiativeItem:
+      type: object
+      additionalProperties: false
+      properties:
+        date:
+          type: string
+          nullable: true
+        initiative:
+          type: string
+          nullable: true
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishedSource'
+        summary:
+          type: array
+          items:
+            type: string
+
+    StrategicInitiativesSection:
+      type: object
+      additionalProperties: false
+      properties:
+        strategic_moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/StrategicMove'
+
+    StrategicMove:
+      type: object
+      additionalProperties: false
+      properties:
+        Area:
+          type: string
+          nullable: true
+        Details:
+          type: array
+          items:
+            $ref: '#/components/schemas/StrategicDetail'
+
+    StrategicDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        point:
+          type: string
+          nullable: true
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishedSource'
+
+    TitledSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          nullable: true
+        summary:
+          type: string
+          nullable: true
+
+    SourceReference:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        date:
+          type: string
+          nullable: true
+
+    PublishedSource:
+      type: object
+      additionalProperties: false
+      properties:
+        url:
+          type: string
+          nullable: true
+          format: uri
+        title:
+          type: string
+          nullable: true
+        publisher:
+          type: string
+          nullable: true
+        publishedDate:
+          type: string
+          nullable: true
+          format: date
+
+    Meta:
+      type: object
+      additionalProperties: false
+      properties:
+        report_id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        user:
+          type: string
+          nullable: true
+          format: email
+        dt_createdon:
+          type: string
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: bad_request
+            message:
+              type: string
+              example: Invalid request payload.
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/ErrorDetail'
+
+    ErrorDetail:
+      type: object
+      additionalProperties: true
+      properties:
+        field:
+          type: string
+          example: sections
+        message:
+          type: string
+          example: At least one supported section must be provided.
