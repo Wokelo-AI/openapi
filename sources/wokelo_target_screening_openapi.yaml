@@ -111,6 +111,16 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from target-screening.md.'
               required:
               - company
+            example:
+              company: microsoft
+              parameters:
+                detailed_query: Looking for B2B SaaS companies in the cybersecurity space
+                keywords:
+                - zero trust
+                - endpoint security
+                geography:
+                - USA
+                company_type: private
       security:
       - bearerAuth: []
 tags:
@@ -122,6 +132,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Use `Authorization: Bearer <JWT>` for authenticated requests. Obtain the token from `POST /auth/token/` and pass it in the request header.'
   schemas:
     CommonUnauthorizedError:
       type: object

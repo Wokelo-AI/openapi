@@ -91,6 +91,11 @@ paths:
               description: '[FROM OFFICIAL DOCS] Multipart upload payload.'
               required:
               - files
+            example:
+              files:
+              - <binary file>
+              fileUUID:
+              - 550e8400-e29b-41d4-a716-446655440000
       security:
       - bearerAuth: []
 tags:
@@ -102,6 +107,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Use `Authorization: Bearer <JWT>` for authenticated requests. Obtain the token from `POST /auth/token/` and pass it in the request header.'
   schemas:
     CommonUnauthorizedError:
       type: object

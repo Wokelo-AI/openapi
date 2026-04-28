@@ -79,6 +79,9 @@ paths:
               required:
               - website
               - permalink
+            example:
+              website: wokelo.ai
+              permalink: wokelo
       security:
       - bearerAuth: []
 tags:
@@ -90,6 +93,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Use `Authorization: Bearer <JWT>` for authenticated requests. Obtain the token from `POST /auth/token/` and pass it in the request header.'
   schemas:
     CommonUnauthorizedError:
       type: object
