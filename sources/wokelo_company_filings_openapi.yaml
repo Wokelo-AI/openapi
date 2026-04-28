@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
   title: Fetch Filings Data
-  description: Fetch SEC filings for a public company. Supports filtering by form
-    type (10-K, 10-Q, 8-K, etc.) and year range.
+  description: Fetch SEC filings for a public company. Supports filtering by form type (10-K, 10-Q, 8-K, etc.) and year range.
   version: 2.0.0
   license:
     name: Proprietary
@@ -14,7 +13,7 @@ paths:
       tags:
       - Enrichment
       summary: Company Filings
-      description: 'Source docs: company-filings.md'
+      description: Fetch SEC filings for a public company. Supports filtering by form type (10-K, 10-Q, 8-K, etc.) and year range.
       operationId: get_api_enterprise_company_filings
       responses:
         '200':
@@ -71,8 +70,7 @@ paths:
                 - from_year
                 - to_year
                 - form
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in company-filings.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in company-filings.md.'
               example:
                 status: success
                 data:
@@ -83,27 +81,20 @@ paths:
                   acceptedDate: '2023-01-31 02:29:15'
                   reportUrl: https://www.sec.gov/Archives/edgar/data/1318605/000095017023001409/tsla-20221231.htm
                   filingUrl: https://www.sec.gov/Archives/edgar/data/1318605/000095017023001409/0000950170-23-001409-index.html
-                  filingData: <html xmlns="http://www.w3.org/1999/xhtml" xmlns:xbrldi="http://xbrl.org/2006/xbrldi"
-                    xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:xbrli="http://www.xbrl.org/2003/instance"
-                    xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink"
-                    xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:nonnumeric="http://www.xbrl.org/dtr/type/non-numeric"
-                    xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2015-02-26"
-                    xmlns:ixt-sec="http://www.sec.gov/inlineXBRL/transformati... [truncated]
+                  filingData: <html xmlns="http://www.w3.org/1999/xhtml" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:nonnumeric="http://www.xbrl.org/dtr/type/non-numeric" xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2015-02-26" xmlns:ixt-sec="http://www.sec.gov/inlineXBRL/transformati... [truncated]
                 count: 1
                 from_year: 2023
                 to_year: 2023
                 form: 10-K
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Company Filings
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: company
         in: query
         required: true
         schema:
           type: string
-        description: Permalink/ URL of the company whose filings need to be fetched
-          E.g. `"salesforce"`
+        description: Permalink/ URL of the company whose filings need to be fetched E.g. `"salesforce"`
       - name: form
         in: query
         required: false
@@ -133,3 +124,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

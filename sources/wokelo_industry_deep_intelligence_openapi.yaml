@@ -1,10 +1,7 @@
 openapi: 3.0.3
 info:
   title: Industry Deep Intelligence
-  description: The Industry Insights API generates structured insights for a given
-    industry topic (e.g., *"Warehouse automation"*). Optionally, you can refine the
-    output by specifying sections, keywords, geography, a custom industry definition,
-    and sample companies. Returns a `request_id` as a response.
+  description: The Industry Insights API generates structured insights for a given industry topic (e.g., *"Warehouse automation"*). Optionally, you can refine the output by specifying sections, keywords, geography, a custom industry definition, and sample companies. Returns a `request_id` as a response.
   version: 2.0.0
   license:
     name: Proprietary
@@ -15,8 +12,8 @@ paths:
     post:
       tags:
       - Enrichment
-      summary: Industry Deep Intelilgence
-      description: 'Source docs: industry-deep-intelligence.md'
+      summary: Industry Deep Intelligence
+      description: The Industry Insights API generates structured insights for a given industry topic (e.g., *"Warehouse automation"*). Optionally, you can refine the output by specifying sections, keywords, geography, a custom industry definition, and sample companies. Returns a `request_id` as a response.
       operationId: post_api_enterprise_industry_enrich
       responses:
         '200':
@@ -28,9 +25,7 @@ paths:
                 properties:
                   request_id:
                     type: string
-                    description: Unique identifier for the request posted. Use this
-                      with the `/api/wkl-api/request/status/` endpoint to check the
-                      status
+                    description: Unique identifier for the request posted. Use this with the `/api/wkl-api/request/status/` endpoint to check the status
                 description: '[FROM OFFICIAL DOCS] Response schema from industry-deep-intelligence.md.'
                 example: &id001
                   request_id: c574254f-137d-40d5-84f1-ac8fa38b8aa7
@@ -52,9 +47,8 @@ paths:
               example:
                 request_id: c574254f-137d-40d5-84f1-ac8fa38b8aa7
                 status: PENDING
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Industry Deep Intelilgence
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -64,16 +58,12 @@ paths:
               properties:
                 topic:
                   type: string
-                  description: The industry topic to generate insights for (e.g. `"Enterprise
-                    SaaS security"`)
+                  description: The industry topic to generate insights for (e.g. `"Enterprise SaaS security"`)
                 sections:
                   type: array
                   items:
                     type: string
-                  description: 'Sections to include in the report. Supported values:
-                    `market_size`, `quant_insights`, `trends_and_innovations`, `transactions_mna`,
-                    `transactions_fundraising`, `transactions_ipo`, `partnerships`,
-                    `tier1_intelligence`, `case_studies`, `industry_regulations`'
+                  description: 'Sections to include in the report. Supported values: `market_size`, `quant_insights`, `trends_and_innovations`, `transactions_mna`, `transactions_fundraising`, `transactions_ipo`, `partnerships`, `tier1_intelligence`, `case_studies`, `industry_regulations`'
                 parameters:
                   type: object
                   properties:
@@ -81,19 +71,15 @@ paths:
                       type: array
                       items:
                         type: string
-                      description: Keywords to focus the analysis on (e.g. `"zero
-                        trust"`, `"SIEM"`)
+                      description: Keywords to focus the analysis on (e.g. `"zero trust"`, `"SIEM"`)
                     geography:
                       type: array
                       items:
                         type: string
-                      description: Geographic scope for the report. It should be a
-                        comma separated list of ISO country codes. (Eg.. `["USA",
-                        "GBR"]`)
+                      description: Geographic scope for the report. It should be a comma separated list of ISO country codes. (Eg.. `["USA", "GBR"]`)
                     definition:
                       type: string
-                      description: A custom definition of the industry to guide the
-                        report generation
+                      description: A custom definition of the industry to guide the report generation
                     sample_companies:
                       type: array
                       items:
@@ -113,3 +99,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
   title: Company Search
-  description: Search for companies using name, website or ticker. It returns a list
-    of companies with their permalink and other attributes.
+  description: Search for companies using name, website or ticker. It returns a list of companies with their permalink and other attributes.
   version: 2.0.0
   license:
     name: Proprietary
@@ -14,7 +13,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Company Search
-      description: 'Source docs: company-search.md'
+      description: Search for companies using name, website or ticker. It returns a list of companies with their permalink and other attributes.
       operationId: get_api_enterprise_company_search
       responses:
         '200':
@@ -70,8 +69,7 @@ paths:
                           description: Company domain name.
                         last_funding_round:
                           type: string
-                          description: Most recent funding round (e.g., `Seed`, `Pre
-                            Seed` etc)
+                          description: Most recent funding round (e.g., `Seed`, `Pre Seed` etc)
                     description: List of matching company objects.
                   count:
                     type: integer
@@ -82,8 +80,7 @@ paths:
                   data:
                   - name: Wokelo AI
                     permalink: wokelo-ai
-                    short_description: Wokelo builds purpose-built AI agents for dealmaking
-                      and consulting.
+                    short_description: Wokelo builds purpose-built AI agents for dealmaking and consulting.
                     founded_year: '2023'
                     ipo_status: private
                     hq: Seattle, United States
@@ -96,17 +93,15 @@ paths:
                     last_funding_round: Seed
                   count: 10
               example: *id001
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Company Search
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: query
         in: query
         required: true
         schema:
           type: string
-        description: 'The search query string (e.g., company name, website or ticker).
-          Examples: Tesla OR `https://tesla.com` OR TSLA'
+        description: 'The search query string (e.g., company name, website or ticker). Examples: Tesla OR `https://tesla.com` OR TSLA'
       - name: search_by
         in: query
         required: false
@@ -118,9 +113,7 @@ paths:
         required: false
         schema:
           type: string
-        description: 'Filter by company type. Supported values: `private`, `public`,
-          `all` Note: Use `all` to return all types. (This is the default value is
-          nothing is mentioned)'
+        description: 'Filter by company type. Supported values: `private`, `public`, `all` Note: Use `all` to return all types. (This is the default value is nothing is mentioned)'
       security:
       - bearerAuth: []
 tags:
@@ -132,3 +125,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

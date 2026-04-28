@@ -13,7 +13,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Request Status
-      description: 'Source docs: request-status.md'
+      description: Retrieves the current status of a previously submitted API request.
       operationId: get_api_enterprise_request_status
       responses:
         '200':
@@ -39,25 +39,22 @@ paths:
                 - request_type
                 - created_at
                 - updated_at
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in request-status.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in request-status.md.'
               example:
                 request_id: b1f10ebf-a251-4e2d-b867-8482ac701987
                 status: COMPLETED
                 request_type: target_screening
                 created_at: '2026-03-25T07:24:40.333168Z'
                 updated_at: '2026-03-25T07:30:41.503082Z'
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Request Status
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: request_id
         in: query
         required: true
         schema:
           type: string
-        description: 'The unique identifier of the request whose status is being checked.
-          Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
+        description: 'The unique identifier of the request whose status is being checked. Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
       security:
       - bearerAuth: []
 tags:
@@ -69,3 +66,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

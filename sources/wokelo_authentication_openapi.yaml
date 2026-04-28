@@ -13,7 +13,7 @@ paths:
       tags:
       - Authentication
       summary: Login
-      description: 'Source docs: authentication.md'
+      description: Obtain a JSON Web Token (JWT) for subsequent API authentication
       operationId: post_auth_token
       responses:
         '200':
@@ -59,9 +59,6 @@ paths:
                 - error
               example:
                 error: invalid_client
-      x-source-variants:
-      - group_path: Authentication
-        request_name: Login
       requestBody:
         required: true
         content:
@@ -101,3 +98,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

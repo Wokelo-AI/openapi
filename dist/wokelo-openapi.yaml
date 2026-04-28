@@ -44,7 +44,7 @@ paths:
       tags:
         - Supporting APIs
       summary: Get Report Status
-      description: 'Source docs: get-report-status.md'
+      description: Retrieves the current status of a previously triggered report using its unique ID
       operationId: get_api_assets_get_notebook_status
       responses:
         '200':
@@ -108,9 +108,6 @@ paths:
                   - message
               example:
                 message: You are not authorized to access this report.
-      x-source-variants:
-        - group_path: Supporting APIs
-          request_name: Get Report Status
       parameters:
         - name: report_id
           in: query
@@ -125,7 +122,7 @@ paths:
       tags:
         - Enrichment
       summary: Company Earnings Transcripts
-      description: 'Source docs: earnings-transcripts.md'
+      description: Fetch earnings call transcripts for a public company. Supports year-range filtering.
       operationId: get_api_enterprise_company_earnings-calls
       responses:
         '200':
@@ -411,9 +408,8 @@ paths:
                 count: 12
                 from_year: 2021
                 to_year: 2023
-      x-source-variants:
-        - group_path: Enrichment
-          request_name: Company Earnings Transcripts
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
         - name: company
           in: query
@@ -440,7 +436,7 @@ paths:
       tags:
         - Enrichment
       summary: Employee Reviews
-      description: 'Source docs: employee-reviews.md'
+      description: Retrieves paginated employee reviews for a specified company, supporting configurable result limits and offsets for efficient data navigation. Returns a structured list of product reviews.
       operationId: get_api_enterprise_company_employee-reviews
       responses:
         '200':
@@ -509,9 +505,8 @@ paths:
                     diversity_and_inclusion_rating: 4.2
                     senior_management_rating: 3.6
                     work_life_balance_rating: 3.9
-      x-source-variants:
-        - group_path: Enrichment
-          request_name: Employee Reviews
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
         - name: company
           in: query
@@ -538,7 +533,7 @@ paths:
       tags:
         - Enrichment
       summary: Company Filings
-      description: 'Source docs: company-filings.md'
+      description: Fetch SEC filings for a public company. Supports filtering by form type (10-K, 10-Q, 8-K, etc.) and year range.
       operationId: get_api_enterprise_company_filings
       responses:
         '200':
@@ -611,9 +606,8 @@ paths:
                 from_year: 2023
                 to_year: 2023
                 form: 10-K
-      x-source-variants:
-        - group_path: Enrichment
-          request_name: Company Filings
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
         - name: company
           in: query
@@ -646,7 +640,7 @@ paths:
       tags:
         - Monitoring
       summary: Company News Monitoring
-      description: 'Source docs: company-news-monitoring.md'
+      description: The Monitoring API fetches the latest news articles for a given company, enriched with AI-generated summaries, categories and publisher details. Optionally, you can refine the output by specifying date range, publisher list, blacklisted publishers, article limit, and news categories. Results are returned in the API response.
       operationId: get_api_enterprise_company_news
       responses:
         '200':
@@ -713,9 +707,8 @@ paths:
                       - Guidance & Forecast Revisions
                     newsworthiness_impact: Medium
                 count: 4
-      x-source-variants:
-        - group_path: Monitoring
-          request_name: Company News Monitoring
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
         - name: blacklisted
           in: query
@@ -772,7 +765,7 @@ paths:
       tags:
         - Enrichment
       summary: Product Reviews
-      description: 'Source docs: product-reviews.md'
+      description: Retrieves paginated product reviews for a specified company, supporting configurable result limits and offsets for efficient data navigation. Returns a structured list of product reviews.
       operationId: get_api_enterprise_company_product-reviews
       responses:
         '200':
@@ -849,9 +842,8 @@ paths:
                   reviews:
                     - review_id: 10674077
                       review_title: Easy to use enterprise communication platform
-      x-source-variants:
-        - group_path: Enrichment
-          request_name: Product Reviews
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
         - name: company
           in: query
@@ -878,7 +870,7 @@ paths:
       tags:
         - Supporting APIs
       summary: Company Search
-      description: 'Source docs: company-search.md'
+      description: Search for companies using name, website or ticker. It returns a list of companies with their permalink and other attributes.
       operationId: get_api_enterprise_company_search
       responses:
         '200':
@@ -974,9 +966,8 @@ paths:
                     domain: wokelo.ai
                     last_funding_round: Seed
                 count: 10
-      x-source-variants:
-        - group_path: Supporting APIs
-          request_name: Company Search
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
         - name: query
           in: query
@@ -1003,7 +994,7 @@ paths:
       tags:
         - Supporting APIs
       summary: Request Result
-      description: 'Source docs: request-result.md'
+      description: Retrieves the result of a previously submitted API request.
       operationId: get_api_enterprise_request_result
       responses:
         '200':
@@ -1050,9 +1041,8 @@ paths:
                         type: public
                         operating_status: IPO
                         ticker: NASDAQ:TSLA
-      x-source-variants:
-        - group_path: Supporting APIs
-          request_name: Request Result
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
         - name: request_id
           in: query
@@ -1067,7 +1057,7 @@ paths:
       tags:
         - Supporting APIs
       summary: Request Status
-      description: 'Source docs: request-status.md'
+      description: Retrieves the current status of a previously submitted API request.
       operationId: get_api_enterprise_request_status
       responses:
         '200':
@@ -1100,9 +1090,8 @@ paths:
                 request_type: target_screening
                 created_at: '2026-03-25T07:24:40.333168Z'
                 updated_at: '2026-03-25T07:30:41.503082Z'
-      x-source-variants:
-        - group_path: Supporting APIs
-          request_name: Request Status
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
         - name: request_id
           in: query
@@ -1117,7 +1106,7 @@ paths:
       tags:
         - Supporting APIs
       summary: Download Report
-      description: 'Source docs: download-report.md'
+      description: Downloads the generated report in the required format such as docx, pdf, and json. The format is passed in the request body.
       operationId: post_api_assets_download_report
       responses:
         '200':
@@ -1176,9 +1165,8 @@ paths:
                           url: https://www.openpr.com/news/4132700/l4-self-driving-vehicle-market-current-status-and-future
                           publisher: ''
                           date: ''
-      x-source-variants:
-        - group_path: Supporting APIs
-          request_name: Download Report
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1203,7 +1191,7 @@ paths:
       tags:
         - Supporting APIs
       summary: Upload file
-      description: 'Source docs: upload-file.md'
+      description: Upload your files to Wokelo to supplement research reports with proprietary data. Each uploaded file receives a unique identifier that you can reference in the `custom_files` parameter when creating reports.
       operationId: post_api_assets_upload
       responses:
         '200':
@@ -1268,9 +1256,8 @@ paths:
                     mimeType: pdf
                     uuid: k3m8n5p1q6
                 fails: []
-      x-source-variants:
-        - group_path: Supporting APIs
-          request_name: Upload file
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1307,7 +1294,7 @@ paths:
       tags:
         - Discovery
       summary: Buyer Screening
-      description: 'Source docs: buyer-screening.md'
+      description: The Buyer Screening API generates a long list of potential buyers for a given target company, enriched with structured data. Optionally, you can refine the output by specifying buyer type, company type, geography, and a detailed query to narrow the strategic criteria. Returns a request\_id as a response.
       operationId: post_api_enterprise_buyer-screening_enrich
       responses:
         '200':
@@ -1342,9 +1329,8 @@ paths:
               example:
                 request_id: 278412f8-87ca-47a9-9d1c-4a62a687eaf6
                 status: PENDING
-      x-source-variants:
-        - group_path: Discovery
-          request_name: Buyer Screening
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1383,7 +1369,7 @@ paths:
       tags:
         - Enrichment
       summary: Enrich a company profile (instant or deep).
-      description: 'Merged operation for the two documented company enrichment variants. Use the documented `sections` vocabulary to select the variant family. Source docs: company-deep-intelligence.md, company-instant-enrichment.md'
+      description: Enrich one or more companies through Wokelo's shared company enrichment endpoint. This operation supports the Company Instant Enrichment and Company Deep Intelligence request variants using a discriminator-based request body.
       operationId: post_api_enterprise_company_enrich
       responses:
         '200':
@@ -1443,11 +1429,8 @@ paths:
                 error: Invalid companies not found in database
                 invalid:
                   - Tesla
-      x-source-variants:
-        - group_path: Enrichment
-          request_name: Company Instant Enrichment
-        - group_path: Enrichment
-          request_name: Company Deep Intelligence
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1468,8 +1451,8 @@ paths:
     post:
       tags:
         - Enrichment
-      summary: Industry Deep Intelilgence
-      description: 'Source docs: industry-deep-intelligence.md'
+      summary: Industry Deep Intelligence
+      description: The Industry Insights API generates structured insights for a given industry topic (e.g., *"Warehouse automation"*). Optionally, you can refine the output by specifying sections, keywords, geography, a custom industry definition, and sample companies. Returns a `request_id` as a response.
       operationId: post_api_enterprise_industry_enrich
       responses:
         '200':
@@ -1504,9 +1487,8 @@ paths:
               example:
                 request_id: c574254f-137d-40d5-84f1-ac8fa38b8aa7
                 status: PENDING
-      x-source-variants:
-        - group_path: Enrichment
-          request_name: Industry Deep Intelilgence
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1553,7 +1535,7 @@ paths:
       tags:
         - Discovery
       summary: Market Map
-      description: 'Source docs: market-map.md'
+      description: The Market Map API generates a long list of companies operating in a given market (e.g., *"AI-powered CRM software"*), enriched with structured data. Optionally, you can refine the output by specifying keywords, sample companies, geography, company type, employee count, funding stage, and more. Returns request\_id as a response.
       operationId: post_api_enterprise_market-map_enrich
       responses:
         '200':
@@ -1588,9 +1570,8 @@ paths:
               example:
                 request_id: ed2ce223-3bd2-4a08-855f-79751bf1bd92
                 status: PENDING
-      x-source-variants:
-        - group_path: Discovery
-          request_name: Market Map
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1673,21 +1654,19 @@ paths:
       tags:
         - Supporting APIs
       summary: Request Cancel
-      description: 'Source docs: request-cancel.md'
+      description: Cancels a request already submitted.
       operationId: post_api_enterprise_request_cancel
       responses:
         '200':
-          description: Successful response
-      x-source-variants:
-        - group_path: Supporting APIs
-          request_name: Request Cancel
-      parameters:
-        - name: request_id
-          in: query
-          required: true
-          schema:
-            type: string
-          description: The unique identifier of request which needs to be cancelled
+          description: Successful cancellation acknowledgement
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                description: Cancellation acknowledgement payload. The exact success body is not formally documented.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1707,7 +1686,7 @@ paths:
       tags:
         - Discovery
       summary: Target Screening
-      description: 'Source docs: target-screening.md'
+      description: The Target Screening API generates a long list of potential acquisition targets for a given acquirer, enriched with structured data. Optionally, you can refine the output by specifying keywords, sample companies, geography, company type, employee count, funding stage, and a detailed query to narrow the search scope. Returns a request\_id as a reponse.
       operationId: post_api_enterprise_target-screening_enrich
       responses:
         '200':
@@ -1742,9 +1721,8 @@ paths:
               example:
                 request_id: 8583f59e-0412-4f1e-81e5-13cc70349cb6
                 status: PENDING
-      x-source-variants:
-        - group_path: Discovery
-          request_name: Target Screening
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1814,7 +1792,7 @@ paths:
       tags:
         - Monitoring
       summary: '[Legacy] Fetch News Report'
-      description: 'Source docs: legacy-fetch-news-report.md'
+      description: This endpoint retrieves the news items from an existing news report run via the Get News Report endpoint `/api/news/start/` news. It returns the news items as a JSON
       operationId: post_api_news_fetch
       responses:
         '200':
@@ -1868,9 +1846,8 @@ paths:
                   - error
               example:
                 error: Report not found.
-      x-source-variants:
-        - group_path: Monitoring
-          request_name: '[Legacy] Fetch News Report'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1897,7 +1874,7 @@ paths:
       tags:
         - Monitoring
       summary: '[Legacy] Initiate News Report'
-      description: 'Source docs: legacy-initiate-news-report.md'
+      description: This endpoint initiates news report on a company
       operationId: post_api_news_start
       responses:
         '200':
@@ -1914,6 +1891,8 @@ paths:
                 description: '[FROM OFFICIAL DOCS] Response schema derived from example in legacy-initiate-news-report.md.'
               example:
                 report_id: 2000156
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Get news report
           content:
@@ -1927,9 +1906,6 @@ paths:
                   - message
               example:
                 message: Invalid payload. permalink or website required.
-      x-source-variants:
-        - group_path: Monitoring
-          request_name: '[Legacy] Initiate News Report'
       requestBody:
         required: true
         content:
@@ -1971,14 +1947,19 @@ paths:
       tags:
         - Supporting APIs
       summary: Notebook Configuration
-      description: 'Source docs: notebook-configuration.md'
+      description: Retrieves and returns the settings you originally configured while initiating the report.
       operationId: post_api_wkl_notebook_configuration
       responses:
         '200':
-          description: Successful response
-      x-source-variants:
-        - group_path: Supporting APIs
-          request_name: Notebook Configuration
+          description: Notebook configuration returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                description: Notebook configuration object. The docs describe this as the original workflow configuration and do not formalize the shape.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1999,7 +1980,7 @@ paths:
       tags:
         - Workflow Automation
       summary: Start a workflow (Company Research, Industry Research, Peer Comparison, or Custom).
-      description: 'Merged operation for the four documented workflow-start variants. Use the `workflow` field to select the variant. Source docs: company-research.md, custom-workflows.md, industry-research.md, peer-comparison.md'
+      description: Start a workflow-driven report through Wokelo's workflow manager. This shared endpoint supports Company Research (`company_primer`), Industry Research (`industry_primer`), Peer Comparison (`player_comparison`), and Custom Workflows (dashboard-configured workflow IDs). The request body is modeled as a discriminator-based union across those variants.
       operationId: post_api_workflow_manager_start
       responses:
         '200':
@@ -2018,7 +1999,7 @@ paths:
               example:
                 report_id: 123345
         '400':
-          description: Company primer
+          description: Bad request
           content:
             application/json:
               schema:
@@ -2030,15 +2011,8 @@ paths:
                   - message
               example:
                 message: Invalid payload. search query is required.
-      x-source-variants:
-        - group_path: Workflow Automation
-          request_name: Company Research
-        - group_path: Workflow Automation
-          request_name: Industry Research
-        - group_path: Workflow Automation
-          request_name: Peer comparison
-        - group_path: Workflow Automation
-          request_name: Custom Workflows
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -2064,7 +2038,7 @@ paths:
       tags:
         - Authentication
       summary: Login
-      description: 'Source docs: authentication.md'
+      description: Obtain a JSON Web Token (JWT) for subsequent API authentication
       operationId: post_auth_token
       responses:
         '200':
@@ -2115,9 +2089,6 @@ paths:
                   - error
               example:
                 error: invalid_client
-      x-source-variants:
-        - group_path: Authentication
-          request_name: Login
       requestBody:
         required: true
         content:
@@ -2385,3 +2356,25 @@ components:
       example:
         workflow: industry_custom_fc44748
         industry_research_topic: Electric vehicles
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

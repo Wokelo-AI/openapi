@@ -1,10 +1,7 @@
 openapi: 3.0.3
 info:
   title: Buyer Screening
-  description: The Buyer Screening API generates a long list of potential buyers for
-    a given target company, enriched with structured data. Optionally, you can refine
-    the output by specifying buyer type, company type, geography, and a detailed query
-    to narrow the strategic criteria. Returns a request\_id as a response.
+  description: The Buyer Screening API generates a long list of potential buyers for a given target company, enriched with structured data. Optionally, you can refine the output by specifying buyer type, company type, geography, and a detailed query to narrow the strategic criteria. Returns a request\_id as a response.
   version: 2.0.0
   license:
     name: Proprietary
@@ -16,7 +13,7 @@ paths:
       tags:
       - Discovery
       summary: Buyer Screening
-      description: 'Source docs: buyer-screening.md'
+      description: The Buyer Screening API generates a long list of potential buyers for a given target company, enriched with structured data. Optionally, you can refine the output by specifying buyer type, company type, geography, and a detailed query to narrow the strategic criteria. Returns a request\_id as a response.
       operationId: post_api_enterprise_buyer-screening_enrich
       responses:
         '200':
@@ -28,9 +25,7 @@ paths:
                 properties:
                   request_id:
                     type: string
-                    description: Unique identifier for the request posted. Use this
-                      with the `/api/enterprise/request/status/` endpoint to check
-                      the status
+                    description: Unique identifier for the request posted. Use this with the `/api/enterprise/request/status/` endpoint to check the status
                 description: '[FROM OFFICIAL DOCS] Response schema from buyer-screening.md.'
                 example: &id001
                   request_id: 278412f8-87ca-47a9-9d1c-4a62a687eaf6
@@ -52,9 +47,8 @@ paths:
               example:
                 request_id: 278412f8-87ca-47a9-9d1c-4a62a687eaf6
                 status: PENDING
-      x-source-variants:
-      - group_path: Discovery
-        request_name: Buyer Screening
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -64,30 +58,25 @@ paths:
               properties:
                 company:
                   type: string
-                  description: 'Permalink of the target company or its complete URL
-                    Example: `"acme-solar"` OR `https://www.acmesolar.in/`'
+                  description: 'Permalink of the target company or its complete URL Example: `"acme-solar"` OR `https://www.acmesolar.in/`'
                 parameters:
                   type: object
                   properties:
                     detailed_query:
                       type: string
-                      description: A descriptive query to refine the buyer search
-                        scope and strategic criteria
+                      description: A descriptive query to refine the buyer search scope and strategic criteria
                     buyer_type:
                       type: array
                       items: {}
-                      description: 'Type of buyer to target. Accepted values: `"strategic"`,
-                        `"financial"`'
+                      description: 'Type of buyer to target. Accepted values: `"strategic"`, `"financial"`'
                     company_type:
                       type: string
-                      description: 'Type of company to include. Accepted values: `"private"`,
-                        `"public"`, `"all"`'
+                      description: 'Type of company to include. Accepted values: `"private"`, `"public"`, `"all"`'
                     geography:
                       type: array
                       items:
                         type: string
-                      description: Geographic scope. It should be a comma separated
-                        list of ISO country codes. (Eg.. `["USA", "GBR"]`)
+                      description: Geographic scope. It should be a comma separated list of ISO country codes. (Eg.. `["USA", "GBR"]`)
               description: '[FROM OFFICIAL DOCS] Request schema from buyer-screening.md.'
               required:
               - company
@@ -102,3 +91,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

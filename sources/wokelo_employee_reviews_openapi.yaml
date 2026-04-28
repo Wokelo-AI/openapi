@@ -1,9 +1,7 @@
 openapi: 3.0.3
 info:
   title: Employee Reviews
-  description: Retrieves paginated employee reviews for a specified company, supporting
-    configurable result limits and offsets for efficient data navigation. Returns
-    a structured list of product reviews.
+  description: Retrieves paginated employee reviews for a specified company, supporting configurable result limits and offsets for efficient data navigation. Returns a structured list of product reviews.
   version: 2.0.0
   license:
     name: Proprietary
@@ -15,7 +13,7 @@ paths:
       tags:
       - Enrichment
       summary: Employee Reviews
-      description: 'Source docs: employee-reviews.md'
+      description: Retrieves paginated employee reviews for a specified company, supporting configurable result limits and offsets for efficient data navigation. Returns a structured list of product reviews.
       operationId: get_api_enterprise_company_employee-reviews
       responses:
         '200':
@@ -69,8 +67,7 @@ paths:
                 required:
                 - status
                 - data
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in employee-reviews.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in employee-reviews.md.'
               example:
                 status: success
                 data:
@@ -85,17 +82,15 @@ paths:
                     diversity_and_inclusion_rating: 4.2
                     senior_management_rating: 3.6
                     work_life_balance_rating: 3.9
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Employee Reviews
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: company
         in: query
         required: true
         schema:
           type: string
-        description: Permalink of the company whose employee reviews need to be fetched
-          E.g. `"salesforce"`
+        description: Permalink of the company whose employee reviews need to be fetched E.g. `"salesforce"`
       - name: limit
         in: query
         required: false
@@ -119,3 +114,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

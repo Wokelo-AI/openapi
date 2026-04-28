@@ -1,11 +1,7 @@
 openapi: 3.0.3
 info:
   title: Company Instant Enrichment
-  description: The Company Enrichment API delivers structured data for one or more
-    companies across sections such as firmographics, products, funding, headcount,
-    and more. Optionally, you can customize the output by specifying which sections
-    to include and defining custom fields with your own prompts. Returns request\_id
-    as a response.
+  description: The Company Enrichment API delivers structured data for one or more companies across sections such as firmographics, products, funding, headcount, and more. Optionally, you can customize the output by specifying which sections to include and defining custom fields with your own prompts. Returns request\_id as a response.
   version: 2.0.0
   license:
     name: Proprietary
@@ -17,11 +13,7 @@ paths:
       tags:
       - Enrichment
       summary: Company Instant Enrichment
-      description: The Company Enrichment API delivers structured data for one or
-        more companies across sections such as firmographics, products, funding, headcount,
-        and more. Optionally, you can customize the output by specifying which sections
-        to include and defining custom fields with your own prompts. Returns request\_id
-        as a response.
+      description: The Company Enrichment API delivers structured data for one or more companies across sections such as firmographics, products, funding, headcount, and more. Optionally, you can customize the output by specifying which sections to include and defining custom fields with your own prompts. Returns request\_id as a response.
       operationId: post_company_instant_enrichment
       responses:
         '200':
@@ -33,12 +25,10 @@ paths:
                 properties:
                   request_id:
                     type: string
-                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                      \ Request identifier returned when the enrichment job is accepted."
+                    description: '[FROM EXAMPLE — not in formal docs schema] Request identifier returned when the enrichment job is accepted.'
                   status:
                     type: string
-                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                      \ Async processing status returned with the request identifier."
+                    description: '[FROM EXAMPLE — not in formal docs schema] Async processing status returned with the request identifier.'
                 description: '[FROM OFFICIAL DOCS] Response schema from company-deep-intelligence.md.'
                 example: &id001
                   request_id: 3c945250-a3e8-4673-b342-2ceb03af5b02
@@ -81,11 +71,8 @@ paths:
                 error: Invalid companies not found in database
                 invalid:
                 - Tesla
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Company Instant Enrichment
-      - group_path: Enrichment
-        request_name: Company Deep Intelligence
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -114,8 +101,7 @@ components:
           type: array
           items:
             type: string
-          description: List of permalinks/ URLs of the companies to enrich E.g. `"tesla-motors"`,
-            `"stripe"` OR `"https://tesla.com"`
+          description: List of permalinks/ URLs of the companies to enrich E.g. `"tesla-motors"`, `"stripe"` OR `"https://tesla.com"`
         sections:
           type: array
           items:
@@ -130,10 +116,7 @@ components:
             - acquisitions
             - investments
             - website_traffic
-          description: 'Sections of data to include in the enrichment. Supported values:
-            `firmographics`, `products`, `headcount`, `funding`, `public_company_financials`,
-            `uk_private_company_financials`, `acquisitions`, `investments`, `website_traffic`
-            Default: all'
+          description: 'Sections of data to include in the enrichment. Supported values: `firmographics`, `products`, `headcount`, `funding`, `public_company_financials`, `uk_private_company_financials`, `acquisitions`, `investments`, `website_traffic` Default: all'
           minItems: 1
         parameters:
           type: object
@@ -145,19 +128,15 @@ components:
                 properties:
                   field_name:
                     type: string
-                    description: Name of the custom field. Required if `custom_fields`
-                      is used.
+                    description: Name of the custom field. Required if `custom_fields` is used.
                   type:
                     type: string
-                    description: 'Data type of the field (e.g. `text`). Supported
-                      values: `text`. Required if `custom_fields` is used.'
+                    description: 'Data type of the field (e.g. `text`). Supported values: `text`. Required if `custom_fields` is used.'
                   prompt:
                     type: string
-                    description: Prompt used to generate the custom field value. Required
-                      if `custom_fields` is used.
+                    description: Prompt used to generate the custom field value. Required if `custom_fields` is used.
               description: List of custom fields to compute for each company
-      description: '[FROM OFFICIAL DOCS] Instant Enrichment variant using the instant-enrichment
-        `sections` vocabulary.'
+      description: '[FROM OFFICIAL DOCS] Instant Enrichment variant using the instant-enrichment `sections` vocabulary.'
       required:
       - companies
       - sections
@@ -169,8 +148,30 @@ components:
         - firmographics
         - products
         - funding
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.
