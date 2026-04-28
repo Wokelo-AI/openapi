@@ -115,12 +115,8 @@ REQUEST_EXAMPLES_BY_OPERATION_ID = {
     },
 }
 
-SKIP_MASTER_MULTI_EXAMPLE_KEYS = {
-    ("post", "/api/enterprise/company/enrich/"),
-}
-SKIP_MASTER_MULTI_EXAMPLE_OPERATION_IDS = {
-    "post_api_enterprise_company_enrich",
-}
+SKIP_MASTER_MULTI_EXAMPLE_KEYS = set()
+SKIP_MASTER_MULTI_EXAMPLE_OPERATION_IDS = set()
 
 
 def load_yaml(path: Path) -> dict:
