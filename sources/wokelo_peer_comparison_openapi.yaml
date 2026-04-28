@@ -1,36 +1,64 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
-  title: Wokelo Peer Comparison API
-  version: 1.0.0
-  description: |
-    Side-by-side peer benchmarking report.
-
-    Generates a comprehensive multi-dimensional comparison of up to 5 companies
-    covering fundamentals, product offerings, business model, strategic moves,
-    management profiles, hiring trends, employee reviews, and market visibility.
-
+  title: Peer Comparison
+  description: Generates a comprehensive comparison of up to 5 companies. The report
+    analyzes multiple dimensions including company fundamentals and firmographics,
+    product offerings and business models, employee reviews and satisfaction, hiring
+    trends and workforce data, and online presence and market visibility.
+  version: 2.0.0
+  license:
+    name: Proprietary
 servers:
-  - url: https://api.wokelo.ai
-
-security:
-  - bearerAuth: []
-
-tags:
-  - name: Peer Comparison
-    description: Generate multi-company peer benchmarking reports.
-
+- url: https://api.wokelo.ai
 paths:
   /api/workflow_manager/start/:
     post:
       tags:
-        - Peer Comparison
-      operationId: startPeerComparison
-      summary: Start peer comparison report
-      description: |
-        Starts a side-by-side peer benchmarking report for up to 5 companies.
-
-        The request uses the workflow manager with `workflow: player_comparison`
-        and accepts a list of company websites plus an optional workbook name.
+      - Workflow Automation
+      summary: Peer Comparison
+      description: Generates a comprehensive comparison of up to 5 companies. The
+        report analyzes multiple dimensions including company fundamentals and firmographics,
+        product offerings and business models, employee reviews and satisfaction,
+        hiring trends and workforce data, and online presence and market visibility.
+      operationId: post_workflow_manager_peer_comparison
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  report_id:
+                    type: integer
+                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
+                      \ Report identifier returned when the workflow request succeeds."
+                description: '[FROM OFFICIAL DOCS] Response schema from company-research.md.'
+                example: &id001
+                  report_id: 123345
+              example: *id001
+        '400':
+          description: Company primer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+              example:
+                message: Invalid payload. search query is required.
+      x-source-variants:
+      - group_path: Workflow Automation
+        request_name: Company Research
+      - group_path: Workflow Automation
+        request_name: Industry Research
+      - group_path: Workflow Automation
+        request_name: Peer comparison
+      - group_path: Workflow Automation
+        request_name: Custom Workflows
       requestBody:
         required: true
         content:
@@ -40,582 +68,44 @@ paths:
             example:
               workflow: player_comparison
               websites:
-                - https://we.are.expensify.com/
-                - https://ramp.com/
-                - https://www.airbase.com/
-                - http://www.expensya.com/
-                - https://payhawk.com/
-              workbook_name: Peer Comparison
-      responses:
-        '200':
-          description: Peer comparison report generated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PeerComparisonResponse'
-              example:
-                Firmographics:
-                  Firmographic:
-                    firmographics:
-                      firmographics:
-                        - organization:
-                            name: Expensify
-                            logo: https://wklogo.blob.core.windows.net/logos-thumbnail/expensify-com.png
-                            url: https://app.wokelo.ai/dashboard/workflows/company-deep-dive-new-v2/?company=expensify-com
-                          details:
-                            industry: Accounting, Enterprise Software, FinTech
-                            product_category: Online Expense Management Service
-                            founded_year: "2008"
-                            hq: San Francisco, United States
-                            company_type: public
-                            employees_in_crunchbase: 101-250
-                            website: https://we.are.expensify.com
-                            total_funding: 138200000
-                            last_funding_round:
-                              currency: USD
-                              round: Public
-                          description: Expensify is a financial services startup that provides an online expense management service.
-                    sources:
-                      - id: 1
-                        title: Sourced from Crunchbase
-                        url: ""
-                        publisher: ""
-                        date: ""
-                Product offerings:
-                  Product offerings:
-                    product_offerings:
-                      - area: Expense Management & Reporting
-                        details:
-                          - permalink: expensify-com
-                            area_details: Comprehensive online expense management platform with automated expense reporting.
-                            company_name: Expensify
-                Business model:
-                  Business model:
-                    business_model:
-                      - area: Revenue & Pricing
-                        details:
-                          - permalink: ramp-financial
-                            area_details: Revenue from interchange fees, value-added services, and tiered paid plans.
-                            company_name: Ramp
-                Strategic moves:
-                  Strategic moves:
-                    strategic_moves:
-                      - area: Product / Service Expansion
-                        details:
-                          - company_name: Payhawk
-                            permalink: payhawk
-                            area_details: Launched Fall '25 Product Edition with 4 AI agents.
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: bad_request
-                  message: Invalid request payload.
-                  details:
-                    - field: websites
-                      message: Provide between 1 and 5 company websites.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: unauthorized
-                  message: Missing or invalid bearer token.
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: rate_limited
-                  message: Too many requests. Please retry later.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: internal_server_error
-                  message: An unexpected error occurred.
-
+              - stripe.com
+              - paypal.com
+              workbook_name: Test report
+      security:
+      - bearerAuth: []
+tags:
+- name: Workflow Automation
+  description: Workflow-driven report generation endpoints.
 components:
+  schemas:
+    PeerComparisonRequest:
+      type: object
+      properties:
+        workflow:
+          type: string
+          description: '`player_comparison`'
+          enum:
+          - player_comparison
+        websites:
+          type: array
+          items:
+            type: string
+          description: Array of company websites to compare
+        workbook_name:
+          type: string
+          description: Name with which the workbook will be saved
+      description: '[FROM OFFICIAL DOCS] Peer Comparison variant with workflow=`player_comparison`.'
+      required:
+      - workflow
+      - websites
+      example:
+        workflow: player_comparison
+        websites:
+        - stripe.com
+        - paypal.com
+        workbook_name: Test report
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Bearer token sent in the Authorization header.
-
-  schemas:
-    PeerComparisonRequest:
-      type: object
-      additionalProperties: false
-      required:
-        - workflow
-        - websites
-      properties:
-        workflow:
-          type: string
-          description: Workflow identifier.
-          enum:
-            - player_comparison
-          example: player_comparison
-        websites:
-          type: array
-          description: List of company websites to compare. The documentation states up to 5 companies.
-          minItems: 1
-          maxItems: 5
-          items:
-            type: string
-            format: uri
-          example:
-            - https://stripe.com
-            - https://paypal.com
-            - https://square.com
-        workbook_name:
-          type: string
-          description: Optional workbook/report title.
-          example: Payments Competitive Landscape
-
-    PeerComparisonResponse:
-      type: object
-      additionalProperties: true
-      description: |
-        The peer comparison response is a large nested benchmarking report with
-        sections such as Firmographics, Product Offerings, Business Model,
-        Strategic Moves, Management Profiles, and other benchmarking modules.
-
-        The documentation provides a large example response rather than a strict
-        contract, so clearly structured sections are modeled while more variable
-        sections remain permissive.
-      properties:
-        Firmographics:
-          $ref: '#/components/schemas/FirmographicsSectionContainer'
-        Product offerings:
-          $ref: '#/components/schemas/ProductOfferingsSectionContainer'
-        Business model:
-          $ref: '#/components/schemas/BusinessModelSectionContainer'
-        Strategic moves:
-          $ref: '#/components/schemas/StrategicMovesSectionContainer'
-        Management profiles:
-          $ref: '#/components/schemas/ManagementProfilesSectionContainer'
-
-    FirmographicsSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Firmographic:
-          type: object
-          additionalProperties: false
-          properties:
-            firmographics:
-              type: object
-              additionalProperties: false
-              properties:
-                firmographics:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/ComparedCompanyFirmographic'
-            sources:
-              type: array
-              items:
-                $ref: '#/components/schemas/SourceReference'
-
-    ComparedCompanyFirmographic:
-      type: object
-      additionalProperties: false
-      properties:
-        organization:
-          $ref: '#/components/schemas/OrganizationRef'
-        details:
-          $ref: '#/components/schemas/ComparedCompanyDetails'
-        description:
-          type: string
-          nullable: true
-
-    OrganizationRef:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-          nullable: true
-        logo:
-          type: string
-          nullable: true
-          format: uri
-        url:
-          type: string
-          nullable: true
-          format: uri
-
-    ComparedCompanyDetails:
-      type: object
-      additionalProperties: true
-      properties:
-        industry:
-          type: string
-          nullable: true
-        product_category:
-          type: string
-          nullable: true
-        founded_year:
-          type: string
-          nullable: true
-        hq:
-          type: string
-          nullable: true
-        company_type:
-          type: string
-          nullable: true
-        employees_in_crunchbase:
-          oneOf:
-            - type: string
-            - type: integer
-          nullable: true
-        website:
-          type: string
-          nullable: true
-          format: uri
-        total_funding:
-          oneOf:
-            - type: number
-            - type: string
-          nullable: true
-        last_funding_round:
-          $ref: '#/components/schemas/FundingRoundSummary'
-        financials:
-          type: object
-          additionalProperties:
-            oneOf:
-              - type: string
-              - type: number
-              - $ref: '#/components/schemas/FinancialMetricAlt'
-
-    FundingRoundSummary:
-      type: object
-      additionalProperties: true
-      properties:
-        currency:
-          type: string
-          nullable: true
-        round:
-          type: string
-          nullable: true
-        value:
-          oneOf:
-            - type: number
-            - type: string
-          nullable: true
-        date:
-          type: string
-          nullable: true
-
-    FinancialMetricAlt:
-      type: object
-      additionalProperties: false
-      properties:
-        period:
-          type: string
-          nullable: true
-        v:
-          oneOf:
-            - type: number
-            - type: string
-            - type: 'null'
-          nullable: true
-        currency:
-          type: string
-          nullable: true
-
-    ProductOfferingsSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Product offerings:
-          type: object
-          additionalProperties: false
-          properties:
-            product_offerings:
-              type: array
-              items:
-                $ref: '#/components/schemas/BenchmarkArea'
-            key_product_features:
-              $ref: '#/components/schemas/KeyProductFeatures'
-
-    BenchmarkArea:
-      type: object
-      additionalProperties: false
-      properties:
-        area:
-          type: string
-          nullable: true
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/CompanyAreaDetail'
-
-    CompanyAreaDetail:
-      type: object
-      additionalProperties: false
-      properties:
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-        permalink:
-          type: string
-          nullable: true
-        area_details:
-          type: string
-          nullable: true
-        company_name:
-          type: string
-          nullable: true
-
-    KeyProductFeatures:
-      type: object
-      additionalProperties: false
-      properties:
-        rows:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureComparisonRow'
-        columns:
-          type: array
-          items:
-            type: string
-
-    FeatureComparisonRow:
-      type: object
-      additionalProperties: false
-      properties:
-        commentary:
-          type: string
-          nullable: true
-        category_name:
-          type: string
-          nullable: true
-        company_names:
-          type: array
-          items:
-            $ref: '#/components/schemas/CompanyFeatureResult'
-        company_result_mapping:
-          type: object
-          additionalProperties:
-            type: string
-
-    CompanyFeatureResult:
-      type: object
-      additionalProperties: false
-      properties:
-        result:
-          type: string
-          nullable: true
-        company_name:
-          type: string
-          nullable: true
-        company_permalink:
-          type: string
-          nullable: true
-
-    BusinessModelSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Business model:
-          type: object
-          additionalProperties: false
-          properties:
-            business_model:
-              type: array
-              items:
-                $ref: '#/components/schemas/BenchmarkArea'
-            business_model_key_take_aways:
-              type: array
-              items:
-                $ref: '#/components/schemas/LabeledNarrative'
-
-    StrategicMovesSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Strategic moves:
-          type: object
-          additionalProperties: false
-          properties:
-            strategic_moves:
-              type: array
-              items:
-                $ref: '#/components/schemas/StrategicMoveArea'
-            strategic_moves_key_take_aways:
-              type: array
-              items:
-                $ref: '#/components/schemas/LabeledNarrative'
-
-    StrategicMoveArea:
-      type: object
-      additionalProperties: false
-      properties:
-        area:
-          type: string
-          nullable: true
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/StrategicMoveDetail'
-
-    StrategicMoveDetail:
-      type: object
-      additionalProperties: false
-      properties:
-        company_name:
-          type: string
-          nullable: true
-        permalink:
-          type: string
-          nullable: true
-        area_details:
-          type: string
-          nullable: true
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-
-    LabeledNarrative:
-      type: object
-      additionalProperties: false
-      properties:
-        label:
-          type: string
-          nullable: true
-        value:
-          type: string
-          nullable: true
-
-    ManagementProfilesSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Management Profiles:
-          type: object
-          additionalProperties: false
-          properties:
-            management_profile:
-              type: array
-              items:
-                $ref: '#/components/schemas/ManagementProfile'
-
-    ManagementProfile:
-      type: object
-      additionalProperties: false
-      properties:
-        organization:
-          type: string
-          nullable: true
-        permalink:
-          type: string
-          nullable: true
-        key_roles_and_previous_experience:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExecutiveProfile'
-        recent_strategic_hires:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-
-    ExecutiveProfile:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-          nullable: true
-        designation:
-          type: string
-          nullable: true
-        organization:
-          type: string
-          nullable: true
-        url:
-          type: string
-          nullable: true
-        positions:
-          type: array
-          items:
-            type: string
-        profile_picture:
-          type: string
-          nullable: true
-          format: uri
-
-    SourceReference:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          oneOf:
-            - type: integer
-            - type: string
-          nullable: true
-        title:
-          type: string
-          nullable: true
-        url:
-          type: string
-          nullable: true
-        publisher:
-          type: string
-          nullable: true
-        date:
-          type: string
-          nullable: true
-
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          additionalProperties: false
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: string
-              example: bad_request
-            message:
-              type: string
-              example: Invalid request payload.
-            details:
-              type: array
-              items:
-                $ref: '#/components/schemas/ErrorDetail'
-
-    ErrorDetail:
-      type: object
-      additionalProperties: true
-      properties:
-        field:
-          type: string
-          example: websites
-        message:
-          type: string
-          example: Provide between 1 and 5 company websites.

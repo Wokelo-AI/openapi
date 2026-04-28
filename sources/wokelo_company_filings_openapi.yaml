@@ -1,0 +1,135 @@
+openapi: 3.0.3
+info:
+  title: Fetch Filings Data
+  description: Fetch SEC filings for a public company. Supports filtering by form
+    type (10-K, 10-Q, 8-K, etc.) and year range.
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/enterprise/company/filings/:
+    get:
+      tags:
+      - Enrichment
+      summary: Company Filings
+      description: 'Source docs: company-filings.md'
+      operationId: get_api_enterprise_company_filings
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        symbol:
+                          type: string
+                        form:
+                          type: string
+                        filedDate:
+                          type: string
+                        acceptedDate:
+                          type: string
+                        reportUrl:
+                          type: string
+                        filingUrl:
+                          type: string
+                        filingData:
+                          type: string
+                      required:
+                      - title
+                      - symbol
+                      - form
+                      - filedDate
+                      - acceptedDate
+                      - reportUrl
+                      - filingUrl
+                      - filingData
+                  count:
+                    type: integer
+                  from_year:
+                    type: integer
+                  to_year:
+                    type: integer
+                  form:
+                    type: string
+                required:
+                - status
+                - data
+                - count
+                - from_year
+                - to_year
+                - form
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example
+                  in company-filings.md.'
+              example:
+                status: success
+                data:
+                - title: TSLA 10-K January 2023
+                  symbol: TSLA
+                  form: 10-K
+                  filedDate: '2023-01-31 00:00:00'
+                  acceptedDate: '2023-01-31 02:29:15'
+                  reportUrl: https://www.sec.gov/Archives/edgar/data/1318605/000095017023001409/tsla-20221231.htm
+                  filingUrl: https://www.sec.gov/Archives/edgar/data/1318605/000095017023001409/0000950170-23-001409-index.html
+                  filingData: <html xmlns="http://www.w3.org/1999/xhtml" xmlns:xbrldi="http://xbrl.org/2006/xbrldi"
+                    xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:xbrli="http://www.xbrl.org/2003/instance"
+                    xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:nonnumeric="http://www.xbrl.org/dtr/type/non-numeric"
+                    xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2015-02-26"
+                    xmlns:ixt-sec="http://www.sec.gov/inlineXBRL/transformati... [truncated]
+                count: 1
+                from_year: 2023
+                to_year: 2023
+                form: 10-K
+      x-source-variants:
+      - group_path: Enrichment
+        request_name: Company Filings
+      parameters:
+      - name: company
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Permalink/ URL of the company whose filings need to be fetched
+          E.g. `"salesforce"`
+      - name: form
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'SEC form type to filter by. Supported values: 10-K, 10-Q, 8-K'
+      - name: from_year
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Start year for the date range
+      - name: to_year
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: End year for the date range
+      security:
+      - bearerAuth: []
+tags:
+- name: Enrichment
+  description: Company and industry enrichment capabilities.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

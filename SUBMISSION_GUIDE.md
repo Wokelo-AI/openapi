@@ -11,7 +11,7 @@ Host the bundled spec at a stable public URL. Recommended:
 Ensure the URL:
 - Returns `Content-Type: application/yaml` (or `text/yaml`)
 - Has CORS header `Access-Control-Allow-Origin: *` so browser tools can fetch
-- Is versioned (tag git releases `v1.0.0`, `v1.1.0` etc.)
+- Is versioned (tag git releases `v2.0.0`, `v2.1.0` etc.)
 
 ---
 
@@ -21,7 +21,7 @@ Ensure the URL:
 - **Time:** 20 min
 - **Steps:**
   1. Fork `https://github.com/APIs-guru/openapi-directory`
-  2. Add your spec under `APIs/wokelo.ai/1.0.0/openapi.yaml` (or submit URL in registry)
+  2. Add your spec under `APIs/wokelo.ai/2.0.0/openapi.yaml` (or submit URL in registry)
   3. Open PR with title "Add Wokelo API"
   4. Maintainers auto-validate and merge
 - **Result:** Listed on `https://apis.guru/` and `https://api.apis.guru/v2/list.json` — used by many downstream tools
@@ -129,4 +129,4 @@ Designed for Apify Actors (scraping bots), not REST APIs. Listing would require 
 
 - Add directory badges to your website and docs
 - Monitor incoming traffic from each source (UTM tags help)
-- When you publish v1.1, most directories auto-refetch from your hosted URL; Postman/SwaggerHub may need manual re-import
+- When you publish v2.1, most directories auto-refetch from your hosted URL; Postman/SwaggerHub may need manual re-import

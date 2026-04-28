@@ -1,696 +1,113 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
-  title: Wokelo Company Research API
-  version: 1.0.0
-  description: |
-    In-depth company intelligence report.
-
-    The documentation shows two request patterns for company research:
-    1. a direct company primer endpoint
-    2. a workflow manager wrapper for the `company_primer` workflow
-
-    This specification includes both patterns because the docs present both as valid
-    ways to initiate the report.
-
+  title: Company Research
+  description: Starts generating a Company Research report for a specific company.
+  version: 2.0.0
+  license:
+    name: Proprietary
 servers:
-  - url: https://api.wokelo.ai
-
-security:
-  - bearerAuth: []
-
-tags:
-  - name: Company Research
-    description: Generate in-depth company intelligence reports.
-
+- url: https://api.wokelo.ai
 paths:
-  /api/company_primer/v3/start/:
-    post:
-      tags:
-        - Company Research
-      operationId: startCompanyResearchDirect
-      summary: Start company research report directly
-      description: |
-        Starts an in-depth company intelligence report using the direct company primer endpoint.
-
-        Either `website` or `permalink` is required according to the documentation.
-        `industry` is optional and may be auto-detected if omitted.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CompanyResearchDirectRequest'
-            example:
-              industry: Artificial Intelligence
-              website: https://wokelo.ai
-      responses:
-        '200':
-          description: Company research report generated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CompanyResearchResponse'
-              example:
-                Quick Snapshot:
-                  Quick Snapshot:
-                    quick_snapshot:
-                      company_firmographics:
-                        organization:
-                          name: Salesforce
-                          logo: https://wklogo.blob.core.windows.net/logos-thumbnail/salesforce.png
-                          url: https://app.wokelo.ai/dashboard/workflows/company-deep-dive-new-v2/?company=salesforce
-                        details:
-                          industry: Artificial Intelligence (AI), Cloud Computing, CRM, SaaS
-                          founded_year: "1999"
-                          website: https://www.salesforce.com
-                          hq: San Francisco, United States
-                          operating_status: active
-                          company_type: public
-                          employees_in_crunchbase: 10000+
-                          employees_in_linkedin: 87189
-                          ticker: NYSE:CRM
-                      product_details:
-                        product_category: Cloud CRM Software
-                        summary: Salesforce provides a cloud-based platform for customer relationship management.
-                    sources:
-                      - id: 1
-                        title: Crunchbase
-                        url: ""
-                        publisher: ""
-                        date: ""
-                Executive Summary:
-                  Executive Summary:
-                    summary: Overview, strategic positioning, recent developments, and key capabilities.
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: bad_request
-                  message: Invalid request payload.
-                  details:
-                    - field: website
-                      message: Either website or permalink is required.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: unauthorized
-                  message: Missing or invalid bearer token.
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: rate_limited
-                  message: Too many requests. Please retry later.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: internal_server_error
-                  message: An unexpected error occurred.
-
   /api/workflow_manager/start/:
     post:
       tags:
-        - Company Research
-      operationId: startCompanyResearchWorkflow
-      summary: Start company research report via workflow manager
-      description: |
-        Starts an in-depth company intelligence report using the workflow manager.
-
-        The documentation shows this endpoint being called with
-        `workflow: company_primer` and a company `permalink`.
+      - Workflow Automation
+      summary: Company Research
+      description: Starts generating a Company Research report for a specific company.
+      operationId: post_workflow_manager_company_research
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  report_id:
+                    type: integer
+                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
+                      \ Report identifier returned when the workflow request succeeds."
+                description: '[FROM OFFICIAL DOCS] Response schema from company-research.md.'
+                example: &id001
+                  report_id: 123345
+              example: *id001
+        '400':
+          description: Company primer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+              example:
+                message: Invalid payload. search query is required.
+      x-source-variants:
+      - group_path: Workflow Automation
+        request_name: Company Research
+      - group_path: Workflow Automation
+        request_name: Industry Research
+      - group_path: Workflow Automation
+        request_name: Peer comparison
+      - group_path: Workflow Automation
+        request_name: Custom Workflows
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CompanyResearchWorkflowRequest'
+              $ref: '#/components/schemas/CompanyResearchRequest'
             example:
               workflow: company_primer
-              permalink: salesforce
-      responses:
-        '200':
-          description: Company research report generated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CompanyResearchResponse'
-              example:
-                Quick Snapshot:
-                  Quick Snapshot:
-                    quick_snapshot:
-                      company_firmographics:
-                        organization:
-                          name: Salesforce
-                          logo: https://wklogo.blob.core.windows.net/logos-thumbnail/salesforce.png
-                          url: https://app.wokelo.ai/dashboard/workflows/company-deep-dive-new-v2/?company=salesforce
-                        details:
-                          industry: Artificial Intelligence (AI), Cloud Computing, CRM, SaaS
-                          founded_year: "1999"
-                          website: https://www.salesforce.com
-                          hq: San Francisco, United States
-                          operating_status: active
-                          company_type: public
-                          employees_in_crunchbase: 10000+
-                          employees_in_linkedin: 87189
-                          ticker: NYSE:CRM
-                      product_details:
-                        product_category: Cloud CRM Software
-                        summary: Salesforce provides a cloud-based platform for customer relationship management.
-                    sources:
-                      - id: 1
-                        title: Crunchbase
-                        url: ""
-                        publisher: ""
-                        date: ""
-                Executive Summary:
-                  Executive Summary:
-                    summary: Overview, strategic positioning, recent developments, and key capabilities.
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: bad_request
-                  message: Invalid request payload.
-                  details:
-                    - field: workflow
-                      message: Workflow must be company_primer.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: unauthorized
-                  message: Missing or invalid bearer token.
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: rate_limited
-                  message: Too many requests. Please retry later.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: internal_server_error
-                  message: An unexpected error occurred.
-
+              permalink: wokelo-ai
+              workbook_name: wokelo-ai
+      security:
+      - bearerAuth: []
+tags:
+- name: Workflow Automation
+  description: Workflow-driven report generation endpoints.
 components:
+  schemas:
+    CompanyResearchRequest:
+      type: object
+      properties:
+        industry:
+          type: string
+          description: Company's industry. If not provided, Wokelo will auto-detect
+            the industry
+        permalink:
+          type: string
+          description: Crunchbase permalink of the company. Provide either this
+            or `website`.
+        website:
+          type: string
+          description: Website of the company. Provide either this or `permalink`.
+        workflow:
+          type: string
+          description: '`company_primer`'
+          enum:
+          - company_primer
+        workbook_name:
+          type: string
+          description: Name with which the workbook will be saved
+        custom_files:
+          type: array
+          items:
+            type: object
+            properties: {}
+          description: Files to include in the report. Use `fileName` values from
+            the file upload response
+      description: '[FROM OFFICIAL DOCS] Company Research variant with workflow=`company_primer`.'
+      required:
+      - workflow
+      example:
+        workflow: company_primer
+        permalink: wokelo-ai
+        workbook_name: wokelo-ai
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Bearer token sent in the Authorization header.
-
-  schemas:
-    CompanyResearchDirectRequest:
-      type: object
-      additionalProperties: false
-      properties:
-        industry:
-          type: string
-          description: Optional company industry. Auto-detected if omitted.
-          example: Artificial Intelligence
-        website:
-          type: string
-          description: Complete company website URL.
-          format: uri
-          example: https://tesla.com
-        permalink:
-          type: string
-          description: Company permalink identifier.
-          example: salesforce
-      description: Either `website` or `permalink` should be provided.
-
-    CompanyResearchWorkflowRequest:
-      type: object
-      additionalProperties: false
-      required:
-        - workflow
-      properties:
-        workflow:
-          type: string
-          description: Workflow identifier.
-          enum:
-            - company_primer
-          example: company_primer
-        permalink:
-          type: string
-          description: Company permalink identifier.
-          example: salesforce
-        website:
-          type: string
-          description: Optional company website URL if supported by the workflow manager.
-          format: uri
-          example: https://wokelo.ai
-        industry:
-          type: string
-          description: Optional company industry.
-          example: Artificial Intelligence
-
-    CompanyResearchResponse:
-      type: object
-      additionalProperties: true
-      description: |
-        The company research response is a large nested intelligence report with
-        sections such as Quick Snapshot, Executive Summary, Key Insights,
-        Product Insights, Transaction Highlights, and Strategic Moves and News.
-
-        The documentation provides a very large example rather than a strict formal
-        schema. This response is therefore modeled with shared nested section
-        components where structure is clear, while leaving some parts permissive.
-      properties:
-        Quick Snapshot:
-          $ref: '#/components/schemas/QuickSnapshotSectionContainer'
-        Executive Summary:
-          $ref: '#/components/schemas/ExecutiveSummarySectionContainer'
-        Key Insights:
-          $ref: '#/components/schemas/KeyInsightsSectionContainer'
-        Product insights:
-          $ref: '#/components/schemas/ProductInsightsSectionContainer'
-        Transaction highlights:
-          $ref: '#/components/schemas/TransactionHighlightsSectionContainer'
-        Strategic moves and news:
-          $ref: '#/components/schemas/StrategicMovesSectionContainer'
-
-    QuickSnapshotSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Quick Snapshot:
-          type: object
-          additionalProperties: false
-          properties:
-            quick_snapshot:
-              type: object
-              additionalProperties: false
-              properties:
-                company_firmographics:
-                  $ref: '#/components/schemas/CompanyFirmographics'
-                product_details:
-                  $ref: '#/components/schemas/ProductDetails'
-            sources:
-              type: array
-              items:
-                $ref: '#/components/schemas/SourceReference'
-
-    CompanyFirmographics:
-      type: object
-      additionalProperties: false
-      properties:
-        organization:
-          $ref: '#/components/schemas/OrganizationRef'
-        details:
-          $ref: '#/components/schemas/FirmographicDetails'
-
-    OrganizationRef:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-          nullable: true
-        logo:
-          type: string
-          nullable: true
-          format: uri
-        url:
-          type: string
-          nullable: true
-          format: uri
-
-    FirmographicDetails:
-      type: object
-      additionalProperties: true
-      properties:
-        industry:
-          type: string
-          nullable: true
-        founded_year:
-          type: string
-          nullable: true
-        website:
-          type: string
-          nullable: true
-          format: uri
-        hq:
-          type: string
-          nullable: true
-        operating_status:
-          type: string
-          nullable: true
-        company_type:
-          type: string
-          nullable: true
-        employees_in_crunchbase:
-          oneOf:
-            - type: string
-            - type: integer
-          nullable: true
-        employees_in_linkedin:
-          oneOf:
-            - type: string
-            - type: integer
-          nullable: true
-        last_funding_round:
-          $ref: '#/components/schemas/FundingRoundSummary'
-        ticker:
-          type: string
-          nullable: true
-        financials:
-          $ref: '#/components/schemas/FinancialSummary'
-
-    FundingRoundSummary:
-      type: object
-      additionalProperties: true
-      properties:
-        currency:
-          type: string
-          nullable: true
-        round:
-          type: string
-          nullable: true
-        value:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        date:
-          type: string
-          nullable: true
-
-    FinancialSummary:
-      type: object
-      additionalProperties: true
-      properties:
-        revenue:
-          $ref: '#/components/schemas/FinancialMetric'
-        ebitda:
-          $ref: '#/components/schemas/FinancialMetric'
-        pat:
-          $ref: '#/components/schemas/FinancialMetric'
-        market_cap:
-          $ref: '#/components/schemas/FinancialMetric'
-
-    FinancialMetric:
-      type: object
-      additionalProperties: false
-      properties:
-        currency:
-          type: string
-          nullable: true
-        value:
-          oneOf:
-            - type: number
-            - type: string
-          nullable: true
-        period:
-          type: string
-          nullable: true
-
-    ProductDetails:
-      type: object
-      additionalProperties: false
-      properties:
-        product_category:
-          type: string
-          nullable: true
-        summary:
-          type: string
-          nullable: true
-
-    ExecutiveSummarySectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Executive Summary:
-          type: object
-          additionalProperties: true
-          properties:
-            source:
-              type: array
-              items:
-                $ref: '#/components/schemas/SourceReference'
-            summary:
-              type: string
-              nullable: true
-
-    KeyInsightsSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        key_insights:
-          type: array
-          items:
-            $ref: '#/components/schemas/KeyInsightItem'
-
-    KeyInsightItem:
-      type: object
-      additionalProperties: false
-      properties:
-        insight:
-          $ref: '#/components/schemas/TitledParagraphWithSources'
-        commentary:
-          type: array
-          items:
-            $ref: '#/components/schemas/ParagraphWithSources'
-
-    ProductInsightsSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Product and services:
-          type: object
-          additionalProperties: true
-          properties:
-            product_overview:
-              $ref: '#/components/schemas/ProductOverview'
-            products_and_services:
-              type: array
-              items:
-                $ref: '#/components/schemas/ProductArea'
-        Product launches and initiatives:
-          type: object
-          additionalProperties: true
-          properties:
-            product_launches_and_initiatives:
-              $ref: '#/components/schemas/ProductLaunchesAndInitiatives'
-
-    ProductOverview:
-      type: object
-      additionalProperties: false
-      properties:
-        source:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-        summary:
-          type: string
-          nullable: true
-        screenshot_url:
-          type: string
-          nullable: true
-          format: uri
-
-    ProductArea:
-      type: object
-      additionalProperties: false
-      properties:
-        product_area:
-          type: string
-          nullable: true
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProductDetail'
-        sources:
-          type: string
-          nullable: true
-
-    ProductDetail:
-      type: object
-      additionalProperties: false
-      properties:
-        title:
-          type: string
-          nullable: true
-        summary:
-          type: string
-          nullable: true
-
-    ProductLaunchesAndInitiatives:
-      type: object
-      additionalProperties: false
-      properties:
-        released_products:
-          type: array
-          items:
-            $ref: '#/components/schemas/InitiativeItem'
-        future_announcements:
-          type: array
-          items:
-            $ref: '#/components/schemas/InitiativeItem'
-
-    InitiativeItem:
-      type: object
-      additionalProperties: false
-      properties:
-        date:
-          type: string
-          nullable: true
-        initiative:
-          type: string
-          nullable: true
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/PublishedSource'
-        summary:
-          type: array
-          items:
-            type: string
-
-    TransactionHighlightsSectionContainer:
-      type: object
-      additionalProperties: true
-      description: Transaction highlights including M&A maps, acquisition strategy, and venture investment strategy.
-
-    StrategicMovesSectionContainer:
-      type: object
-      additionalProperties: true
-      description: Strategic moves, timelines, partnerships, and related news sections.
-
-    TitledParagraphWithSources:
-      type: object
-      additionalProperties: false
-      properties:
-        title:
-          type: string
-          nullable: true
-        paragraph:
-          type: string
-          nullable: true
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-
-    ParagraphWithSources:
-      type: object
-      additionalProperties: false
-      properties:
-        paragraph:
-          type: string
-          nullable: true
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-
-    SourceReference:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          oneOf:
-            - type: integer
-            - type: string
-          nullable: true
-        title:
-          type: string
-          nullable: true
-        url:
-          type: string
-          nullable: true
-        publisher:
-          type: string
-          nullable: true
-        date:
-          type: string
-          nullable: true
-
-    PublishedSource:
-      type: object
-      additionalProperties: false
-      properties:
-        url:
-          type: string
-          nullable: true
-          format: uri
-        title:
-          type: string
-          nullable: true
-        publisher:
-          type: string
-          nullable: true
-        publishedDate:
-          type: string
-          nullable: true
-
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          additionalProperties: false
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: string
-              example: bad_request
-            message:
-              type: string
-              example: Invalid request payload.
-            details:
-              type: array
-              items:
-                $ref: '#/components/schemas/ErrorDetail'
-
-    ErrorDetail:
-      type: object
-      additionalProperties: true
-      properties:
-        field:
-          type: string
-          example: website
-        message:
-          type: string
-          example: Either website or permalink is required.

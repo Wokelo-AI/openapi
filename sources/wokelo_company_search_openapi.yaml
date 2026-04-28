@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: Company Search
+  description: Search for companies using name, website or ticker. It returns a list
+    of companies with their permalink and other attributes.
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/enterprise/company/search:
+    get:
+      tags:
+      - Supporting APIs
+      summary: Company Search
+      description: 'Source docs: company-search.md'
+      operationId: get_api_enterprise_company_search
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: '`"success"` if the request was processed successfully.'
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Company name.
+                        permalink:
+                          type: string
+                          description: Unique identifier/slug for the company.
+                        short_description:
+                          type: string
+                          description: Brief description of the company.
+                        founded_year:
+                          type: string
+                          description: Year the company was founded.
+                        ipo_status:
+                          type: string
+                          description: IPO status (e.g., `private`, `public`).
+                        hq:
+                          type: string
+                          description: Headquarters location.
+                        industries:
+                          type: string
+                          description: Industry or sector the company operates in.
+                        website:
+                          type: string
+                          description: Company website URL.
+                        ticker:
+                          type: string
+                          description: Stock ticker symbol (if applicable).
+                        country_code:
+                          type: string
+                          description: ISO country code.
+                        country:
+                          type: string
+                          description: Full country name.
+                        domain:
+                          type: string
+                          description: Company domain name.
+                        last_funding_round:
+                          type: string
+                          description: Most recent funding round (e.g., `Seed`, `Pre
+                            Seed` etc)
+                    description: List of matching company objects.
+                  count:
+                    type: integer
+                    description: Total number of results returned.
+                description: '[FROM OFFICIAL DOCS] Response schema from company-search.md.'
+                example: &id001
+                  status: success
+                  data:
+                  - name: Wokelo AI
+                    permalink: wokelo-ai
+                    short_description: Wokelo builds purpose-built AI agents for dealmaking
+                      and consulting.
+                    founded_year: '2023'
+                    ipo_status: private
+                    hq: Seattle, United States
+                    industries: AI Investment Research Platform
+                    website: https://www.wokelo.ai/
+                    ticker: ''
+                    country_code: US
+                    country: United States
+                    domain: wokelo.ai
+                    last_funding_round: Seed
+                  count: 10
+              example: *id001
+      x-source-variants:
+      - group_path: Supporting APIs
+        request_name: Company Search
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+        description: 'The search query string (e.g., company name, website or ticker).
+          Examples: Tesla OR `https://tesla.com` OR TSLA'
+      - name: search_by
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Field to search by. Supported value: `name`, `website`, `ticker`'
+      - name: company_type
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Filter by company type. Supported values: `private`, `public`,
+          `all` Note: Use `all` to return all types. (This is the default value is
+          nothing is mentioned)'
+      security:
+      - bearerAuth: []
+tags:
+- name: Supporting APIs
+  description: Supporting endpoints for uploads, status, downloads, and configuration.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

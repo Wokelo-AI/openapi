@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: Download Report
+  description: Downloads the generated report in the required format such as docx,
+    pdf, and json. The format is passed in the request body.
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/assets/download_report/:
+    post:
+      tags:
+      - Supporting APIs
+      summary: Download Report
+      description: 'Source docs: download-report.md'
+      operationId: post_api_assets_download_report
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Executive Summary:
+                    type: object
+                    properties:
+                      Executive Summary:
+                        type: object
+                        properties:
+                          summary:
+                            type: object
+                            properties:
+                              source:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: integer
+                                    title:
+                                      type: string
+                                    url:
+                                      type: string
+                                    publisher:
+                                      type: string
+                                    date:
+                                      type: string
+                                  required:
+                                  - id
+                                  - title
+                                  - url
+                                  - publisher
+                                  - date
+                            required:
+                            - source
+                        required:
+                        - summary
+                    required:
+                    - Executive Summary
+                required:
+                - Executive Summary
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example
+                  in download-report.md.'
+              example:
+                Executive Summary:
+                  Executive Summary:
+                    summary:
+                      source:
+                      - id: 1
+                        title: openPR.com L4 Self-driving Vehicle Market Current Status
+                          and Future Prospects till 2033
+                        url: https://www.openpr.com/news/4132700/l4-self-driving-vehicle-market-current-status-and-future
+                        publisher: ''
+                        date: ''
+      x-source-variants:
+      - group_path: Supporting APIs
+        request_name: Download Report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file_type:
+                  type: string
+                  description: 'Export format. Permitted values: "pdf", "docx", "json"'
+                report_id:
+                  type: integer
+                  description: Id of the report to be exported
+              description: '[FROM OFFICIAL DOCS] Request schema from download-report.md.'
+              required:
+              - file_type
+              - report_id
+      security:
+      - bearerAuth: []
+tags:
+- name: Supporting APIs
+  description: Supporting endpoints for uploads, status, downloads, and configuration.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

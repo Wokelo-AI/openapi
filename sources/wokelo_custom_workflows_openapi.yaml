@@ -1,61 +1,61 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
-  title: Wokelo Custom Workflows API
-  version: 1.0.0
-  description: |
-    Build custom research workflows in Wokelo and trigger them via API.
-
-    This endpoint is a workflow-manager wrapper that can start many different
-    custom workflows. The request body always includes a `workflow` identifier,
-    while the additional input fields vary by workflow.
-
-    The documentation explicitly lists multiple workflow IDs such as:
-    - `customer_call_synthesis_462a7bb`
-    - `fact_sheet_v1_274e768`
-    - `expert_call_synthesis_f6a6a60`
-    - `ic_memo_(direct_investments)_02918b9`
-    - `ic_memo_(fund)_e41b13a`
-    - `value_chain_v1_bac0ea9`
-    - `week_0_cdd_fact_pack_c0fd566`
-    - `martec_cim_review_memo_71a4d4a`
-    - `value_creation_e469641`
-    - `industry_research___custom_a842447`
-    - `industry_level_unit_economics_ac92754`
-    - `new_market_sizing_work`
-    - `company_teaser_ad4f4ca`
-
-    Because each workflow accepts different input fields and returns a different
-    report structure, this specification models the endpoint as a flexible
-    workflow dispatcher with representative request examples and a permissive
-    response schema anchored to the example shown in the documentation.
-
+  title: Custom Workflows
+  description: Run your pre-configured custom workflows to generate company or industry
+    reports in your specific format.
+  version: 2.0.0
+  license:
+    name: Proprietary
 servers:
-  - url: https://api.wokelo.ai
-
-security:
-  - bearerAuth: []
-
-tags:
-  - name: Custom Workflows
-    description: Trigger custom research workflows through the workflow manager.
-
+- url: https://api.wokelo.ai
 paths:
   /api/workflow_manager/start/:
     post:
       tags:
-        - Custom Workflows
-      operationId: startCustomWorkflow
-      summary: Start a custom workflow
-      description: |
-        Starts a custom Wokelo workflow using the workflow manager.
-
-        The request must include a `workflow` identifier. Additional request
-        fields depend on the selected workflow. For example:
-        - `industry_research___custom_a842447` uses `industry_research_topic`
-        - `value_creation_e469641` uses `permalink`
-
-        The response structure is workflow-specific and generally returns a
-        nested research report or workbook-like JSON object.
+      - Workflow Automation
+      summary: Custom Workflows
+      description: Run your pre-configured custom workflows to generate company or
+        industry reports in your specific format.Workflow IDs are dashboard-configured
+        values supplied by the user.
+      operationId: post_workflow_manager_custom_workflows
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  report_id:
+                    type: integer
+                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
+                      \ Report identifier returned when the workflow request succeeds."
+                description: '[FROM OFFICIAL DOCS] Response schema from company-research.md.'
+                example: &id001
+                  report_id: 123345
+              example: *id001
+        '400':
+          description: Company primer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+              example:
+                message: Invalid payload. search query is required.
+      x-source-variants:
+      - group_path: Workflow Automation
+        request_name: Company Research
+      - group_path: Workflow Automation
+        request_name: Industry Research
+      - group_path: Workflow Automation
+        request_name: Peer comparison
+      - group_path: Workflow Automation
+        request_name: Custom Workflows
       requestBody:
         required: true
         content:
@@ -63,381 +63,55 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomWorkflowRequest'
             example:
-              workflow: industry_research___custom_a842447
+              workflow: industry_custom_fc44748
               industry_research_topic: Electric vehicles
-      responses:
-        '200':
-          description: Custom workflow completed successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomWorkflowResponse'
-              example:
-                Investment Prioritization Scorecard:
-                  Opportunity Prioritization Scorecard:
-                    source:
-                      - id: 1
-                        title: Private Equity Insights TravelPerk acquires Yokoy following $200m equity raise to strengthen travel tech expansion
-                        url: https://pe-insights.com/travelperk-acquires-yokoy-following-200m-equity-raise-to-strengthen-travel-tech-expansion/
-                        publisher: ""
-                        date: ""
-                      - id: 44
-                        title: Sourced from Wokelo Database
-                        url: ""
-                        publisher: ""
-                        date: ""
-                    summary: |
-                      | **Theme** | **Business Value** | **Overall Attractiveness** |
-                      | --- | --- | --- |
-                      | Mid-Market Corporate Travel Platform | High | Strong |
-                      | Cargo Digitization and Freighter Capacity | High | Strong |
-                "Step 1: Company Information":
-                  CP - Quick snapshot_3b3f08c6-d285-4bb6-9b50-93c7e87cea9d:
-                    quick_snapshot:
-                      company_firmographics:
-                        organization:
-                          name: Air Canada
-                          logo: https://files.wokelo.ai/logo/thumbnail/air-canada.png
-                          url: https://app.wokelo.ai/dashboard/workflows/company-deep-dive-new-v2/?company=air-canada
-                        details:
-                          industry: Aerospace, Transportation, Travel
-                          founded_year: "1937"
-                          website: http://www.aircanada.com
-                          hq: Montréal, Canada
-                          operating_status: active
-                          company_type: public
-                          employees_in_crunchbase: 10000+
-                          last_funding_round:
-                            currency: USD
-                            round: Public
-                          ticker: TSX:AC
-                          financials:
-                            revenue:
-                              currency: USD
-                              value: 16299350852.78
-                              period: "2025"
-                      product_details:
-                        product_category: Airline Transportation Services
-                        summary: Air Canada provides scheduled passenger and cargo air transport services across domestic and international routes.
-                    sources:
-                      - id: 1
-                        title: S&P CapIQ
-                        url: ""
-                        publisher: ""
-                        date: ""
-                "Step 2: Company Intent Identification":
-                  Company Intent Identification:
-                    summary: |
-                      Air Canada's inorganic strategy is fundamentally driven by
-                      international network expansion, margin defense, cargo and
-                      logistics capability buildout, and loyalty/digital platform bolt-ons.
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: bad_request
-                  message: Invalid request payload.
-                  details:
-                    - field: workflow
-                      message: A valid workflow identifier is required.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: unauthorized
-                  message: Missing or invalid bearer token.
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: rate_limited
-                  message: Too many requests. Please retry later.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: internal_server_error
-                  message: An unexpected error occurred.
-
+      security:
+      - bearerAuth: []
+tags:
+- name: Workflow Automation
+  description: Workflow-driven report generation endpoints.
 components:
+  schemas:
+    CustomWorkflowRequest:
+      type: object
+      properties:
+        workbook_name:
+          type: string
+          description: Name with which the workbook will be saved
+        workflow:
+          type: string
+          description: Your workflow ID from the dashboard URL (e.g., `comp_research_f312g`
+            from *app.wokelo.ai/dashboard/workflows/comp\_research\_f312g/*)User-defined
+            custom workflow ID from the dashboard URL.
+          pattern: ^(?!company_primer$|industry_primer$|player_comparison$).+
+        permalink:
+          type: string
+          description: Crunchbase permalink of the company. Required for company-based
+            workflows.
+        website:
+          type: string
+          description: Website of the company. Required for company-based workflows.
+        industry_research_topic:
+          type: string
+          description: "`For company workflows`: Company's industry (optional\u2014\
+            leaves blank to use Wokelo's auto-detected industry) `For industry workflows`:\
+            \ Industry to analyze (required)"
+        custom_files:
+          type: array
+          items:
+            type: object
+            properties: {}
+          description: "Files to include in the report\u2014use `fileName` values\
+            \ from the upload response"
+      description: '[FROM OFFICIAL DOCS] Custom Workflow variant using a dashboard
+        workflow ID such as `industry_custom_fc44748`.'
+      required:
+      - workflow
+      example:
+        workflow: industry_custom_fc44748
+        industry_research_topic: Electric vehicles
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Bearer token sent in the Authorization header.
-
-  schemas:
-    CustomWorkflowRequest:
-      type: object
-      additionalProperties: true
-      required:
-        - workflow
-      properties:
-        workflow:
-          type: string
-          description: |
-            Workflow identifier. The documentation lists multiple custom workflow IDs,
-            such as `industry_research___custom_a842447`, `value_creation_e469641`,
-            `week_0_cdd_fact_pack_c0fd566`, and `company_teaser_ad4f4ca`.
-          example: industry_research___custom_a842447
-        industry_research_topic:
-          type: string
-          description: Representative workflow-specific input used by the Industry Attractiveness workflow.
-          example: Electric vehicles
-        permalink:
-          type: string
-          description: Representative workflow-specific input used by company-oriented workflows.
-          example: air-canada
-      description: |
-        Flexible request schema for the workflow manager. The only stable field
-        across all custom workflows is `workflow`; all other input fields are
-        workflow-specific and therefore allowed via additionalProperties.
-
-    CustomWorkflowResponse:
-      type: object
-      additionalProperties: true
-      description: |
-        Flexible workflow-specific response object.
-
-        The documentation shows a nested report structure for the example
-        `value_creation_e469641` workflow, with sections such as:
-        - Investment Prioritization Scorecard
-        - Step 1: Company Information
-        - Step 2: Company Intent Identification
-        - Step 3: Opportunity Mapping
-        - Step 4: Deep Dive into Individual Theme
-
-        Since different custom workflows can return materially different output
-        structures, this response is intentionally permissive, while selected
-        shared nested patterns are typed below.
-      properties:
-        Investment Prioritization Scorecard:
-          $ref: '#/components/schemas/SourcedSummarySectionContainer'
-        "Step 1: Company Information":
-          type: object
-          additionalProperties: true
-          properties:
-            CP - Quick snapshot_3b3f08c6-d285-4bb6-9b50-93c7e87cea9d:
-              $ref: '#/components/schemas/QuickSnapshotSection'
-        "Step 2: Company Intent Identification":
-          $ref: '#/components/schemas/SourcedSummarySectionContainer'
-        "Step 3: Opportunity Mapping":
-          $ref: '#/components/schemas/SourcedSummarySectionContainer'
-        "Step 4: Deep Dive into Individual Theme":
-          $ref: '#/components/schemas/SourcedSummarySectionContainer'
-
-    SourcedSummarySectionContainer:
-      type: object
-      additionalProperties: true
-      description: Generic report section container with nested sourced summary blocks.
-
-    QuickSnapshotSection:
-      type: object
-      additionalProperties: true
-      properties:
-        quick_snapshot:
-          type: object
-          additionalProperties: false
-          properties:
-            company_firmographics:
-              $ref: '#/components/schemas/CompanyFirmographics'
-            product_details:
-              $ref: '#/components/schemas/ProductDetails'
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-
-    CompanyFirmographics:
-      type: object
-      additionalProperties: false
-      properties:
-        organization:
-          $ref: '#/components/schemas/OrganizationRef'
-        details:
-          $ref: '#/components/schemas/FirmographicDetails'
-
-    OrganizationRef:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-          nullable: true
-        logo:
-          type: string
-          nullable: true
-          format: uri
-        url:
-          type: string
-          nullable: true
-          format: uri
-
-    FirmographicDetails:
-      type: object
-      additionalProperties: true
-      properties:
-        industry:
-          type: string
-          nullable: true
-        founded_year:
-          type: string
-          nullable: true
-        website:
-          type: string
-          nullable: true
-          format: uri
-        hq:
-          type: string
-          nullable: true
-        operating_status:
-          type: string
-          nullable: true
-        company_type:
-          type: string
-          nullable: true
-        employees_in_crunchbase:
-          oneOf:
-            - type: string
-            - type: integer
-          nullable: true
-        last_funding_round:
-          $ref: '#/components/schemas/FundingRoundSummary'
-        ticker:
-          type: string
-          nullable: true
-        financials:
-          $ref: '#/components/schemas/FinancialSummary'
-
-    FundingRoundSummary:
-      type: object
-      additionalProperties: true
-      properties:
-        currency:
-          type: string
-          nullable: true
-        round:
-          type: string
-          nullable: true
-        value:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        date:
-          type: string
-          nullable: true
-
-    FinancialSummary:
-      type: object
-      additionalProperties: true
-      properties:
-        revenue:
-          $ref: '#/components/schemas/FinancialMetric'
-        ebitda:
-          $ref: '#/components/schemas/FinancialMetric'
-        pat:
-          $ref: '#/components/schemas/FinancialMetric'
-        market_cap:
-          $ref: '#/components/schemas/FinancialMetric'
-
-    FinancialMetric:
-      type: object
-      additionalProperties: false
-      properties:
-        currency:
-          type: string
-          nullable: true
-        value:
-          oneOf:
-            - type: number
-            - type: string
-          nullable: true
-        period:
-          type: string
-          nullable: true
-
-    ProductDetails:
-      type: object
-      additionalProperties: false
-      properties:
-        product_category:
-          type: string
-          nullable: true
-        summary:
-          type: string
-          nullable: true
-
-    SourceReference:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          oneOf:
-            - type: integer
-            - type: string
-          nullable: true
-        title:
-          type: string
-          nullable: true
-        url:
-          type: string
-          nullable: true
-        publisher:
-          type: string
-          nullable: true
-        date:
-          type: string
-          nullable: true
-
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          additionalProperties: false
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: string
-              example: bad_request
-            message:
-              type: string
-              example: Invalid request payload.
-            details:
-              type: array
-              items:
-                $ref: '#/components/schemas/ErrorDetail'
-
-    ErrorDetail:
-      type: object
-      additionalProperties: true
-      properties:
-        field:
-          type: string
-          example: workflow
-        message:
-          type: string
-          example: A valid workflow identifier is required.

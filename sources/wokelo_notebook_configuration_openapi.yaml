@@ -1,0 +1,49 @@
+openapi: 3.0.3
+info:
+  title: Notebook Configuration
+  description: Retrieves and returns the settings you originally configured while
+    initiating the report.
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/wkl/notebook/configuration/:
+    post:
+      tags:
+      - Supporting APIs
+      summary: Notebook Configuration
+      description: 'Source docs: notebook-configuration.md'
+      operationId: post_api_wkl_notebook_configuration
+      responses:
+        '200':
+          description: Successful response
+      x-source-variants:
+      - group_path: Supporting APIs
+        request_name: Notebook Configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notebook_id:
+                  type: integer
+                  description: Report ID of the notebook for which the configuration
+                    is to be retrieved
+              description: '[FROM OFFICIAL DOCS] Request schema from notebook-configuration.md.'
+              required:
+              - notebook_id
+      security:
+      - bearerAuth: []
+tags:
+- name: Supporting APIs
+  description: Supporting endpoints for uploads, status, downloads, and configuration.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
