@@ -124,6 +124,25 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from market-map.md.'
               required:
               - topic
+            example:
+              topic: AI-powered CRM software
+              parameters:
+                detailed_query: B2B CRM tools leveraging AI for sales automation
+                keywords:
+                - AI
+                - CRM
+                - sales automation
+                sample_companies:
+                - salesforce
+                - hubspot
+                geography:
+                - USA
+                company_type: private
+                employee_count:
+                - 11-50
+                funding_stage:
+                - Series A
+                - Series B
       security:
       - bearerAuth: []
 tags:
@@ -135,6 +154,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Use `Authorization: Bearer <JWT>` for authenticated requests. Obtain the token from `POST /auth/token/` and pass it in the request header.'
   schemas:
     CommonUnauthorizedError:
       type: object

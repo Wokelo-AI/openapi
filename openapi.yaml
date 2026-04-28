@@ -1121,6 +1121,9 @@ paths:
               required:
               - file_type
               - report_id
+            example:
+              report_id: 84102
+              file_type: json
       security:
       - bearerAuth: []
   /api/assets/upload/:
@@ -1213,6 +1216,11 @@ paths:
               fileUUID:
                 style: form
                 explode: true
+            example:
+              files:
+              - <binary file>
+              fileUUID:
+              - 550e8400-e29b-41d4-a716-446655440000
       security:
       - bearerAuth: []
   /api/enterprise/buyer-screening/enrich/:
@@ -1287,6 +1295,14 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from buyer-screening.md.'
               required:
               - company
+            example:
+              company: acme-security
+              parameters:
+                buyer_type:
+                - strategic
+                company_type: public
+                geography:
+                - USA
       security:
       - bearerAuth: []
   /api/enterprise/company/enrich/:
@@ -1450,6 +1466,22 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from industry-deep-intelligence.md.'
               required:
               - topic
+            example:
+              topic: Enterprise SaaS security
+              sections:
+              - market_size
+              - trends_and_innovations
+              - transactions_mna
+              parameters:
+                keywords:
+                - zero trust
+                - SIEM
+                geography:
+                - USA
+                definition: B2B software focused on enterprise cybersecurity
+                sample_companies:
+                - crowdstrike
+                - sentinel
       security:
       - bearerAuth: []
   /api/enterprise/market-map/enrich/:
@@ -1568,6 +1600,25 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from market-map.md.'
               required:
               - topic
+            example:
+              topic: AI-powered CRM software
+              parameters:
+                detailed_query: B2B CRM tools leveraging AI for sales automation
+                keywords:
+                - AI
+                - CRM
+                - sales automation
+                sample_companies:
+                - salesforce
+                - hubspot
+                geography:
+                - USA
+                company_type: private
+                employee_count:
+                - 11-50
+                funding_stage:
+                - Series A
+                - Series B
       security:
       - bearerAuth: []
   /api/enterprise/request/cancel:
@@ -1600,6 +1651,8 @@ paths:
               required:
               - request_id
               description: '[DERIVED FROM EXAMPLE — not authoritative] Request schema from Postman raw body.'
+            example:
+              request_id: 5b0eff600-366f-465c-b795-68837043a2d3
       security:
       - bearerAuth: []
   /api/enterprise/target-screening/enrich/:
@@ -1705,6 +1758,16 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from target-screening.md.'
               required:
               - company
+            example:
+              company: microsoft
+              parameters:
+                detailed_query: Looking for B2B SaaS companies in the cybersecurity space
+                keywords:
+                - zero trust
+                - endpoint security
+                geography:
+                - USA
+                company_type: private
       security:
       - bearerAuth: []
   /api/news/fetch/:
@@ -1787,6 +1850,10 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from legacy-fetch-news-report.md.'
               required:
               - report_id
+            example:
+              report_id: 72053
+              page: 1
+              page_size: 500
       security:
       - bearerAuth: []
   /api/news/start/:
@@ -1860,6 +1927,9 @@ paths:
               required:
               - website
               - permalink
+            example:
+              website: wokelo.ai
+              permalink: wokelo
       security:
       - bearerAuth: []
   /api/wkl/notebook/configuration/:
@@ -1893,6 +1963,8 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from notebook-configuration.md.'
               required:
               - notebook_id
+            example:
+              notebook_id: 103737
       security:
       - bearerAuth: []
   /api/workflow_manager/start/:
@@ -1950,6 +2022,28 @@ paths:
                   player_comparison: '#/components/schemas/PeerComparisonRequest'
                   industry_custom_fc44748: '#/components/schemas/CustomWorkflowRequest'
               description: '[FROM OFFICIAL DOCS] Workflow union request body.'
+            examples:
+              company_research:
+                value:
+                  workflow: company_primer
+                  permalink: wokelo-ai
+                  workbook_name: wokelo-ai
+              custom_workflows:
+                value:
+                  workflow: industry_custom_fc44748
+                  industry_research_topic: Electric vehicles
+              industry_research:
+                value:
+                  workflow: industry_primer
+                  industry: gaming
+                  workbook_name: Industry Research - Gaming
+              peer_comparison:
+                value:
+                  workflow: player_comparison
+                  websites:
+                  - stripe.com
+                  - paypal.com
+                  workbook_name: Test report
       security:
       - bearerAuth: []
   /auth/token/:
@@ -2032,6 +2126,12 @@ paths:
               - username
               - password
               - grant_type
+            example:
+              client_id: YOUR_CLIENT_ID
+              client_secret: YOUR_CLIENT_SECRET
+              username: sam@abconsulting.com
+              password: password
+              grant_type: password
       security: []
 security:
 - bearerAuth: []
@@ -2041,6 +2141,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Use `Authorization: Bearer <JWT>` for authenticated requests. Obtain the token from `POST /auth/token/` and pass it in the request header.'
   schemas:
     CompanyInstantEnrichmentRequest:
       type: object

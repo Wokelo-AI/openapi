@@ -88,6 +88,22 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from industry-deep-intelligence.md.'
               required:
               - topic
+            example:
+              topic: Enterprise SaaS security
+              sections:
+              - market_size
+              - trends_and_innovations
+              - transactions_mna
+              parameters:
+                keywords:
+                - zero trust
+                - SIEM
+                geography:
+                - USA
+                definition: B2B software focused on enterprise cybersecurity
+                sample_companies:
+                - crowdstrike
+                - sentinel
       security:
       - bearerAuth: []
 tags:
@@ -99,6 +115,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Use `Authorization: Bearer <JWT>` for authenticated requests. Obtain the token from `POST /auth/token/` and pass it in the request header.'
   schemas:
     CommonUnauthorizedError:
       type: object

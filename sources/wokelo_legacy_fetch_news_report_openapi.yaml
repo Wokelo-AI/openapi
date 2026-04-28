@@ -88,6 +88,10 @@ paths:
               description: '[FROM OFFICIAL DOCS] Request schema from legacy-fetch-news-report.md.'
               required:
               - report_id
+            example:
+              report_id: 72053
+              page: 1
+              page_size: 500
       security:
       - bearerAuth: []
 tags:
@@ -99,6 +103,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Use `Authorization: Bearer <JWT>` for authenticated requests. Obtain the token from `POST /auth/token/` and pass it in the request header.'
   schemas:
     CommonUnauthorizedError:
       type: object

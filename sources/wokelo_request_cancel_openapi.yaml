@@ -38,6 +38,8 @@ paths:
               required:
               - request_id
               description: '[DERIVED FROM EXAMPLE — not authoritative] Request schema from Postman raw body.'
+            example:
+              request_id: 5b0eff600-366f-465c-b795-68837043a2d3
       security:
       - bearerAuth: []
 tags:
@@ -49,6 +51,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Use `Authorization: Bearer <JWT>` for authenticated requests. Obtain the token from `POST /auth/token/` and pass it in the request header.'
   schemas:
     CommonUnauthorizedError:
       type: object

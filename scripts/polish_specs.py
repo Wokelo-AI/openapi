@@ -18,6 +18,10 @@ UNAUTHORIZED_SCHEMA_NAME = "CommonUnauthorizedError"
 UNAUTHORIZED_RESPONSE_NAME = "UnauthorizedError"
 UNAUTHORIZED_RESPONSE_REF = f"#/components/responses/{UNAUTHORIZED_RESPONSE_NAME}"
 UNAUTHORIZED_SCHEMA_REF = f"#/components/schemas/{UNAUTHORIZED_SCHEMA_NAME}"
+BEARER_AUTH_DESCRIPTION = (
+    "Use `Authorization: Bearer <JWT>` for authenticated requests. "
+    "Obtain the token from `POST /auth/token/` and pass it in the request header."
+)
 
 MERGED_DESCRIPTIONS = {
     ("post", "/api/workflow_manager/start/"): (
@@ -32,6 +36,89 @@ MERGED_DESCRIPTIONS = {
         "This operation supports the Company Instant Enrichment and Company Deep Intelligence "
         "request variants using a discriminator-based request body."
     ),
+}
+
+REQUEST_EXAMPLES_BY_OPERATION_ID = {
+    "post_auth_token": {
+        "client_id": "YOUR_CLIENT_ID",
+        "client_secret": "YOUR_CLIENT_SECRET",
+        "username": "sam@abconsulting.com",
+        "password": "password",
+        "grant_type": "password",
+    },
+    "post_api_assets_download_report": {
+        "report_id": 84102,
+        "file_type": "json",
+    },
+    "post_api_assets_upload": {
+        "files": ["<binary file>"],
+        "fileUUID": ["550e8400-e29b-41d4-a716-446655440000"],
+    },
+    "post_api_enterprise_buyer-screening_enrich": {
+        "company": "acme-security",
+        "parameters": {
+            "buyer_type": ["strategic"],
+            "company_type": "public",
+            "geography": ["USA"],
+        },
+    },
+    "post_api_enterprise_industry_enrich": {
+        "topic": "Enterprise SaaS security",
+        "sections": [
+            "market_size",
+            "trends_and_innovations",
+            "transactions_mna",
+        ],
+        "parameters": {
+            "keywords": ["zero trust", "SIEM"],
+            "geography": ["USA"],
+            "definition": "B2B software focused on enterprise cybersecurity",
+            "sample_companies": ["crowdstrike", "sentinel"],
+        },
+    },
+    "post_api_enterprise_market-map_enrich": {
+        "topic": "AI-powered CRM software",
+        "parameters": {
+            "detailed_query": "B2B CRM tools leveraging AI for sales automation",
+            "keywords": ["AI", "CRM", "sales automation"],
+            "sample_companies": ["salesforce", "hubspot"],
+            "geography": ["USA"],
+            "company_type": "private",
+            "employee_count": ["11-50"],
+            "funding_stage": ["Series A", "Series B"],
+        },
+    },
+    "post_api_enterprise_request_cancel": {
+        "request_id": "5b0eff600-366f-465c-b795-68837043a2d3",
+    },
+    "post_api_enterprise_target-screening_enrich": {
+        "company": "microsoft",
+        "parameters": {
+            "detailed_query": "Looking for B2B SaaS companies in the cybersecurity space",
+            "keywords": ["zero trust", "endpoint security"],
+            "geography": ["USA"],
+            "company_type": "private",
+        },
+    },
+    "post_api_news_fetch": {
+        "report_id": 72053,
+        "page": 1,
+        "page_size": 500,
+    },
+    "post_api_news_start": {
+        "website": "wokelo.ai",
+        "permalink": "wokelo",
+    },
+    "post_api_wkl_notebook_configuration": {
+        "notebook_id": 103737,
+    },
+}
+
+SKIP_MASTER_MULTI_EXAMPLE_KEYS = {
+    ("post", "/api/enterprise/company/enrich/"),
+}
+SKIP_MASTER_MULTI_EXAMPLE_OPERATION_IDS = {
+    "post_api_enterprise_company_enrich",
 }
 
 
@@ -58,6 +145,13 @@ def ensure_components(spec: dict) -> dict:
 
 def ensure_common_unauthorized(spec: dict) -> None:
     components = ensure_components(spec)
+    security_schemes = components.setdefault("securitySchemes", {})
+    bearer_auth = security_schemes.setdefault(
+        "bearerAuth",
+        {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"},
+    )
+    bearer_auth["description"] = BEARER_AUTH_DESCRIPTION
+
     schemas = components.setdefault("schemas", {})
     responses = components.setdefault("responses", {})
     schemas[UNAUTHORIZED_SCHEMA_NAME] = {
@@ -82,6 +176,50 @@ def ensure_common_unauthorized(spec: dict) -> None:
             }
         },
     }
+
+
+def slugify_example_name(value: str) -> str:
+    slug = []
+    previous_underscore = False
+    for char in value.lower():
+        if char.isalnum():
+            slug.append(char)
+            previous_underscore = False
+        elif not previous_underscore:
+            slug.append("_")
+            previous_underscore = True
+    return "".join(slug).strip("_") or "example"
+
+
+def get_schema_example(schema: dict, spec: dict) -> dict | list | str | int | float | bool | None:
+    if not isinstance(schema, dict):
+        return None
+    if "example" in schema:
+        return schema["example"]
+    ref = schema.get("$ref")
+    if not ref or not ref.startswith("#/components/schemas/"):
+        return None
+    schema_name = ref.rsplit("/", 1)[-1]
+    component_schema = spec.get("components", {}).get("schemas", {}).get(schema_name, {})
+    return component_schema.get("example")
+
+
+def set_request_body_examples(op: dict, spec: dict) -> None:
+    request_body = op.get("requestBody")
+    if not request_body:
+        return
+
+    manual_example = REQUEST_EXAMPLES_BY_OPERATION_ID.get(op.get("operationId"))
+    for media in request_body.get("content", {}).values():
+        if manual_example is not None:
+            media.pop("examples", None)
+            media["example"] = manual_example
+            continue
+        schema_example = get_schema_example(media.get("schema", {}), spec)
+        if "examples" in media or "example" in media:
+            continue
+        if schema_example is not None:
+            media["example"] = schema_example
 
 
 def normalize_request_cancel(op: dict) -> None:
@@ -152,6 +290,8 @@ def cleanup_operation(
     if normalize_notebook:
         normalize_notebook_configuration(op)
 
+    set_request_body_examples(op, {})
+
 
 def build_source_description_map() -> dict[tuple[str, str], list[str]]:
     mapping: dict[tuple[str, str], list[str]] = {}
@@ -159,6 +299,24 @@ def build_source_description_map() -> dict[tuple[str, str], list[str]]:
         spec = load_yaml(path)
         for op_path, method, _op in iter_operations(spec):
             mapping.setdefault((method, op_path), []).append(spec["info"]["description"].strip())
+    return mapping
+
+
+def build_source_request_examples_map() -> dict[tuple[str, str], list[tuple[str, dict]]]:
+    mapping: dict[tuple[str, str], list[tuple[str, dict]]] = {}
+    for path in sorted(SOURCES_DIR.glob("*.yaml")):
+        spec = load_yaml(path)
+        title = spec.get("info", {}).get("title", path.stem)
+        for op_path, method, op in iter_operations(spec):
+            request_body = op.get("requestBody", {})
+            for media in request_body.get("content", {}).values():
+                if "examples" in media:
+                    for example_name, example_value in media["examples"].items():
+                        value = example_value.get("value")
+                        if value is not None:
+                            mapping.setdefault((method, op_path), []).append((example_name, value))
+                elif "example" in media:
+                    mapping.setdefault((method, op_path), []).append((slugify_example_name(title), media["example"]))
     return mapping
 
 
@@ -175,6 +333,7 @@ def polish_source(path: Path) -> None:
             normalize_cancel=op.get("operationId") == "post_api_enterprise_request_cancel",
             normalize_notebook=op.get("operationId") == "post_api_wkl_notebook_configuration",
         )
+        set_request_body_examples(op, spec)
 
     dump_yaml(path, spec)
 
@@ -184,7 +343,7 @@ def polish_master() -> None:
     ensure_common_unauthorized(spec)
 
     description_map = build_source_description_map()
-    description_counter = Counter(description_map)
+    source_request_examples = build_source_request_examples_map()
 
     for op_path, method, op in iter_operations(spec):
         key = (method, op_path)
@@ -201,6 +360,28 @@ def polish_master() -> None:
             normalize_cancel=op.get("operationId") == "post_api_enterprise_request_cancel",
             normalize_notebook=op.get("operationId") == "post_api_wkl_notebook_configuration",
         )
+        set_request_body_examples(op, spec)
+
+        key = (method, op_path)
+        request_body = op.get("requestBody")
+        if not request_body:
+            continue
+        for media in request_body.get("content", {}).values():
+            examples = source_request_examples.get(key, [])
+            if key in SKIP_MASTER_MULTI_EXAMPLE_KEYS or op.get("operationId") in SKIP_MASTER_MULTI_EXAMPLE_OPERATION_IDS:
+                media.pop("example", None)
+                media.pop("examples", None)
+                continue
+            if "examples" in media:
+                continue
+            if len(examples) > 1:
+                media.pop("example", None)
+                media["examples"] = {
+                    name: {"value": value}
+                    for name, value in examples
+                }
+            elif len(examples) == 1 and "example" not in media:
+                media["example"] = examples[0][1]
 
     dump_yaml(MASTER_PATH, spec)
 
