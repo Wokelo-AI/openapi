@@ -322,6 +322,23 @@ paths:
         description: End year of the date range.
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/earnings-calls/?company=tesla-motors&from_year=2021&to_year=2023\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests\nimport json\n\nurl = \"https://api.wokelo.ai/api/enterprise/company/earnings-calls/?company=tesla-motors&from_year=2021&to_year=2023\"\n\npayload = {}\nheaders = {\n  'Authorization': 'Bearer YOUR_TOKEN',\n  'Content-Type': 'application/json'\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, data=payload)\n\nprint(response.text)"
+      - label: cURL
+        lang: cURL
+        source: 'curl --location ''https://api.wokelo.ai/api/enterprise/company/earnings-calls/?company=tesla-motors&from_year=2021&to_year=2023'' \
+
+          --header ''Authorization: Bearer YOUR_TOKEN'' \
+
+          --header ''Content-Type: application/json'''
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io\"\n)\n\nfunc main() {\n\n  url := \"https://api.wokelo.ai/api/enterprise/company/earnings-calls/?company=tesla-motors&from_year=2021&to_year=2023\"\n  method := \"GET\"\n\n  client := &http.Client {\n  }\n  req, err := http.NewRequest(method, url, nil)\n\n  if err != nil {\n    fmt.Println(err)\n    return\n  }\n  req.Header.Add(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Add(\"Content-Type\", \"application/json\")\n\n  res, err := client.Do(req)\n  if err != nil {\n    fmt.Println(err)\n    return\n  }\n  defer res.Body.Close()\n\n  body, err := io.ReadAll(res.Body)\n  if err != nil {\n    fmt.Println(err)\n    return\n  }\n  fmt.Println(string(body))\n}"
 tags:
 - name: Enrichment
   description: Company and industry enrichment capabilities.

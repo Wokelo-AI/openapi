@@ -42,6 +42,22 @@ paths:
               request_id: 5b0eff600-366f-465c-b795-68837043a2d3
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"request_id\": \"5b0eff600-366f-465c-b795-68837043a2d3\"\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/request/cancel\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\", \"Content-Type\": \"application/json\"}\npayload = {\"request_id\": \"5b0eff600-366f-465c-b795-68837043a2d3\"}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/request/cancel\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+      - label: cURL
+        lang: cURL
+        source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/request/cancel \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"request_id\":\"5b0eff600-366f-465c-b795-68837043a2d3\"}'"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"bytes\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  body := []byte(`{\"request_id\":\"5b0eff600-366f-465c-b795-68837043a2d3\"}`)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/request/cancel\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class RequestCancel {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/request/cancel\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(\"{\\\"request_id\\\":\\\"5b0eff600-366f-465c-b795-68837043a2d3\\\"}\"))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
 tags:
 - name: Supporting APIs
   description: Supporting endpoints for uploads, status, downloads, and configuration.

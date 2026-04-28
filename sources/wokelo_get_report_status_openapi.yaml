@@ -86,6 +86,22 @@ paths:
         description: The id returned in response to the start report request
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/assets/get_notebook_status/?report_id=\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests, time\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\"}\nwhile True:\n    r = requests.get(\n        \"https://api.wokelo.ai/api/assets/get_notebook_status/\",\n        headers=headers,\n        params={\"report_id\": 98564}\n    )\n    data = r.json()\n    if data[\"status\"] in (\"Completed\", \"Exported\", \"No Data Found\"):\n        break\n    time.sleep(10)\nprint(data)"
+      - label: cURL
+        lang: cURL
+        source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/assets/get_notebook_status/?report_id=98564' \\\n  --header 'Authorization: Bearer YOUR_TOKEN'"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n  \"time\"\n)\n\nfunc main() {\n  for {\n    req, _ := http.NewRequest(\"GET\",\n      \"https://api.wokelo.ai/api/assets/get_notebook_status/?report_id=98564\", nil)\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n    resp, _ := http.DefaultClient.Do(req)\n    body, _ := io.ReadAll(resp.Body)\n    resp.Body.Close()\n    var result map[string]interface{}\n    json.Unmarshal(body, &result)\n    s := result[\"status\"].(string)\n    if s == \"Completed\" || s == \"Exported\" || s == \"No Data Found\" {\n      fmt.Println(string(body)); break\n    }\n    time.Sleep(10 * time.Second)\n  }\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class GetReportStatus {\n  public static void main(String[] args) throws Exception {\n    while (true) {\n      HttpRequest request = HttpRequest.newBuilder()\n          .uri(URI.create(\"https://api.wokelo.ai/api/assets/get_notebook_status/?report_id=98564\"))\n          .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n          .GET().build();\n      HttpResponse<String> response = HttpClient.newHttpClient()\n          .send(request, HttpResponse.BodyHandlers.ofString());\n      String body = response.body();\n      if (body.contains(\"Completed\") || body.contains(\"Exported\") || body.contains(\"No Data Found\")) {\n        System.out.println(body); break;\n      }\n      Thread.sleep(10000);\n    }\n  }\n}"
 tags:
 - name: Supporting APIs
   description: Supporting endpoints for uploads, status, downloads, and configuration.

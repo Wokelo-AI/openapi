@@ -89,6 +89,22 @@ paths:
               - funding
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"companies\": [\n    \"tesla-motors\",\n    \"stripe\"\n  ],\n  \"sections\": [\n    \"firmographics\",\n    \"products\",\n    \"funding\"\n  ]\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/enrich/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests, json\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\npayload = {\n    \"companies\": [\"tesla-motors\", \"stripe\"],\n    \"sections\": [\"firmographics\", \"products\", \"funding\"],\n    \"parameters\": {\n        \"custom_fields\": [\n            {\n                \"field_name\": \"AI Readiness\",\n                \"type\": \"text\",\n                \"prompt\": \"Rate this company's AI readiness on a scale of 1-10 with reasoning\"\n            }\n        ]\n    }\n}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/company/enrich/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+      - label: cURL
+        lang: cURL
+        source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/company/enrich/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"companies\": [\"tesla-motors\", \"stripe\"],\n    \"sections\": [\"firmographics\", \"products\", \"funding\"]\n  }'"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"net/http\"\n  \"io\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"companies\": []string{\"tesla-motors\", \"stripe\"},\n    \"sections\":  []string{\"firmographics\", \"products\", \"funding\"},\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/company/enrich/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class CompanyEnrichment {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"companies\\\":[\\\"tesla-motors\\\",\\\"stripe\\\"],\\\"sections\\\":[\\\"firmographics\\\",\\\"products\\\",\\\"funding\\\"]}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/company/enrich/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
 tags:
 - name: Enrichment
   description: Company and industry enrichment capabilities.

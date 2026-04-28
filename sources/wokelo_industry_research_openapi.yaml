@@ -57,6 +57,31 @@ paths:
               workbook_name: Industry Research - Gaming
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const myHeaders = new Headers();\nmyHeaders.append(\"Content-Type\", \"application/json\");\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst raw = JSON.stringify({\n  \"workflow\": \"industry_primer\",\n  \"industry\": \"gaming\",\n  \"workbook_name\": \"Industry Research - Gaming\"\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/workflow_manager/start/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: 'import requests
+
+
+          headers = {"Content-Type": "application/json", "Authorization": "Bearer YOUR_TOKEN"}
+
+          payload = {"workflow": "industry_primer", "industry": "gaming", "workbook_name": "Industry Research - Gaming"}
+
+          response = requests.post("https://api.wokelo.ai/api/workflow_manager/start/", headers=headers, json=payload)
+
+          print(response.json())'
+      - label: cURL
+        lang: cURL
+        source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/workflow_manager/start/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"workflow\":\"industry_primer\",\"industry\":\"gaming\",\"workbook_name\":\"Industry Research - Gaming\"}'"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]string{\"workflow\": \"industry_primer\", \"industry\": \"gaming\", \"workbook_name\": \"Industry Research - Gaming\"}\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/workflow_manager/start/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class IndustryResearch {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"workflow\\\":\\\"industry_primer\\\",\\\"industry\\\":\\\"gaming\\\",\\\"workbook_name\\\":\\\"Industry Research - Gaming\\\"}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/workflow_manager/start/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
 tags:
 - name: Workflow Automation
   description: Workflow-driven report generation endpoints.

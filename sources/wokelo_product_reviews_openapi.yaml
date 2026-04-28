@@ -113,6 +113,22 @@ paths:
         description: Number of records to skip before starting to return results
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/product-reviews/?company=https://www.salesforce.com/&limit=5&offset=0\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\nresponse = requests.get(\n    \"https://api.wokelo.ai/api/enterprise/company/product-reviews/\",\n    headers=headers,\n    params={\"company\": \"salesforce\", \"limit\": 5, \"offset\": 0}\n)\nprint(response.json())"
+      - label: cURL
+        lang: cURL
+        source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/enterprise/company/product-reviews/?company=salesforce&limit=5&offset=0' \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json'"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  req, _ := http.NewRequest(\"GET\",\n    \"https://api.wokelo.ai/api/enterprise/company/product-reviews/?company=salesforce&limit=5&offset=0\", nil)\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class ProductReviews {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/company/product-reviews/?company=salesforce&limit=5&offset=0\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .GET()\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
 tags:
 - name: Enrichment
   description: Company and industry enrichment capabilities.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from collections import Counter
+from copy import deepcopy
 from pathlib import Path
 
 import yaml
@@ -10,6 +10,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 MASTER_PATH = ROOT / "openapi.yaml"
 SOURCES_DIR = ROOT / "sources"
+CODE_SAMPLES_PATH = ROOT / "scripts" / "code_samples.yaml"
 
 OPERATIONS = {"get", "post", "put", "patch", "delete"}
 LOGIN_OPERATION_ID = "post_auth_token"
@@ -143,6 +144,12 @@ def ensure_components(spec: dict) -> dict:
     return spec.setdefault("components", {})
 
 
+def load_code_samples_data() -> dict:
+    if not CODE_SAMPLES_PATH.exists():
+        return {}
+    return yaml.safe_load(CODE_SAMPLES_PATH.read_text()) or {}
+
+
 def ensure_common_unauthorized(spec: dict) -> None:
     components = ensure_components(spec)
     security_schemes = components.setdefault("securitySchemes", {})
@@ -220,6 +227,13 @@ def set_request_body_examples(op: dict, spec: dict) -> None:
             continue
         if schema_example is not None:
             media["example"] = schema_example
+
+
+def set_code_samples(op: dict, samples: list[dict]) -> None:
+    if samples:
+        op["x-codeSamples"] = deepcopy(samples)
+    else:
+        op.pop("x-codeSamples", None)
 
 
 def normalize_request_cancel(op: dict) -> None:
@@ -320,9 +334,42 @@ def build_source_request_examples_map() -> dict[tuple[str, str], list[tuple[str,
     return mapping
 
 
+def build_source_code_samples_map(code_samples_data: dict) -> dict[tuple[str, str], list[dict]]:
+    mapping: dict[tuple[str, str], list[dict]] = {}
+    for entry in code_samples_data.values():
+        key = (entry["method"], entry["path"])
+        mapping.setdefault(key, []).append(entry)
+    return mapping
+
+
+def build_master_code_samples(entries: list[dict]) -> list[dict]:
+    if not entries:
+        return []
+    if len(entries) == 1:
+        return deepcopy(entries[0].get("samples", []))
+
+    merged: list[dict] = []
+    for entry in entries:
+        variant_title = entry["title"]
+        filtered_samples = [
+            sample for sample in entry.get("samples", [])
+            if sample.get("lang") in {"cURL", "Python"}
+        ]
+        if not filtered_samples:
+            filtered_samples = entry.get("samples", [])[:1]
+        for sample in filtered_samples:
+            merged.append({
+                "lang": sample["lang"],
+                "label": f"{variant_title} · {sample.get('label', sample['lang'])}",
+                "source": sample["source"],
+            })
+    return merged
+
+
 def polish_source(path: Path) -> None:
     spec = load_yaml(path)
     ensure_common_unauthorized(spec)
+    code_samples_data = load_code_samples_data()
 
     info_description = spec["info"]["description"].strip()
     for op_path, method, op in iter_operations(spec):
@@ -334,6 +381,7 @@ def polish_source(path: Path) -> None:
             normalize_notebook=op.get("operationId") == "post_api_wkl_notebook_configuration",
         )
         set_request_body_examples(op, spec)
+        set_code_samples(op, code_samples_data.get(op.get("operationId"), {}).get("samples", []))
 
     dump_yaml(path, spec)
 
@@ -344,6 +392,8 @@ def polish_master() -> None:
 
     description_map = build_source_description_map()
     source_request_examples = build_source_request_examples_map()
+    code_samples_data = load_code_samples_data()
+    source_code_samples = build_source_code_samples_map(code_samples_data)
 
     for op_path, method, op in iter_operations(spec):
         key = (method, op_path)
@@ -361,6 +411,7 @@ def polish_master() -> None:
             normalize_notebook=op.get("operationId") == "post_api_wkl_notebook_configuration",
         )
         set_request_body_examples(op, spec)
+        set_code_samples(op, build_master_code_samples(source_code_samples.get(key, [])))
 
         key = (method, op_path)
         request_body = op.get("requestBody")

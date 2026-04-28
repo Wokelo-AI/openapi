@@ -98,6 +98,23 @@ paths:
               - 550e8400-e29b-41d4-a716-446655440000
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const formdata = new FormData();\nformdata.append(\"files\", fileInput.files[0], \"lemonade.pdf\");\nformdata.append(\"fileUUID\", \"550e8400-e29b-41d4-a716-446655440000\");\n\nconst requestOptions = {\n  method: \"POST\",\n  body: formdata,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/assets/upload/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\"}\nwith open(\"lemonade.pdf\", \"rb\") as f:\n    response = requests.post(\n        \"https://api.wokelo.ai/api/assets/upload/\",\n        headers=headers,\n        files={\"files\": (\"lemonade.pdf\", f, \"application/pdf\")},\n        data={\"fileUUID\": \"550e8400-e29b-41d4-a716-446655440000\"}\n    )\nprint(response.json())"
+      - label: cURL
+        lang: cURL
+        source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/assets/upload/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --form 'files=@/path/to/lemonade.pdf' \\\n  --form 'fileUUID=550e8400-e29b-41d4-a716-446655440000'"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"bytes\"\n  \"fmt\"\n  \"io\"\n  \"mime/multipart\"\n  \"net/http\"\n  \"os\"\n)\n\nfunc main() {\n  var buf bytes.Buffer\n  w := multipart.NewWriter(&buf)\n  file, _ := os.Open(\"lemonade.pdf\")\n  defer file.Close()\n  fw, _ := w.CreateFormFile(\"files\", \"lemonade.pdf\")\n  io.Copy(fw, file)\n  w.WriteField(\"fileUUID\", \"550e8400-e29b-41d4-a716-446655440000\")\n  w.Close()\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/assets/upload/\", &buf)\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", w.FormDataContentType())\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\nimport java.nio.file.*;\n\npublic class UploadFile {\n  public static void main(String[] args) throws Exception {\n    String boundary = \"----JavaBoundary\";\n    byte[] fileBytes = Files.readAllBytes(Path.of(\"lemonade.pdf\"));\n    String bodyPart1 = \"--\" + boundary + \"\\r\\nContent-Disposition: form-data; name=\\\"files\\\"; filename=\\\"lemonade.pdf\\\"\\r\\nContent-Type: application/pdf\\r\\n\\r\\n\";\n    String bodyPart2 = \"\\r\\n--\" + boundary + \"--\";\n    byte[] body = concat(bodyPart1.getBytes(), fileBytes, bodyPart2.getBytes());\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/assets/upload/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"multipart/form-data; boundary=\" + boundary)\n        .POST(HttpRequest.BodyPublishers.ofByteArray(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n\
+          \        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n  static byte[] concat(byte[]... arrays) {\n    int len = 0; for (byte[] a : arrays) len += a.length;\n    byte[] result = new byte[len]; int pos = 0;\n    for (byte[] a : arrays) { System.arraycopy(a, 0, result, pos, a.length); pos += a.length; }\n    return result;\n  }\n}"
 tags:
 - name: Supporting APIs
   description: Supporting endpoints for uploads, status, downloads, and configuration.
