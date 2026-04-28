@@ -43,6 +43,22 @@ paths:
               notebook_id: 103737
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"notebook_id\": 103737\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/wkl/notebook/configuration/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\npayload = {\"notebook_id\": 103737}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/wkl/notebook/configuration/\",\n    headers=headers,\n    json=payload\n)\nprint(response.json())"
+      - label: cURL
+        lang: cURL
+        source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/wkl/notebook/configuration/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"notebook_id\": 103737}'"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]int{\"notebook_id\": 103737}\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/wkl/notebook/configuration/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class NotebookConfiguration {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"notebook_id\\\":103737}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/wkl/notebook/configuration/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
 tags:
 - name: Supporting APIs
   description: Supporting endpoints for uploads, status, downloads, and configuration.

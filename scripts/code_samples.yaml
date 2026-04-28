@@ -1,0 +1,589 @@
+get_api_assets_get_notebook_status:
+  doc_file: get-report-status.md
+  method: get
+  path: /api/assets/get_notebook_status/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/assets/get_notebook_status/?report_id=\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests, time\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\"}\nwhile True:\n    r = requests.get(\n        \"https://api.wokelo.ai/api/assets/get_notebook_status/\",\n        headers=headers,\n        params={\"report_id\": 98564}\n    )\n    data = r.json()\n    if data[\"status\"] in (\"Completed\", \"Exported\", \"No Data Found\"):\n        break\n    time.sleep(10)\nprint(data)"
+  - label: cURL
+    lang: cURL
+    source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/assets/get_notebook_status/?report_id=98564' \\\n  --header 'Authorization: Bearer YOUR_TOKEN'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n  \"time\"\n)\n\nfunc main() {\n  for {\n    req, _ := http.NewRequest(\"GET\",\n      \"https://api.wokelo.ai/api/assets/get_notebook_status/?report_id=98564\", nil)\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n    resp, _ := http.DefaultClient.Do(req)\n    body, _ := io.ReadAll(resp.Body)\n    resp.Body.Close()\n    var result map[string]interface{}\n    json.Unmarshal(body, &result)\n    s := result[\"status\"].(string)\n    if s == \"Completed\" || s == \"Exported\" || s == \"No Data Found\" {\n      fmt.Println(string(body)); break\n    }\n    time.Sleep(10 * time.Second)\n  }\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class GetReportStatus {\n  public static void main(String[] args) throws Exception {\n    while (true) {\n      HttpRequest request = HttpRequest.newBuilder()\n          .uri(URI.create(\"https://api.wokelo.ai/api/assets/get_notebook_status/?report_id=98564\"))\n          .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n          .GET().build();\n      HttpResponse<String> response = HttpClient.newHttpClient()\n          .send(request, HttpResponse.BodyHandlers.ofString());\n      String body = response.body();\n      if (body.contains(\"Completed\") || body.contains(\"Exported\") || body.contains(\"No Data Found\")) {\n        System.out.println(body); break;\n      }\n      Thread.sleep(10000);\n    }\n  }\n}"
+  title: Get Report Status
+get_api_enterprise_company_earnings-calls:
+  doc_file: earnings-transcripts.md
+  method: get
+  path: /api/enterprise/company/earnings-calls/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/earnings-calls/?company=tesla-motors&from_year=2021&to_year=2023\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\nimport json\n\nurl = \"https://api.wokelo.ai/api/enterprise/company/earnings-calls/?company=tesla-motors&from_year=2021&to_year=2023\"\n\npayload = {}\nheaders = {\n  'Authorization': 'Bearer YOUR_TOKEN',\n  'Content-Type': 'application/json'\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, data=payload)\n\nprint(response.text)"
+  - label: cURL
+    lang: cURL
+    source: 'curl --location ''https://api.wokelo.ai/api/enterprise/company/earnings-calls/?company=tesla-motors&from_year=2021&to_year=2023'' \
+
+      --header ''Authorization: Bearer YOUR_TOKEN'' \
+
+      --header ''Content-Type: application/json'''
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io\"\n)\n\nfunc main() {\n\n  url := \"https://api.wokelo.ai/api/enterprise/company/earnings-calls/?company=tesla-motors&from_year=2021&to_year=2023\"\n  method := \"GET\"\n\n  client := &http.Client {\n  }\n  req, err := http.NewRequest(method, url, nil)\n\n  if err != nil {\n    fmt.Println(err)\n    return\n  }\n  req.Header.Add(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Add(\"Content-Type\", \"application/json\")\n\n  res, err := client.Do(req)\n  if err != nil {\n    fmt.Println(err)\n    return\n  }\n  defer res.Body.Close()\n\n  body, err := io.ReadAll(res.Body)\n  if err != nil {\n    fmt.Println(err)\n    return\n  }\n  fmt.Println(string(body))\n}"
+  title: Fetch Earnings Transcripts
+get_api_enterprise_company_employee-reviews:
+  doc_file: employee-reviews.md
+  method: get
+  path: /api/enterprise/company/employee-reviews/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/employee-reviews/?company=salesforce&limit=50&offset=0\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\nresponse = requests.get(\n    \"https://api.wokelo.ai/api/enterprise/company/employee-reviews/\",\n    headers=headers,\n    params={\"company\": \"salesforce\", \"limit\": 50, \"offset\": 0}\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/enterprise/company/employee-reviews/?company=salesforce&limit=50&offset=0' \\\n  --header 'Authorization: Bearer YOUR_TOKEN'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  req, _ := http.NewRequest(\"GET\",\n    \"https://api.wokelo.ai/api/enterprise/company/employee-reviews/?company=salesforce&limit=50&offset=0\", nil)\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class EmployeeReviews {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/company/employee-reviews/?company=salesforce&limit=50&offset=0\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .GET()\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Employee Reviews
+get_api_enterprise_company_filings:
+  doc_file: company-filings.md
+  method: get
+  path: /api/enterprise/company/filings/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/filings/?company=tesla-motors&form=10-K&from_year=2021&to_year=2023\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\nimport json\n\nurl = \"https://api.wokelo.ai/api/enterprise/company/filings/?company=tesla-motors&form=10-K&from_year=2021&to_year=2023\"\n\npayload = {}\nheaders = {\n  'Authorization': 'Bearer YOUR_TOKEN',\n  'Content-Type': 'application/json'\n}\n\nresponse = requests.request(\"GET\", url, headers=headers, data=payload)\n\nprint(response.text)"
+  - label: cURL
+    lang: cURL
+    source: 'curl --location ''https://api.wokelo.ai/api/enterprise/company/filings/?company=tesla-motors&form=10-K&from_year=2021&to_year=2023'' \
+
+      --header ''Authorization: Bearer YOUR_TOKEN'' \
+
+      --header ''Content-Type: application/json'''
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io\"\n)\n\nfunc main() {\n\n  url := \"https://api.wokelo.ai/api/enterprise/company/filings/?company=tesla-motors&form=10-K&from_year=2021&to_year=2023\"\n  method := \"GET\"\n\n  client := &http.Client {\n  }\n  req, err := http.NewRequest(method, url, nil)\n\n  if err != nil {\n    fmt.Println(err)\n    return\n  }\n  req.Header.Add(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Add(\"Content-Type\", \"application/json\")\n\n  res, err := client.Do(req)\n  if err != nil {\n    fmt.Println(err)\n    return\n  }\n  defer res.Body.Close()\n\n  body, err := io.ReadAll(res.Body)\n  if err != nil {\n    fmt.Println(err)\n    return\n  }\n  fmt.Println(string(body))\n}"
+  title: Fetch Filings Data
+get_api_enterprise_company_news:
+  doc_file: company-news-monitoring.md
+  method: get
+  path: /api/enterprise/company/news/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/news/?company=tesla&category=PRODUCT RELATED\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\nresponse = requests.get(\n    \"https://api.wokelo.ai/api/enterprise/company/news/\",\n    headers=headers,\n    params={\"company\": \"tesla\", \"category\": \"PRODUCT RELATED\", \"limit\": 100}\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/enterprise/company/news/?company=tesla&category=PRODUCT%20RELATED' \\\n  --header 'Authorization: Bearer YOUR_TOKEN'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n  \"net/url\"\n)\n\nfunc main() {\n  params := url.Values{\"company\": {\"tesla\"}, \"category\": {\"PRODUCT RELATED\"}}\n  req, _ := http.NewRequest(\"GET\",\n    \"https://api.wokelo.ai/api/enterprise/company/news/?\"+params.Encode(), nil)\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class NewsMonitoring {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/company/news/?company=tesla&category=PRODUCT%20RELATED\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .GET()\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Company News Monitoring
+get_api_enterprise_company_product-reviews:
+  doc_file: product-reviews.md
+  method: get
+  path: /api/enterprise/company/product-reviews/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/product-reviews/?company=https://www.salesforce.com/&limit=5&offset=0\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\nresponse = requests.get(\n    \"https://api.wokelo.ai/api/enterprise/company/product-reviews/\",\n    headers=headers,\n    params={\"company\": \"salesforce\", \"limit\": 5, \"offset\": 0}\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/enterprise/company/product-reviews/?company=salesforce&limit=5&offset=0' \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  req, _ := http.NewRequest(\"GET\",\n    \"https://api.wokelo.ai/api/enterprise/company/product-reviews/?company=salesforce&limit=5&offset=0\", nil)\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class ProductReviews {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/company/product-reviews/?company=salesforce&limit=5&offset=0\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .GET()\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Product Reviews
+get_api_enterprise_company_search:
+  doc_file: company-search.md
+  method: get
+  path: /api/enterprise/company/search
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"q\": \"wokelo\"\n});\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/search?query=wokelo&search_by=name&company_type=all\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\", \"Content-Type\": \"application/json\"}\nresponse = requests.get(\n    \"https://api.wokelo.ai/api/enterprise/company/search\",\n    headers=headers,\n    params={\"query\": \"wokelo\", \"search_by\": \"name\", \"company_type\": \"all\"}\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/enterprise/company/search?query=wokelo&search_by=name&company_type=all' \\\n  --header 'Authorization: Bearer YOUR_TOKEN'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  req, _ := http.NewRequest(\"GET\",\n    \"https://api.wokelo.ai/api/enterprise/company/search?query=wokelo&search_by=name&company_type=all\", nil)\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class CompanySearch {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/company/search?query=wokelo&search_by=name&company_type=all\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .GET()\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Company Search
+get_api_enterprise_request_result:
+  doc_file: request-result.md
+  method: get
+  path: /api/enterprise/request/result/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const requestOptions = {\n  method: \"GET\",\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/request/result/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\"}\nresponse = requests.get(\n    \"https://api.wokelo.ai/api/enterprise/request/result/\",\n    headers=headers,\n    params={\"request_id\": \"11db67b6-8345-4837-950f-87bbd8d7dcbe\"}\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/enterprise/request/result/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe' \\\n  --header 'Authorization: Bearer YOUR_TOKEN'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  req, _ := http.NewRequest(\"GET\",\n    \"https://api.wokelo.ai/api/enterprise/request/result/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe\", nil)\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class RequestResult {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/request/result/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .GET().build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Request Result
+get_api_enterprise_request_status:
+  doc_file: request-status.md
+  method: get
+  path: /api/enterprise/request/status/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst requestOptions = {\n  method: \"GET\",\n  headers: myHeaders,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/request/status/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests, time\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\", \"Content-Type\": \"application/json\"}\nwhile True:\n    r = requests.get(\n        \"https://api.wokelo.ai/api/enterprise/request/status/\",\n        headers=headers,\n        params={\"request_id\": \"11db67b6-8345-4837-950f-87bbd8d7dcbe\"}\n    )\n    data = r.json()\n    if data[\"status\"] in (\"COMPLETED\", \"FAILED\"):\n        break\n    time.sleep(5)\nprint(data)"
+  - label: cURL
+    lang: cURL
+    source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/enterprise/request/status/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe' \\\n  --header 'Authorization: Bearer YOUR_TOKEN'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n  \"time\"\n)\n\nfunc main() {\n  for {\n    req, _ := http.NewRequest(\"GET\",\n      \"https://api.wokelo.ai/api/enterprise/request/status/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe\", nil)\n    req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n    resp, _ := http.DefaultClient.Do(req)\n    body, _ := io.ReadAll(resp.Body)\n    resp.Body.Close()\n    var result map[string]interface{}\n    json.Unmarshal(body, &result)\n    if result[\"status\"] == \"COMPLETED\" || result[\"status\"] == \"FAILED\" {\n      fmt.Println(string(body)); break\n    }\n    time.Sleep(5 * time.Second)\n  }\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class RequestStatus {\n  public static void main(String[] args) throws Exception {\n    while (true) {\n      HttpRequest request = HttpRequest.newBuilder()\n          .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/request/status/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe\"))\n          .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n          .GET().build();\n      HttpResponse<String> response = HttpClient.newHttpClient()\n          .send(request, HttpResponse.BodyHandlers.ofString());\n      if (response.body().contains(\"COMPLETED\") || response.body().contains(\"FAILED\")) {\n        System.out.println(response.body()); break;\n      }\n      Thread.sleep(5000);\n    }\n  }\n}"
+  title: Request Status
+post_api_assets_download_report:
+  doc_file: download-report.md
+  method: post
+  path: /api/assets/download_report/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Content-Type\", \"application/json\");\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst raw = JSON.stringify({\n  \"report_id\": 84102,\n  \"file_type\": \"json\"\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/assets/download_report/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Content-Type\": \"application/json\",\n    \"Authorization\": \"Bearer YOUR_TOKEN\"\n}\npayload = {\"report_id\": 84102, \"file_type\": \"json\"}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/assets/download_report/\",\n    headers=headers,\n    json=payload\n)\n\n# For JSON export\nprint(response.json())\n\n# For binary (pdf/docx), save to file instead:\n# with open(\"report.pdf\", \"wb\") as f:\n#     f.write(response.content)"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/assets/download_report/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"report_id\": 84102,\n    \"file_type\": \"json\"\n  }'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"report_id\": 84102,\n    \"file_type\": \"json\",\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/assets/download_report/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class DownloadReport {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"report_id\\\":84102,\\\"file_type\\\":\\\"json\\\"}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/assets/download_report/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Download Report
+post_api_assets_upload:
+  doc_file: upload-file.md
+  method: post
+  path: /api/assets/upload/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const formdata = new FormData();\nformdata.append(\"files\", fileInput.files[0], \"lemonade.pdf\");\nformdata.append(\"fileUUID\", \"550e8400-e29b-41d4-a716-446655440000\");\n\nconst requestOptions = {\n  method: \"POST\",\n  body: formdata,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/assets/upload/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\"}\nwith open(\"lemonade.pdf\", \"rb\") as f:\n    response = requests.post(\n        \"https://api.wokelo.ai/api/assets/upload/\",\n        headers=headers,\n        files={\"files\": (\"lemonade.pdf\", f, \"application/pdf\")},\n        data={\"fileUUID\": \"550e8400-e29b-41d4-a716-446655440000\"}\n    )\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/assets/upload/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --form 'files=@/path/to/lemonade.pdf' \\\n  --form 'fileUUID=550e8400-e29b-41d4-a716-446655440000'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"fmt\"\n  \"io\"\n  \"mime/multipart\"\n  \"net/http\"\n  \"os\"\n)\n\nfunc main() {\n  var buf bytes.Buffer\n  w := multipart.NewWriter(&buf)\n  file, _ := os.Open(\"lemonade.pdf\")\n  defer file.Close()\n  fw, _ := w.CreateFormFile(\"files\", \"lemonade.pdf\")\n  io.Copy(fw, file)\n  w.WriteField(\"fileUUID\", \"550e8400-e29b-41d4-a716-446655440000\")\n  w.Close()\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/assets/upload/\", &buf)\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", w.FormDataContentType())\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\nimport java.nio.file.*;\n\npublic class UploadFile {\n  public static void main(String[] args) throws Exception {\n    String boundary = \"----JavaBoundary\";\n    byte[] fileBytes = Files.readAllBytes(Path.of(\"lemonade.pdf\"));\n    String bodyPart1 = \"--\" + boundary + \"\\r\\nContent-Disposition: form-data; name=\\\"files\\\"; filename=\\\"lemonade.pdf\\\"\\r\\nContent-Type: application/pdf\\r\\n\\r\\n\";\n    String bodyPart2 = \"\\r\\n--\" + boundary + \"--\";\n    byte[] body = concat(bodyPart1.getBytes(), fileBytes, bodyPart2.getBytes());\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/assets/upload/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"multipart/form-data; boundary=\" + boundary)\n        .POST(HttpRequest.BodyPublishers.ofByteArray(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n\
+      \        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n  static byte[] concat(byte[]... arrays) {\n    int len = 0; for (byte[] a : arrays) len += a.length;\n    byte[] result = new byte[len]; int pos = 0;\n    for (byte[] a : arrays) { System.arraycopy(a, 0, result, pos, a.length); pos += a.length; }\n    return result;\n  }\n}"
+  title: Upload File
+post_api_enterprise_buyer-screening_enrich:
+  doc_file: buyer-screening.md
+  method: post
+  path: /api/enterprise/buyer-screening/enrich/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"company\": \"acme-security\",\n  \"parameters\": {\n    \"detailed_query\": \"Looking for strategic acquirers in enterprise software\",\n    \"buyer_type\": [\n      \"strategic\"\n    ],\n    \"company_type\": \"public\",\n    \"geography\": [\n      \"United States\"\n    ]\n  }\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/buyer-screening/enrich/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\npayload = {\n    \"company\": \"acme-security\",\n    \"parameters\": {\n        \"detailed_query\": \"Looking for strategic acquirers in enterprise software\",\n        \"buyer_type\": [\"strategic\"],\n        \"company_type\": \"public\",\n        \"geography\": [\"USA\"]\n    }\n}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/buyer-screening/enrich/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/buyer-screening/enrich/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"company\": \"acme-security\",\n    \"parameters\": {\n      \"buyer_type\": [\"strategic\"],\n      \"company_type\": \"public\",\n      \"geography\": [\"USA\"]\n    }\n  }'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"company\": \"acme-security\",\n    \"parameters\": map[string]interface{}{\n      \"buyer_type\":   []string{\"strategic\"},\n      \"company_type\": \"public\",\n      \"geography\":    []string{\"USA\"},\n    },\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/buyer-screening/enrich/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class BuyerScreening {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"company\\\":\\\"acme-security\\\",\\\"parameters\\\":{\\\"buyer_type\\\":[\\\"strategic\\\"],\\\"company_type\\\":\\\"public\\\",\\\"geography\\\":[\\\"USA\\\"]}}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/buyer-screening/enrich/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Buyer Screening
+post_api_enterprise_industry_enrich:
+  doc_file: industry-deep-intelligence.md
+  method: post
+  path: /api/enterprise/industry/enrich/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"topic\": \"Enterprise SaaS security\",\n  \"sections\": [\n    \"market_size\",\n    \"trends_and_innovations\",\n    \"transactions_mna\"\n  ],\n  \"parameters\": {\n    \"keywords\": [\n      \"zero trust\",\n      \"SIEM\"\n    ],\n    \"geography\": [\n      \"United States\"\n    ],\n    \"definition\": \"B2B software focused on enterprise cybersecurity\",\n    \"sample_companies\": [\n      \"crowdstrike\",\n      \"sentinel\"\n    ]\n  }\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/industry/enrich/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\npayload = {\n    \"topic\": \"Enterprise SaaS security\",\n    \"sections\": [\"market_size\", \"trends_and_innovations\", \"transactions_mna\"],\n    \"parameters\": {\n        \"keywords\": [\"zero trust\", \"SIEM\"],\n        \"geography\": [\"USA\"],\n        \"definition\": \"B2B software focused on enterprise cybersecurity\",\n        \"sample_companies\": [\"crowdstrike\", \"sentinel\"]\n    }\n}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/industry/enrich/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/industry/enrich/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"topic\": \"Enterprise SaaS security\",\n    \"sections\": [\"market_size\", \"trends_and_innovations\", \"transactions_mna\"],\n    \"parameters\": {\n      \"keywords\": [\"zero trust\", \"SIEM\"],\n      \"geography\": [\"USA\"],\n      \"definition\": \"B2B software focused on enterprise cybersecurity\",\n      \"sample_companies\": [\"crowdstrike\", \"sentinel\"]\n    }\n  }'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"topic\":    \"Enterprise SaaS security\",\n    \"sections\": []string{\"market_size\", \"trends_and_innovations\", \"transactions_mna\"},\n    \"parameters\": map[string]interface{}{\n      \"keywords\":         []string{\"zero trust\", \"SIEM\"},\n      \"geography\":        []string{\"USA\"},\n      \"definition\":       \"B2B software focused on enterprise cybersecurity\",\n      \"sample_companies\": []string{\"crowdstrike\", \"sentinel\"},\n    },\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/industry/enrich/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n\
+      \  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class IndustryIntelligence {\n  public static void main(String[] args) throws Exception {\n    String body = \"\"\"\n        {\"topic\":\"Enterprise SaaS security\",\n         \"sections\":[\"market_size\",\"trends_and_innovations\",\"transactions_mna\"],\n         \"parameters\":{\"keywords\":[\"zero trust\",\"SIEM\"],\"geography\":[\"USA\"],\n         \"definition\":\"B2B software focused on enterprise cybersecurity\",\n         \"sample_companies\":[\"crowdstrike\",\"sentinel\"]}}\n        \"\"\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/industry/enrich/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n\
+      \    System.out.println(response.body());\n  }\n}"
+  title: Industry Deep Intelligence
+post_api_enterprise_market-map_enrich:
+  doc_file: market-map.md
+  method: post
+  path: /api/enterprise/market-map/enrich/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"topic\": \"AI-powered CRM software\",\n  \"parameters\": {\n    \"detailed_query\": \"B2B CRM tools leveraging AI for sales automation\",\n    \"keywords\": [\n      \"AI\",\n      \"CRM\",\n      \"sales automation\"\n    ],\n    \"sample_companies\": [\n      \"salesforce\",\n      \"hubspot\"\n    ],\n    \"geography\": [\n      \"United States\"\n    ],\n    \"company_type\": \"private\",\n    \"employee_count\": [\"11-50\"],\n    \"founded_year\": { \"min\": 2015 },\n    \"funding_stage\": [],\n    \"total_funding\": {},\n    \"last_funding_round\": {},\n    \"revenue\": {},\n    \"ebitda\": {},\n    \"net_income\": {},\n    \"ev_ebitda\": {}\n  }\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/market-map/enrich/\"\
+      , requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\npayload = {\n    \"topic\": \"AI-powered CRM software\",\n    \"parameters\": {\n        \"detailed_query\": \"B2B CRM tools leveraging AI for sales automation\",\n        \"keywords\": [\"AI\", \"CRM\", \"sales automation\"],\n        \"sample_companies\": [\"salesforce\", \"hubspot\"],\n        \"geography\": [\"USA\"],\n        \"company_type\": \"private\",\n        \"employee_count\": [\"11-50\"],\n        \"founded_year\": {\"from\": 2015},\n        \"funding_stage\": [\"Series A\", \"Series B\"]\n    }\n}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/market-map/enrich/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/market-map/enrich/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"topic\": \"AI-powered CRM software\",\n    \"parameters\": {\n      \"company_type\": \"private\",\n      \"employee_count\": [\"11-50\"]\n    }\n  }'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"topic\": \"AI-powered CRM software\",\n    \"parameters\": map[string]interface{}{\n      \"company_type\":   \"private\",\n      \"employee_count\": []string{\"11-50\"},\n    },\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/market-map/enrich/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class MarketMap {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"topic\\\":\\\"AI-powered CRM software\\\",\\\"parameters\\\":{\\\"company_type\\\":\\\"private\\\",\\\"employee_count\\\":[\\\"11-50\\\"]}}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/market-map/enrich/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Market Map
+post_api_enterprise_request_cancel:
+  doc_file: request-cancel.md
+  method: post
+  path: /api/enterprise/request/cancel
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"request_id\": \"5b0eff600-366f-465c-b795-68837043a2d3\"\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/request/cancel\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\", \"Content-Type\": \"application/json\"}\npayload = {\"request_id\": \"5b0eff600-366f-465c-b795-68837043a2d3\"}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/request/cancel\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/request/cancel \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"request_id\":\"5b0eff600-366f-465c-b795-68837043a2d3\"}'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  body := []byte(`{\"request_id\":\"5b0eff600-366f-465c-b795-68837043a2d3\"}`)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/request/cancel\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class RequestCancel {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/request/cancel\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(\"{\\\"request_id\\\":\\\"5b0eff600-366f-465c-b795-68837043a2d3\\\"}\"))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Request Cancel
+post_api_enterprise_target-screening_enrich:
+  doc_file: target-screening.md
+  method: post
+  path: /api/enterprise/target-screening/enrich/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"company\": \"microsoft\",\n  \"parameters\": {\n    \"detailed_query\": \"Looking for B2B SaaS companies in the cybersecurity space\",\n    \"keywords\": [\"zero trust\", \"endpoint security\"],\n    \"sample_companies\": [\"crowdstrike\", \"sentinel\"],\n    \"geography\": [\"United States\"],\n    \"company_type\": \"private\",\n    \"employee_count\": [],\n    \"founded_year\": {},\n    \"funding_stage\": [],\n    \"total_funding\": {},\n    \"revenue\": {}\n  }\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/target-screening/enrich/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\", \"Content-Type\": \"application/json\"}\npayload = {\n    \"company\": \"microsoft\",\n    \"parameters\": {\n        \"detailed_query\": \"Looking for B2B SaaS companies in the cybersecurity space\",\n        \"keywords\": [\"zero trust\", \"endpoint security\"],\n        \"geography\": [\"USA\"],\n        \"company_type\": \"private\"\n    }\n}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/target-screening/enrich/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/target-screening/enrich/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"company\":\"microsoft\",\"parameters\":{\"company_type\":\"private\"}}'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"company\": \"microsoft\",\n    \"parameters\": map[string]interface{}{\n      \"company_type\": \"private\",\n      \"geography\":    []string{\"USA\"},\n    },\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/target-screening/enrich/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class TargetScreening {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"company\\\":\\\"microsoft\\\",\\\"parameters\\\":{\\\"company_type\\\":\\\"private\\\"}}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/target-screening/enrich/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Target Screening
+post_api_news_fetch:
+  doc_file: legacy-fetch-news-report.md
+  method: post
+  path: /api/news/fetch/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Content-Type\", \"application/json\");\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst raw = JSON.stringify({\n  \"report_id\": 72053\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/news/fetch/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Content-Type\": \"application/json\",\n    \"Authorization\": \"Bearer YOUR_TOKEN\"\n}\npayload = {\"report_id\": 72053, \"page\": 1, \"page_size\": 500}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/news/fetch/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/news/fetch/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"report_id\": 72053}'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  body := []byte(`{\"report_id\":72053}`)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/news/fetch/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class FetchNewsReport {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/news/fetch/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(\"{\\\"report_id\\\":72053}\"))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: '[Legacy] Fetch News Report'
+post_api_news_start:
+  doc_file: legacy-initiate-news-report.md
+  method: post
+  path: /api/news/start/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Content-Type\", \"application/json\");\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst raw = JSON.stringify({\n  \"website\": \"wokelo.ai\"\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/news/start/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Content-Type\": \"application/json\",\n    \"Authorization\": \"Bearer YOUR_TOKEN\"\n}\npayload = {\"website\": \"wokelo.ai\"}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/news/start/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/news/start/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"website\": \"wokelo.ai\"}'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  body := []byte(`{\"website\":\"wokelo.ai\"}`)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/news/start/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class InitiateNewsReport {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/news/start/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(\"{\\\"website\\\":\\\"wokelo.ai\\\"}\"))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: '[Legacy] Initiate News Report'
+post_api_wkl_notebook_configuration:
+  doc_file: notebook-configuration.md
+  method: post
+  path: /api/wkl/notebook/configuration/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"notebook_id\": 103737\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/wkl/notebook/configuration/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\npayload = {\"notebook_id\": 103737}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/wkl/notebook/configuration/\",\n    headers=headers,\n    json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/wkl/notebook/configuration/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"notebook_id\": 103737}'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]int{\"notebook_id\": 103737}\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/wkl/notebook/configuration/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class NotebookConfiguration {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"notebook_id\\\":103737}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/wkl/notebook/configuration/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Notebook Configuration
+post_auth_token:
+  doc_file: authentication.md
+  method: post
+  path: /auth/token/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const formdata = new FormData();\nformdata.append(\"username\", \"sam@abconsulting.com\");\nformdata.append(\"password\", \"password\");\nformdata.append(\"grant_type\", \"password\");\nformdata.append(\"client_id\", \"R9L25HMhvxp33N4ws2PYBqVTMclSnXKjdf8E4Mf\");\nformdata.append(\"client_secret\", \"NmwXR8KYjUnpqs2hwmHJHBLTNPV4x7DtZA5ScK\");\n\nconst requestOptions = {\n  method: \"POST\",\n  body: formdata,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/auth/token/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nformdata = {\n    \"username\": \"sam@abconsulting.com\",\n    \"password\": \"password\",\n    \"grant_type\": \"password\",\n    \"client_id\": \"YOUR_CLIENT_ID\",\n    \"client_secret\": \"YOUR_CLIENT_SECRET\",\n}\n\nresponse = requests.post(\"https://api.wokelo.ai/auth/token/\", data=formdata)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/auth/token/ \\\n  --form username=sam@abconsulting.com \\\n  --form password=password \\\n  --form grant_type=password \\\n  --form client_id=YOUR_CLIENT_ID \\\n  --form client_secret=YOUR_CLIENT_SECRET"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"net/url\"\n  \"io\"\n)\n\nfunc main() {\n  formData := url.Values{\n    \"username\":      {\"sam@abconsulting.com\"},\n    \"password\":      {\"password\"},\n    \"grant_type\":    {\"password\"},\n    \"client_id\":     {\"YOUR_CLIENT_ID\"},\n    \"client_secret\": {\"YOUR_CLIENT_SECRET\"},\n  }\n  resp, _ := http.PostForm(\"https://api.wokelo.ai/auth/token/\", formData)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\nimport java.net.URLEncoder;\nimport java.nio.charset.StandardCharsets;\n\npublic class WokeloAuth {\n  public static void main(String[] args) throws Exception {\n    String body = \"username=\" + URLEncoder.encode(\"sam@abconsulting.com\", StandardCharsets.UTF_8)\n        + \"&password=password&grant_type=password\"\n        + \"&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET\";\n\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/auth/token/\"))\n        .header(\"Content-Type\", \"application/x-www-form-urlencoded\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Login
+post_company_deep_intelligence:
+  doc_file: company-deep-intelligence.md
+  method: post
+  path: /api/enterprise/company/enrich/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"companies\": [\n    \"tesla-motors\",\n    \"stripe\"\n  ],\n  \"sections\": [\n    \"products_and_services\",\n    \"product_launches\"\n  ],\n  \"parameters\": {\n    \"custom_fields\": [\n      {\n        \"field_name\": \"AI Readiness\",\n        \"type\": \"text\",\n        \"prompt\": \"Rate this company's AI readiness on a scale of 1-10 with reasoning\"\n      }\n    ]\n  }\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/enrich/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\npayload = {\n    \"companies\": [\"tesla-motors\", \"stripe\"],\n    \"sections\": [\"products_and_services\", \"product_launches\"],\n    \"parameters\": {\n        \"custom_fields\": [\n            {\n                \"field_name\": \"AI Readiness\",\n                \"type\": \"text\",\n                \"prompt\": \"Rate this company's AI readiness on a scale of 1-10 with reasoning\"\n            }\n        ]\n    }\n}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/company/enrich/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/company/enrich/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"companies\": [\"tesla-motors\", \"stripe\"],\n    \"sections\": [\"products_and_services\", \"product_launches\"],\n    \"parameters\": {\n      \"custom_fields\": [\n        {\n          \"field_name\": \"AI Readiness\",\n          \"type\": \"text\",\n          \"prompt\": \"Rate this company'\\''s AI readiness on a scale of 1-10 with reasoning\"\n        }\n      ]\n    }\n  }'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"companies\": []string{\"tesla-motors\", \"stripe\"},\n    \"sections\":  []string{\"products_and_services\", \"product_launches\"},\n    \"parameters\": map[string]interface{}{\n      \"custom_fields\": []map[string]string{\n        {\"field_name\": \"AI Readiness\", \"type\": \"text\", \"prompt\": \"Rate this company's AI readiness on a scale of 1-10 with reasoning\"},\n      },\n    },\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/company/enrich/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class CompanyDeepIntelligence {\n  public static void main(String[] args) throws Exception {\n    String body = \"\"\"\n        {\"companies\":[\"tesla-motors\",\"stripe\"],\n         \"sections\":[\"products_and_services\",\"product_launches\"],\n         \"parameters\":{\"custom_fields\":[{\"field_name\":\"AI Readiness\",\"type\":\"text\",\"prompt\":\"Rate this company's AI readiness on a scale of 1-10 with reasoning\"}]}}\n        \"\"\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/company/enrich/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n\
+      \  }\n}"
+  title: Company Deep Intelligence
+post_company_instant_enrichment:
+  doc_file: company-instant-enrichment.md
+  method: post
+  path: /api/enterprise/company/enrich/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"companies\": [\n    \"tesla-motors\",\n    \"stripe\"\n  ],\n  \"sections\": [\n    \"firmographics\",\n    \"products\",\n    \"funding\"\n  ]\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/company/enrich/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: "import requests, json\n\nheaders = {\n    \"Authorization\": \"Bearer YOUR_TOKEN\",\n    \"Content-Type\": \"application/json\"\n}\npayload = {\n    \"companies\": [\"tesla-motors\", \"stripe\"],\n    \"sections\": [\"firmographics\", \"products\", \"funding\"],\n    \"parameters\": {\n        \"custom_fields\": [\n            {\n                \"field_name\": \"AI Readiness\",\n                \"type\": \"text\",\n                \"prompt\": \"Rate this company's AI readiness on a scale of 1-10 with reasoning\"\n            }\n        ]\n    }\n}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/company/enrich/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/company/enrich/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"companies\": [\"tesla-motors\", \"stripe\"],\n    \"sections\": [\"firmographics\", \"products\", \"funding\"]\n  }'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"net/http\"\n  \"io\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"companies\": []string{\"tesla-motors\", \"stripe\"},\n    \"sections\":  []string{\"firmographics\", \"products\", \"funding\"},\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/company/enrich/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class CompanyEnrichment {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"companies\\\":[\\\"tesla-motors\\\",\\\"stripe\\\"],\\\"sections\\\":[\\\"firmographics\\\",\\\"products\\\",\\\"funding\\\"]}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/company/enrich/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Company Instant Enrichment
+post_workflow_manager_company_research:
+  doc_file: company-research.md
+  method: post
+  path: /api/workflow_manager/start/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Content-Type\", \"application/json\");\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst raw = JSON.stringify({\n  \"workflow\": \"company_primer\",\n  \"permalink\": \"wokelo-ai\",\n  \"workbook_name\": \"wokelo-ai\"\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/workflow_manager/start/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: 'import requests
+
+
+      headers = {"Content-Type": "application/json", "Authorization": "Bearer YOUR_TOKEN"}
+
+      payload = {"workflow": "company_primer", "permalink": "wokelo-ai", "workbook_name": "wokelo-ai"}
+
+      response = requests.post("https://api.wokelo.ai/api/workflow_manager/start/", headers=headers, json=payload)
+
+      print(response.json())'
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/workflow_manager/start/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"workflow\":\"company_primer\",\"permalink\":\"wokelo-ai\",\"workbook_name\":\"wokelo-ai\"}'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]string{\"workflow\": \"company_primer\", \"permalink\": \"wokelo-ai\", \"workbook_name\": \"wokelo-ai\"}\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/workflow_manager/start/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class CompanyResearch {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"workflow\\\":\\\"company_primer\\\",\\\"permalink\\\":\\\"wokelo-ai\\\",\\\"workbook_name\\\":\\\"wokelo-ai\\\"}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/workflow_manager/start/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Company Research
+post_workflow_manager_custom_workflows:
+  doc_file: custom-workflows.md
+  method: post
+  path: /api/workflow_manager/start/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Content-Type\", \"application/json\");\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst raw = JSON.stringify({\n  \"workflow\": \"industry_custom_fc44748\",\n  \"industry_research_topic\": \"Electric vehicles\"\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/workflow_manager/start/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: 'import requests
+
+
+      headers = {"Content-Type": "application/json", "Authorization": "Bearer YOUR_TOKEN"}
+
+      payload = {"workflow": "industry_custom_fc44748", "industry_research_topic": "Electric vehicles"}
+
+      response = requests.post("https://api.wokelo.ai/api/workflow_manager/start/", headers=headers, json=payload)
+
+      print(response.json())'
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/workflow_manager/start/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"workflow\":\"industry_custom_fc44748\",\"industry_research_topic\":\"Electric vehicles\"}'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]string{\"workflow\": \"industry_custom_fc44748\", \"industry_research_topic\": \"Electric vehicles\"}\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/workflow_manager/start/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class CustomWorkflows {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"workflow\\\":\\\"industry_custom_fc44748\\\",\\\"industry_research_topic\\\":\\\"Electric vehicles\\\"}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/workflow_manager/start/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Custom Workflows
+post_workflow_manager_industry_research:
+  doc_file: industry-research.md
+  method: post
+  path: /api/workflow_manager/start/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Content-Type\", \"application/json\");\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst raw = JSON.stringify({\n  \"workflow\": \"industry_primer\",\n  \"industry\": \"gaming\",\n  \"workbook_name\": \"Industry Research - Gaming\"\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/workflow_manager/start/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: 'import requests
+
+
+      headers = {"Content-Type": "application/json", "Authorization": "Bearer YOUR_TOKEN"}
+
+      payload = {"workflow": "industry_primer", "industry": "gaming", "workbook_name": "Industry Research - Gaming"}
+
+      response = requests.post("https://api.wokelo.ai/api/workflow_manager/start/", headers=headers, json=payload)
+
+      print(response.json())'
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/workflow_manager/start/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"workflow\":\"industry_primer\",\"industry\":\"gaming\",\"workbook_name\":\"Industry Research - Gaming\"}'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]string{\"workflow\": \"industry_primer\", \"industry\": \"gaming\", \"workbook_name\": \"Industry Research - Gaming\"}\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/workflow_manager/start/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class IndustryResearch {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"workflow\\\":\\\"industry_primer\\\",\\\"industry\\\":\\\"gaming\\\",\\\"workbook_name\\\":\\\"Industry Research - Gaming\\\"}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/workflow_manager/start/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Industry Research
+post_workflow_manager_peer_comparison:
+  doc_file: peer-comparison.md
+  method: post
+  path: /api/workflow_manager/start/
+  samples:
+  - label: JavaScript - Fetch
+    lang: JavaScript
+    source: "const myHeaders = new Headers();\nmyHeaders.append(\"Content-Type\", \"application/json\");\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\n\nconst raw = JSON.stringify({\n  \"workflow\": \"player_comparison\",\n  \"websites\": [\n    \"stripe.com\",\n    \"paypal.com\"\n  ],\n  \"workbook_name\": \"Test report\"\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/workflow_manager/start/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+  - label: Python
+    lang: Python
+    source: 'import requests
+
+
+      headers = {"Content-Type": "application/json", "Authorization": "Bearer YOUR_TOKEN"}
+
+      payload = {"workflow": "player_comparison", "websites": ["stripe.com", "paypal.com"], "workbook_name": "Test report"}
+
+      response = requests.post("https://api.wokelo.ai/api/workflow_manager/start/", headers=headers, json=payload)
+
+      print(response.json())'
+  - label: cURL
+    lang: cURL
+    source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/workflow_manager/start/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"workflow\":\"player_comparison\",\"websites\":[\"stripe.com\",\"paypal.com\"],\"workbook_name\":\"Test report\"}'"
+  - label: Go
+    lang: Go
+    source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"workflow\":      \"player_comparison\",\n    \"websites\":      []string{\"stripe.com\", \"paypal.com\"},\n    \"workbook_name\": \"Test report\",\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/workflow_manager/start/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+  - label: Java
+    lang: Java
+    source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class PeerComparison {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"workflow\\\":\\\"player_comparison\\\",\\\"websites\\\":[\\\"stripe.com\\\",\\\"paypal.com\\\"],\\\"workbook_name\\\":\\\"Test report\\\"}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/workflow_manager/start/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
+  title: Peer Comparison

@@ -16,6 +16,7 @@ The canonical spec is **`openapi.yaml`** at the repo root. A pre-bundled single-
 | `redocly.yaml` | Linter configuration |
 | `.github/workflows/validate.yml` | CI validation + GitHub Pages deploy |
 | `scripts/polish_specs.py` | Normalizes public-facing descriptions, auth error coverage, and known docs inconsistencies across the master and sources |
+| `scripts/code_samples.yaml` | Repo-local cache of request code samples extracted and normalized from the official docs, used to populate `x-codeSamples` in Redoc |
 
 ## Coverage
 

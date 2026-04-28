@@ -95,6 +95,22 @@ paths:
               password: password
               grant_type: password
       security: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const formdata = new FormData();\nformdata.append(\"username\", \"sam@abconsulting.com\");\nformdata.append(\"password\", \"password\");\nformdata.append(\"grant_type\", \"password\");\nformdata.append(\"client_id\", \"R9L25HMhvxp33N4ws2PYBqVTMclSnXKjdf8E4Mf\");\nformdata.append(\"client_secret\", \"NmwXR8KYjUnpqs2hwmHJHBLTNPV4x7DtZA5ScK\");\n\nconst requestOptions = {\n  method: \"POST\",\n  body: formdata,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/auth/token/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests\n\nformdata = {\n    \"username\": \"sam@abconsulting.com\",\n    \"password\": \"password\",\n    \"grant_type\": \"password\",\n    \"client_id\": \"YOUR_CLIENT_ID\",\n    \"client_secret\": \"YOUR_CLIENT_SECRET\",\n}\n\nresponse = requests.post(\"https://api.wokelo.ai/auth/token/\", data=formdata)\nprint(response.json())"
+      - label: cURL
+        lang: cURL
+        source: "curl --request POST \\\n  --url https://api.wokelo.ai/auth/token/ \\\n  --form username=sam@abconsulting.com \\\n  --form password=password \\\n  --form grant_type=password \\\n  --form client_id=YOUR_CLIENT_ID \\\n  --form client_secret=YOUR_CLIENT_SECRET"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"net/url\"\n  \"io\"\n)\n\nfunc main() {\n  formData := url.Values{\n    \"username\":      {\"sam@abconsulting.com\"},\n    \"password\":      {\"password\"},\n    \"grant_type\":    {\"password\"},\n    \"client_id\":     {\"YOUR_CLIENT_ID\"},\n    \"client_secret\": {\"YOUR_CLIENT_SECRET\"},\n  }\n  resp, _ := http.PostForm(\"https://api.wokelo.ai/auth/token/\", formData)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\nimport java.net.URLEncoder;\nimport java.nio.charset.StandardCharsets;\n\npublic class WokeloAuth {\n  public static void main(String[] args) throws Exception {\n    String body = \"username=\" + URLEncoder.encode(\"sam@abconsulting.com\", StandardCharsets.UTF_8)\n        + \"&password=password&grant_type=password\"\n        + \"&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET\";\n\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/auth/token/\"))\n        .header(\"Content-Type\", \"application/x-www-form-urlencoded\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
 tags:
 - name: Authentication
   description: Token issuance and authentication entry points.

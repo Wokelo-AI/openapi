@@ -59,6 +59,22 @@ paths:
         description: 'The unique identifier of the async request whose status is being checked. Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const requestOptions = {\n  method: \"GET\",\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/request/result/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\"}\nresponse = requests.get(\n    \"https://api.wokelo.ai/api/enterprise/request/result/\",\n    headers=headers,\n    params={\"request_id\": \"11db67b6-8345-4837-950f-87bbd8d7dcbe\"}\n)\nprint(response.json())"
+      - label: cURL
+        lang: cURL
+        source: "curl --request GET \\\n  --url 'https://api.wokelo.ai/api/enterprise/request/result/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe' \\\n  --header 'Authorization: Bearer YOUR_TOKEN'"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  req, _ := http.NewRequest(\"GET\",\n    \"https://api.wokelo.ai/api/enterprise/request/result/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe\", nil)\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  body, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(body))\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class RequestResult {\n  public static void main(String[] args) throws Exception {\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/request/result/?request_id=11db67b6-8345-4837-950f-87bbd8d7dcbe\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .GET().build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
 tags:
 - name: Supporting APIs
   description: Supporting endpoints for uploads, status, downloads, and configuration.

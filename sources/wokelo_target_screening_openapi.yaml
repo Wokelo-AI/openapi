@@ -123,6 +123,22 @@ paths:
                 company_type: private
       security:
       - bearerAuth: []
+      x-codeSamples:
+      - label: JavaScript - Fetch
+        lang: JavaScript
+        source: "const myHeaders = new Headers();\nmyHeaders.append(\"Authorization\", \"Bearer YOUR_TOKEN\");\nmyHeaders.append(\"Content-Type\", \"application/json\");\n\nconst raw = JSON.stringify({\n  \"company\": \"microsoft\",\n  \"parameters\": {\n    \"detailed_query\": \"Looking for B2B SaaS companies in the cybersecurity space\",\n    \"keywords\": [\"zero trust\", \"endpoint security\"],\n    \"sample_companies\": [\"crowdstrike\", \"sentinel\"],\n    \"geography\": [\"United States\"],\n    \"company_type\": \"private\",\n    \"employee_count\": [],\n    \"founded_year\": {},\n    \"funding_stage\": [],\n    \"total_funding\": {},\n    \"revenue\": {}\n  }\n});\n\nconst requestOptions = {\n  method: \"POST\",\n  headers: myHeaders,\n  body: raw,\n  redirect: \"follow\"\n};\n\nfetch(\"https://api.wokelo.ai/api/enterprise/target-screening/enrich/\", requestOptions)\n  .then((response) => response.text())\n  .then((result) => console.log(result))\n  .catch((error) => console.error(error));"
+      - label: Python
+        lang: Python
+        source: "import requests\n\nheaders = {\"Authorization\": \"Bearer YOUR_TOKEN\", \"Content-Type\": \"application/json\"}\npayload = {\n    \"company\": \"microsoft\",\n    \"parameters\": {\n        \"detailed_query\": \"Looking for B2B SaaS companies in the cybersecurity space\",\n        \"keywords\": [\"zero trust\", \"endpoint security\"],\n        \"geography\": [\"USA\"],\n        \"company_type\": \"private\"\n    }\n}\nresponse = requests.post(\n    \"https://api.wokelo.ai/api/enterprise/target-screening/enrich/\",\n    headers=headers, json=payload\n)\nprint(response.json())"
+      - label: cURL
+        lang: cURL
+        source: "curl --request POST \\\n  --url https://api.wokelo.ai/api/enterprise/target-screening/enrich/ \\\n  --header 'Authorization: Bearer YOUR_TOKEN' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\"company\":\"microsoft\",\"parameters\":{\"company_type\":\"private\"}}'"
+      - label: Go
+        lang: Go
+        source: "package main\n\nimport (\n  \"bytes\"\n  \"encoding/json\"\n  \"fmt\"\n  \"io\"\n  \"net/http\"\n)\n\nfunc main() {\n  payload := map[string]interface{}{\n    \"company\": \"microsoft\",\n    \"parameters\": map[string]interface{}{\n      \"company_type\": \"private\",\n      \"geography\":    []string{\"USA\"},\n    },\n  }\n  body, _ := json.Marshal(payload)\n  req, _ := http.NewRequest(\"POST\", \"https://api.wokelo.ai/api/enterprise/target-screening/enrich/\", bytes.NewBuffer(body))\n  req.Header.Set(\"Authorization\", \"Bearer YOUR_TOKEN\")\n  req.Header.Set(\"Content-Type\", \"application/json\")\n  resp, _ := http.DefaultClient.Do(req)\n  defer resp.Body.Close()\n  respBody, _ := io.ReadAll(resp.Body)\n  fmt.Println(string(respBody))\n}"
+      - label: Java
+        lang: Java
+        source: "import java.net.URI;\nimport java.net.http.*;\n\npublic class TargetScreening {\n  public static void main(String[] args) throws Exception {\n    String body = \"{\\\"company\\\":\\\"microsoft\\\",\\\"parameters\\\":{\\\"company_type\\\":\\\"private\\\"}}\";\n    HttpRequest request = HttpRequest.newBuilder()\n        .uri(URI.create(\"https://api.wokelo.ai/api/enterprise/target-screening/enrich/\"))\n        .header(\"Authorization\", \"Bearer YOUR_TOKEN\")\n        .header(\"Content-Type\", \"application/json\")\n        .POST(HttpRequest.BodyPublishers.ofString(body))\n        .build();\n    HttpResponse<String> response = HttpClient.newHttpClient()\n        .send(request, HttpResponse.BodyHandlers.ofString());\n    System.out.println(response.body());\n  }\n}"
 tags:
 - name: Discovery
   description: Discovery workflows such as market maps and screening.
