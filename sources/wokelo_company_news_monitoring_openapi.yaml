@@ -1,342 +1,138 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
-  title: Wokelo Company News Monitoring API
-  version: 1.0.0
-  description: |
-    Fetch the latest news articles for a given company, enriched with AI-generated
-    summaries, event categories, publisher metadata, and article text.
-
-    Results are returned synchronously in the response.
-
+  title: Company News Monitoring
+  description: The Monitoring API fetches the latest news articles for a given company,
+    enriched with AI-generated summaries, categories and publisher details. Optionally,
+    you can refine the output by specifying date range, publisher list, blacklisted
+    publishers, article limit, and news categories. Results are returned in the API
+    response.
+  version: 2.0.0
+  license:
+    name: Proprietary
 servers:
-  - url: https://api.wokelo.ai
-
-security:
-  - bearerAuth: []
-
-tags:
-  - name: Company News Monitoring
-    description: News retrieval and filtering for a specific company.
-
+- url: https://api.wokelo.ai
 paths:
   /api/enterprise/company/news/:
     get:
       tags:
-        - Company News Monitoring
-      operationId: getCompanyNews
-      summary: Fetch company news articles
-      description: |
-        Returns recent news articles for a specified company, enriched with AI-generated
-        summaries, event categories, metadata, and scraped article text.
-
-        Supports filtering by date range, category, publisher allowlist, publisher
-        blacklist, pagination, and result limit.
-
-        Note: the documentation examples encode some multi-value filters directly
-        into query strings. This spec models those filters conservatively as strings
-        rather than assuming a repeated-parameter or array-based wire format.
-      parameters:
-        - name: company
-          in: query
-          required: true
-          description: Company permalink or identifier to monitor.
-          schema:
-            type: string
-          example: tesla
-        - name: blacklisted
-          in: query
-          required: false
-          description: |
-            Blacklisted publisher URL or encoded value. Documentation shows URL-encoded
-            string input rather than a formally typed array.
-          schema:
-            type: string
-          example: https://www.prnewswire.com/
-        - name: limit
-          in: query
-          required: false
-          description: Maximum number of results to return.
-          schema:
-            type: integer
-            default: 100
-            minimum: 1
-          example: 100
-        - name: start_date
-          in: query
-          required: false
-          description: Start date filter in YYYY-MM-DD format.
-          schema:
-            type: string
-            format: date
-          example: 2025-01-01
-        - name: end_date
-          in: query
-          required: false
-          description: End date filter in YYYY-MM-DD format.
-          schema:
-            type: string
-            format: date
-          example: 2026-03-15
-        - name: category
-          in: query
-          required: false
-          description: |
-            News category filter. Documentation examples show comma-separated values
-            in a single query string.
-          schema:
-            type: string
-          example: PARTNERSHIPS
-        - name: offset
-          in: query
-          required: false
-          description: Pagination offset.
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
-          example: 0
-        - name: publishers
-          in: query
-          required: false
-          description: |
-            Publisher URL filter. Documentation shows URL string values in the query.
-          schema:
-            type: string
-          example: https://www.bloomberg.com/
+      - Monitoring
+      summary: Company News Monitoring
+      description: 'Source docs: company-news-monitoring.md'
+      operationId: get_api_enterprise_company_news
       responses:
         '200':
-          description: Company news fetched successfully
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompanyNewsResponse'
-              example:
-                status: success
-                data:
-                  - ai_summary: Tesla Inc.'s energy division was granted a license to supply electricity in the UK.
-                    type: Partnerships & Alliances
-                    url: https://www.bloomberg.com/news/articles/2026-03-12/tesla-s-energy-division-gets-uk-license-to-supply-electricity
-                    title: Tesla’s Energy Division Gets UK License to Supply Electricity
-                    scraped_text: Tesla Inc.’s energy division has been granted a license to supply electricity in the UK.
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: '`"success"` if the request was processed successfully.'
+                  data:
+                    type: array
+                    items: {}
+                    description: List of news
+                  count:
+                    type: integer
+                    description: Total number of results returned.
+                description: '[FROM OFFICIAL DOCS] Response schema from company-news-monitoring.md.'
+                example: &id001
+                  status: success
+                  data:
+                  - ai_summary: 'Nordea Investment Management AB reduced its stake
+                      in Tesla, Inc. by 8.4% in the fourth quarter, according to its
+                      SEC filing. Several institutional investors increased their
+                      holdings, and Tesla reported quarterly earnings with a net margin
+                      of 4%, revenue of $24.90 billion, and an EPS of $0.50. '
+                    type: Secondary Transactions
+                    url: https://www.defenseworld.net/2026/03/23/nordea-investment-management-ab-lowers-position-in-tesla-inc-tsla.html
+                    title: Nordea Investment Management AB Lowers Position in Tesla,
+                      Inc. $TSLA
                     company_name: Tesla
-                    publisher: bloomberg
-                    published_date: '2026-03-12 07:55:50'
+                    publisher: defenseworld
+                    published_date: '2026-03-23 10:52:44'
                     source: Wokelo
-                    author: Priscila Azevedo Rocha
+                    author: Defense World Staff
                     countries:
-                      - GBR
+                    - USA
                     sentiment: Neutral
-                    company_names:
-                      - name: Tesla
-                        website: http://tesla-pa.com/
-                    primary_tag: Partnerships & Alliances
+                    primary_tag: Secondary Transactions
                     original_language: EN
-                    secondary_tags: []
+                    secondary_tags:
+                    - Earnings Releases
+                    - Revenue & Growth Metrics
+                    - Guidance & Forecast Revisions
                     newsworthiness_impact: Medium
-                    primary_industry: C&I Renewable Supply & Green Tariffs
-                    secondary_industry: []
-                count: 1
-                total: 1
-                limit: 100
-                offset: 0
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: bad_request
-                  message: Invalid query parameters.
-                  details:
-                    - field: company
-                      message: Company is required.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: unauthorized
-                  message: Missing or invalid bearer token.
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: rate_limited
-                  message: Too many requests. Please retry later.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: internal_server_error
-                  message: An unexpected error occurred.
-
+                  count: 4
+              example: *id001
+      x-source-variants:
+      - group_path: Monitoring
+        request_name: Company News Monitoring
+      parameters:
+      - name: blacklisted
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Comma-separated list of publisher domains to exclude from results.
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Comma-separated list of news categories to filter by. [View](https://wkemails.blob.core.windows.net/clients/%28%27808dda00-141d-4952-b44c-c50bd41c2ce3%27%2C%29/news_category_names.csv)
+          complete list of all the supported news categories.
+      - name: company
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Company permalink or a valid company URL for which news articles
+          need to be fetched (e.g., `tesla` or `https://www.tesla.com/`)
+      - name: end_date
+        in: query
+        required: false
+        schema:
+          type: string
+        description: End date for the timeframe to consider when fetching news (e.g.,
+          `2024-12-31`)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Maximum number of news articles to return Default = 100 Max value=
+          1000
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Number of news to skip before starting to return results
+      - name: publishers
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Comma-separated list of publisher domains whose articles will
+          be included.
+      - name: start_date
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Start date for the timeframe to consider when fetching news (e.g.,
+          `2024-01-01`)
+      security:
+      - bearerAuth: []
+tags:
+- name: Monitoring
+  description: Monitoring and legacy news-report workflows.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Bearer token sent in the Authorization header.
-
-  schemas:
-    CompanyNewsResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - status
-        - data
-        - count
-        - total
-        - limit
-        - offset
-      properties:
-        status:
-          type: string
-          example: success
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/CompanyNewsArticle'
-        count:
-          type: integer
-          example: 4
-        total:
-          type: integer
-          example: 4
-        limit:
-          type: integer
-          example: 100
-        offset:
-          type: integer
-          example: 0
-
-    CompanyNewsArticle:
-      type: object
-      additionalProperties: true
-      properties:
-        ai_summary:
-          type: string
-          nullable: true
-        type:
-          type: string
-          nullable: true
-        url:
-          type: string
-          nullable: true
-          format: uri
-        title:
-          type: string
-          nullable: true
-        scraped_text:
-          type: string
-          nullable: true
-        company_name:
-          type: string
-          nullable: true
-        publisher:
-          type: string
-          nullable: true
-        published_date:
-          type: string
-          nullable: true
-        source:
-          type: string
-          nullable: true
-        author:
-          oneOf:
-            - type: string
-            - type: array
-              items:
-                type: string
-          nullable: true
-        countries:
-          type: array
-          items:
-            type: string
-        sentiment:
-          type: string
-          nullable: true
-        company_names:
-          type: array
-          items:
-            $ref: '#/components/schemas/ReferencedCompany'
-        primary_tag:
-          type: string
-          nullable: true
-        original_language:
-          type: string
-          nullable: true
-        secondary_tags:
-          type: array
-          items:
-            type: string
-        newsworthiness_impact:
-          type: string
-          nullable: true
-        primary_industry:
-          type: string
-          nullable: true
-        secondary_industry:
-          type: array
-          items:
-            type: string
-
-    ReferencedCompany:
-      type: object
-      additionalProperties: false
-      properties:
-        name:
-          type: string
-          nullable: true
-        website:
-          type: string
-          nullable: true
-          format: uri
-
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          additionalProperties: false
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: string
-              example: bad_request
-            message:
-              type: string
-              example: Invalid query parameters.
-            details:
-              type: array
-              items:
-                $ref: '#/components/schemas/ErrorDetail'
-
-    ErrorDetail:
-      type: object
-      additionalProperties: true
-      properties:
-        field:
-          type: string
-          example: company
-        message:
-          type: string
-          example: Company is required.

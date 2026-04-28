@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: '[Legacy] Initiate News Report'
+  description: This endpoint initiates news report on a company
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/news/start/:
+    post:
+      tags:
+      - Monitoring
+      summary: '[Legacy] Initiate News Report'
+      description: 'Source docs: legacy-initiate-news-report.md'
+      operationId: post_api_news_start
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  report_id:
+                    type: integer
+                required:
+                - report_id
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example
+                  in legacy-initiate-news-report.md.'
+              example:
+                report_id: 2000156
+        '404':
+          description: Get news report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+              example:
+                message: Invalid payload. permalink or website required.
+      x-source-variants:
+      - group_path: Monitoring
+        request_name: '[Legacy] Initiate News Report'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                whitelisted_domains:
+                  type: array
+                  items: {}
+                  description: Domains of news sources from which to fetch news
+                blacklisted_domains:
+                  type: array
+                  items: {}
+                  description: News source domains to exclude from search
+                news_limit:
+                  type: integer
+                  description: 'Number of news items to retrieve (Default: 1000)'
+                start_date:
+                  type: string
+                  description: 'Date from which news will be retrieved. * Default:
+                    2 years * Format: `YYYY-MM-DD`'
+                end_date:
+                  type: string
+                  description: 'Date till which news will be retrieved. * Default:
+                    current date * Format: `YYYY-MM-DD`'
+                website:
+                  type: string
+                  description: Website of the target company
+                permalink:
+                  type: string
+                  description: Crunchbase permalink of the target company
+              description: '[FROM OFFICIAL DOCS] Request schema from legacy-initiate-news-report.md.'
+              required:
+              - website
+              - permalink
+      security:
+      - bearerAuth: []
+tags:
+- name: Monitoring
+  description: Monitoring and legacy news-report workflows.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

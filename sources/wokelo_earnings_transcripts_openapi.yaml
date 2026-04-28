@@ -1,0 +1,390 @@
+openapi: 3.0.3
+info:
+  title: Fetch Earnings Transcripts
+  description: Fetch earnings call transcripts for a public company. Supports year-range
+    filtering.
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/enterprise/company/earnings-calls/:
+    get:
+      tags:
+      - Enrichment
+      summary: Company Earnings Transcripts
+      description: 'Source docs: earnings-transcripts.md'
+      operationId: get_api_enterprise_company_earnings-calls
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transcript_title:
+                          type: string
+                        transcript_name:
+                          type: string
+                        ticker:
+                          type: string
+                        transcript_url:
+                          type: string
+                        date:
+                          type: string
+                        year:
+                          type: integer
+                        quarter:
+                          type: integer
+                        transcript_data:
+                          type: object
+                          properties:
+                            date:
+                              type: string
+                            participant:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  role:
+                                    type: string
+                                  pro_id:
+                                    type: integer
+                                  job_title:
+                                    type: string
+                                  description:
+                                    type: string
+                                  company_name:
+                                    type: string
+                                  transcript_person_id:
+                                    type: integer
+                                required:
+                                - name
+                                - role
+                                - pro_id
+                                - job_title
+                                - description
+                                - company_name
+                                - transcript_person_id
+                            transcript:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  speech:
+                                    type: string
+                                  session:
+                                    type: string
+                                  person_id:
+                                    type: integer
+                                  person_company: {}
+                                  component_order:
+                                    type: integer
+                                required:
+                                - name
+                                - speech
+                                - session
+                                - person_id
+                                - person_company
+                                - component_order
+                            title:
+                              type: string
+                            quarter:
+                              type: integer
+                            year:
+                              type: integer
+                          required:
+                          - date
+                          - participant
+                          - transcript
+                          - title
+                          - quarter
+                          - year
+                      required:
+                      - transcript_title
+                      - transcript_name
+                      - ticker
+                      - transcript_url
+                      - date
+                      - year
+                      - quarter
+                      - transcript_data
+                  count:
+                    type: integer
+                  from_year:
+                    type: integer
+                  to_year:
+                    type: integer
+                required:
+                - status
+                - data
+                - count
+                - from_year
+                - to_year
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example
+                  in earnings-transcripts.md.'
+              example:
+                status: success
+                data:
+                - transcript_title: Tesla, Inc. - Q4 2023
+                  transcript_name: Tesla, Inc., Q4 2023 Earnings Call, Jan 24, 2024
+                  ticker: NASDAQ:TSLA
+                  transcript_url: https://wkarticles.blob.core.windows.net/finnhub/snp_transcript_3003051
+                  date: '2024-01-24'
+                  year: 2023
+                  quarter: 4
+                  transcript_data:
+                    date: '2024-01-24'
+                    participant:
+                    - name: Adam Jonas
+                      role: Analysts
+                      pro_id: 29412103
+                      job_title: MD & Head of Global Auto & Shared Mobility Research
+                      description: Analysts
+                      company_name: Morgan Stanley, Research Division
+                      transcript_person_id: 118469
+                    - name: Colin Langan
+                      role: Analysts
+                      pro_id: 710566519
+                      job_title: Senior Equity Analyst
+                      description: Analysts
+                      company_name: Wells Fargo Securities, LLC, Research Division
+                      transcript_person_id: 480193
+                    - name: Dan Levy
+                      role: Analysts
+                      pro_id: 214533139
+                      job_title: Senior Analyst
+                      description: Analysts
+                      company_name: Barclays Bank PLC, Research Division
+                      transcript_person_id: 253177
+                    transcript:
+                    - name: Martin Viecha
+                      speech: "Good afternoon, everyone, and welcome to Tesla's Fourth\
+                        \ Quarter 2023 Q&A Webcast. My name is Martin Viecha, VP of\
+                        \ Investor Relations, and I'm joined today by Elon Musk, Vaibhav\
+                        \ Taneja, and a number of other executives. Our Q4 results\
+                        \ were announced at about 3:00 p.m. Central Time in the update\
+                        \ deck we published at the same link as this webcast.\r\n\
+                        During this call, we will discuss our business outlook and\
+                        \ make forward-looking statements. These comments are based\
+                        \ on our predictions and expectations... [truncated]"
+                      session: Presenter Speech
+                      person_id: 370659
+                      person_company: null
+                      component_order: 0
+                    - name: Elon Musk
+                      speech: Thank you. So the Tesla team did an incredible job in
+                        2023. We achieved record production and deliveries of [ about
+                        ] 1.8 million vehicles, in line with our official guidance.
+                        And in Q4, we're producing vehicles at an annualized run rate
+                        of almost 2 million cars a year. This is really a phenomenal
+                        achievement. Looking at just the Fremont factory alone, we
+                        made 560,000 cars. This is a record. In fact, it's the highest
+                        output of automotive plant in North America. And people are
+                        often surprised tha... [truncated]
+                      session: Presenter Speech
+                      person_id: 175883
+                      person_company: null
+                      component_order: 1
+                    - name: Martin Viecha
+                      speech: Thank you. And our CFO, Vaibhav, has opening remarks
+                        as well.
+                      session: Presenter Speech
+                      person_id: 370659
+                      person_company: null
+                      component_order: 2
+                    title: Tesla, Inc., Q4 2023 Earnings Call, Jan 24, 2024
+                    quarter: 4
+                    year: 2023
+                - transcript_title: Tesla, Inc. - Q3 2023
+                  transcript_name: Tesla, Inc., Q3 2023 Earnings Call, Oct 18, 2023
+                  ticker: NASDAQ:TSLA
+                  transcript_url: https://wkarticles.blob.core.windows.net/finnhub/snp_transcript_3078546
+                  date: '2024-04-03'
+                  year: 2023
+                  quarter: 3
+                  transcript_data:
+                    date: '2024-04-03'
+                    participant:
+                    - name: Colin Langan
+                      role: Analysts
+                      pro_id: 710566519
+                      job_title: Senior Equity Analyst
+                      description: Analysts
+                      company_name: Wells Fargo Securities, LLC, Research Division
+                      transcript_person_id: 480193
+                    - name: Drew Baglino
+                      role: Executives
+                      pro_id: 621069668
+                      job_title: Former Senior Vice President of Powertrain & Energy
+                        Engineering
+                      description: Executives
+                      company_name: Tesla, Inc.
+                      transcript_person_id: 393478
+                    - name: Elon Musk
+                      role: Executives
+                      pro_id: 27546373
+                      job_title: Co-Founder, Technoking of Tesla, CEO & Director
+                      description: Executives
+                      company_name: Tesla, Inc.
+                      transcript_person_id: 175883
+                    transcript:
+                    - name: Martin Viecha
+                      speech: Good afternoon, everyone and welcome to Tesla's Third
+                        Quarter 2023 Q&A Webcast. My name is Martin Viecha, VP of
+                        Investor Relations, and I'm joined today by Elon Musk, Vaibhav
+                        Taneja and a number of other executives. Our Q3 results were
+                        announced at about 3:00 p.m. Central Time in the update that
+                        we published at the same link as this webcast. During this
+                        call, we will discuss our business outlook and make forward-looking
+                        statements. These comments are based on our predictions and
+                        expectations as ... [truncated]
+                      session: Presenter Speech
+                      person_id: 370659
+                      person_company: null
+                      component_order: 0
+                    - name: Elon Musk
+                      speech: Thanks, Martin. So just a Q3 recap. Our last quarter
+                        was impacted by down time for global factory upgrades that
+                        will help us reduce cost per vehicle as well as increase production.
+                        We remain focused on 3 main objectives which is the cost reduction
+                        of our products, investments in artificial intelligence, and
+                        other growth projects like Optimus. And continued free cash
+                        flow generation. Regarding vehicle cost, our team was able
+                        to reduce the cost per vehicle further in Q3 despite headwinds
+                        from fact... [truncated]
+                      session: Presenter Speech
+                      person_id: 175883
+                      person_company: null
+                      component_order: 1
+                    - name: Martin Viecha
+                      speech: Thank you very much, Elon. And our CFO, Vaibhav, had
+                        some opening remarks as well.
+                      session: Presenter Speech
+                      person_id: 370659
+                      person_company: null
+                      component_order: 2
+                    title: Tesla, Inc., Q3 2023 Earnings Call, Oct 18, 2023
+                    quarter: 3
+                    year: 2023
+                - transcript_title: Tesla, Inc. - Q2 2023
+                  transcript_name: Tesla, Inc., Q2 2023 Earnings Call, Jul 19, 2023
+                  ticker: NASDAQ:TSLA
+                  transcript_url: https://wkarticles.blob.core.windows.net/finnhub/snp_transcript_2854174
+                  date: '2023-07-19'
+                  year: 2023
+                  quarter: 2
+                  transcript_data:
+                    date: '2023-07-19'
+                    participant:
+                    - name: Colin Rusch
+                      role: Analysts
+                      pro_id: 311020585
+                      job_title: MD & Senior Analyst and Head of Sustainable Growth
+                        & Resource Optimization
+                      description: Analysts
+                      company_name: Oppenheimer & Co. Inc., Research Division
+                      transcript_person_id: 310676
+                    - name: Dan Levy
+                      role: Analysts
+                      pro_id: 214533139
+                      job_title: Senior Analyst
+                      description: Analysts
+                      company_name: Barclays Bank PLC, Research Division
+                      transcript_person_id: 253177
+                    - name: Drew Baglino
+                      role: Executives
+                      pro_id: 621069668
+                      job_title: Former Senior Vice President of Powertrain & Energy
+                        Engineering
+                      description: Executives
+                      company_name: Tesla, Inc.
+                      transcript_person_id: 393478
+                    transcript:
+                    - name: Martin Viecha
+                      speech: "Good afternoon, everyone, and welcome to Tesla's Second\
+                        \ Quarter 2023 Q&A Webcast. My name is Martin Viecha, I'm\
+                        \ VP of Investor Relations, and I'm joined today by Elon Musk,\
+                        \ Zachary Kirkhorn and a number of other executives. \r\n\
+                        Our Q2 results were announced at about 3 p.m. Central Time\
+                        \ in the update deck we published at the same link as this\
+                        \ webcast. During this call, we will discuss our business\
+                        \ outlook and make forward-looking statements. These comments\
+                        \ are based on our predictions and expectati... [truncated]"
+                      session: Presenter Speech
+                      person_id: 370659
+                      person_company: null
+                      component_order: 0
+                    - name: Elon Musk
+                      speech: "Thank you, Martin. So just a Q2 recap. In Q2, we achieved\
+                        \ record vehicle production and deliveries and record revenue\
+                        \ of about $25 billion in a single quarter. And Model Y became\
+                        \ the best-selling vehicle of any kind globally in Q1, surpassing\
+                        \ the likes of Corolla and Gulf. So it was the #1 vehicle\
+                        \ of any kind, including vehicles that are sold at a far lower\
+                        \ price. This is, I think, an incredible achievement by the\
+                        \ Tesla team, and just a huge thank you to our customers for\
+                        \ their support. \r\nSo thi... [truncated]"
+                      session: Presenter Speech
+                      person_id: 175883
+                      person_company: null
+                      component_order: 1
+                    - name: Martin Viecha
+                      speech: Thank you very much, Elon. And I think Zach has some
+                        opening remarks as well.
+                      session: Presenter Speech
+                      person_id: 370659
+                      person_company: null
+                      component_order: 2
+                    title: Tesla, Inc., Q2 2023 Earnings Call, Jul 19, 2023
+                    quarter: 2
+                    year: 2023
+                count: 12
+                from_year: 2021
+                to_year: 2023
+      x-source-variants:
+      - group_path: Enrichment
+        request_name: Company Earnings Transcripts
+      parameters:
+      - name: company
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Permalink or URL of the company. E.g. `"salesforce"`
+      - name: from_year
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Start year of the date range.
+      - name: to_year
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: End year of the date range.
+      security:
+      - bearerAuth: []
+tags:
+- name: Enrichment
+  description: Company and industry enrichment capabilities.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

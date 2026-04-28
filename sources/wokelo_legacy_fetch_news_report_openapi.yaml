@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: '[Legacy] Fetch News Report'
+  description: This endpoint retrieves the news items from an existing news report
+    run via the Get News Report endpoint `/api/news/start/` news. It returns the news
+    items as a JSON
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/news/fetch/:
+    post:
+      tags:
+      - Monitoring
+      summary: '[Legacy] Fetch News Report'
+      description: 'Source docs: legacy-fetch-news-report.md'
+      operationId: post_api_news_fetch
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  report_id:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ai_summary:
+                          type: string
+                        type:
+                          type: string
+                        url:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                      - ai_summary
+                      - type
+                      - url
+                      - title
+                required:
+                - report_id
+                - data
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example
+                  in legacy-fetch-news-report.md.'
+              example:
+                report_id: 72053
+                data:
+                - ai_summary: Wokelo has announced a minority equity investment from
+                    KPMG LLP, marking a significant step in their growth strategy.
+                  type: Investments
+                  url: https://kpmg.com/us/en/media/news/kpmg-wokelo-investment-2024.html
+                  title: Wokelo Announces Minority Equity Investment from KPMG LLP
+        '400':
+          description: Fetch news
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+              example:
+                error: Report not found.
+      x-source-variants:
+      - group_path: Monitoring
+        request_name: '[Legacy] Fetch News Report'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                report_id:
+                  type: integer
+                  description: Report ID of the news report from which the news is
+                    to be retrieved
+                page:
+                  type: integer
+                  description: 'Page number from which the news is to be returned
+                    in the response. Default: 1'
+                page_size:
+                  type: integer
+                  description: 'Number of news items per page. Default: 500'
+              description: '[FROM OFFICIAL DOCS] Request schema from legacy-fetch-news-report.md.'
+              required:
+              - report_id
+      security:
+      - bearerAuth: []
+tags:
+- name: Monitoring
+  description: Monitoring and legacy news-report workflows.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

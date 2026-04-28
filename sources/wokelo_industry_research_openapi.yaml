@@ -1,451 +1,107 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
-  title: Wokelo Industry Research API
-  version: 1.0.0
-  description: |
-    End-to-end sector coverage report.
-
-    The documentation shows two request patterns for industry research:
-    1. a direct industry primer endpoint
-    2. a workflow manager wrapper for the `industry_primer` workflow
-
-    This specification includes both patterns because the docs present both as valid
-    ways to initiate the report.
-
+  title: Industry Research
+  description: Starts generating an Industry Research report for your specified industry.
+  version: 2.0.0
+  license:
+    name: Proprietary
 servers:
-  - url: https://api.wokelo.ai
-
-security:
-  - bearerAuth: []
-
-tags:
-  - name: Industry Research
-    description: Generate end-to-end industry intelligence reports.
-
+- url: https://api.wokelo.ai
 paths:
-  /api/industry_primer/v3/start/:
-    post:
-      tags:
-        - Industry Research
-      operationId: startIndustryResearchDirect
-      summary: Start industry research report directly
-      description: |
-        Starts an end-to-end industry intelligence report using the direct
-        industry primer endpoint.
-
-        The request requires a specific industry name.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IndustryResearchDirectRequest'
-            example:
-              industry: gaming
-      responses:
-        '200':
-          description: Industry research report generated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IndustryResearchResponse'
-              example:
-                Executive Summary:
-                  Executive Summary:
-                    summary:
-                      source:
-                        - id: 1
-                          title: Electronic Manufacturing Services Market Set to Reach USD 820.71 Billion
-                          url: https://www.prnewswire.com/news-releases/example
-                          publisher: ""
-                          date: ""
-                      summary: The global EMS industry represents a critical segment of the electronics ecosystem.
-                Key Insights:
-                  key_insights:
-                    - insight:
-                        title: Profit Centers Shift to Industrial & EV Segments
-                        paragraph: Profit pools pivot toward high-margin industrial and EV electronics.
-                        sources:
-                          - id: 1
-                            title: Example source
-                            url: https://example.com
-                            publisher: ""
-                            date: ""
-                Overview:
-                  Overview:
-                    industry_overview_details:
-                      summary: Electronic Manufacturing Services represents a specialized industry where companies provide comprehensive manufacturing and supply chain solutions.
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: bad_request
-                  message: Invalid request payload.
-                  details:
-                    - field: industry
-                      message: Industry is required.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: unauthorized
-                  message: Missing or invalid bearer token.
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: rate_limited
-                  message: Too many requests. Please retry later.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: internal_server_error
-                  message: An unexpected error occurred.
-
   /api/workflow_manager/start/:
     post:
       tags:
-        - Industry Research
-      operationId: startIndustryResearchWorkflow
-      summary: Start industry research report via workflow manager
-      description: |
-        Starts an end-to-end industry intelligence report using the workflow manager.
-
-        The documentation shows this endpoint being called with
-        `workflow: industry_primer` and an `industry` field.
+      - Workflow Automation
+      summary: Industry Research
+      description: Starts generating an Industry Research report for your specified
+        industry.
+      operationId: post_workflow_manager_industry_research
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  report_id:
+                    type: integer
+                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
+                      \ Report identifier returned when the workflow request succeeds."
+                description: '[FROM OFFICIAL DOCS] Response schema from company-research.md.'
+                example: &id001
+                  report_id: 123345
+              example: *id001
+        '400':
+          description: Company primer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+              example:
+                message: Invalid payload. search query is required.
+      x-source-variants:
+      - group_path: Workflow Automation
+        request_name: Company Research
+      - group_path: Workflow Automation
+        request_name: Industry Research
+      - group_path: Workflow Automation
+        request_name: Peer comparison
+      - group_path: Workflow Automation
+        request_name: Custom Workflows
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IndustryResearchWorkflowRequest'
+              $ref: '#/components/schemas/IndustryResearchRequest'
             example:
               workflow: industry_primer
-              industry: Electronics Manufacturing Services
-      responses:
-        '200':
-          description: Industry research report generated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IndustryResearchResponse'
-              example:
-                Executive Summary:
-                  Executive Summary:
-                    summary:
-                      source:
-                        - id: 1
-                          title: Electronic Manufacturing Services Market Set to Reach USD 820.71 Billion
-                          url: https://www.prnewswire.com/news-releases/example
-                          publisher: ""
-                          date: ""
-                      summary: The global EMS industry represents a critical segment of the electronics ecosystem.
-                Key Insights:
-                  key_insights:
-                    - insight:
-                        title: Profit Centers Shift to Industrial & EV Segments
-                        paragraph: Profit pools pivot toward high-margin industrial and EV electronics.
-                        sources:
-                          - id: 1
-                            title: Example source
-                            url: https://example.com
-                            publisher: ""
-                            date: ""
-                Overview:
-                  Overview:
-                    industry_overview_details:
-                      summary: Electronic Manufacturing Services represents a specialized industry where companies provide comprehensive manufacturing and supply chain solutions.
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: bad_request
-                  message: Invalid request payload.
-                  details:
-                    - field: workflow
-                      message: Workflow must be industry_primer.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: unauthorized
-                  message: Missing or invalid bearer token.
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: rate_limited
-                  message: Too many requests. Please retry later.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: internal_server_error
-                  message: An unexpected error occurred.
-
+              industry: gaming
+              workbook_name: Industry Research - Gaming
+      security:
+      - bearerAuth: []
+tags:
+- name: Workflow Automation
+  description: Workflow-driven report generation endpoints.
 components:
+  schemas:
+    IndustryResearchRequest:
+      type: object
+      properties:
+        industry:
+          type: string
+          description: Industry on which the report will be created
+        workflow:
+          type: string
+          description: '`industry_primer`'
+          enum:
+          - industry_primer
+        workbook_name:
+          type: string
+          description: Name with which the workbook will be saved
+        custom_files:
+          type: array
+          items:
+            type: object
+            properties: {}
+          description: Files to include in the report. Use fileName values from the
+            file upload response
+      description: '[FROM OFFICIAL DOCS] Industry Research variant with workflow=`industry_primer`.'
+      required:
+      - industry
+      - workflow
+      example:
+        workflow: industry_primer
+        industry: gaming
+        workbook_name: Industry Research - Gaming
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Bearer token sent in the Authorization header.
-
-  schemas:
-    IndustryResearchDirectRequest:
-      type: object
-      additionalProperties: false
-      required:
-        - industry
-      properties:
-        industry:
-          type: string
-          description: Specific industry name on which the report should be prepared.
-          example: gaming
-
-    IndustryResearchWorkflowRequest:
-      type: object
-      additionalProperties: false
-      required:
-        - workflow
-        - industry
-      properties:
-        workflow:
-          type: string
-          description: Workflow identifier.
-          enum:
-            - industry_primer
-          example: industry_primer
-        industry:
-          type: string
-          description: Specific industry name on which the report should be prepared.
-          example: Electronics Manufacturing Services
-
-    IndustryResearchResponse:
-      type: object
-      additionalProperties: true
-      description: |
-        The industry research response is a large nested intelligence report with
-        sections such as Executive Summary, Key Insights, Overview, Trends and
-        Innovations, Select Transactions, Recent Strategic Moves, and Competitive Landscape.
-
-        The documentation provides a very large example rather than a strict formal
-        schema. This response is therefore modeled with shared nested section
-        components where structure is clear, while leaving some parts permissive.
-      properties:
-        Executive Summary:
-          $ref: '#/components/schemas/ExecutiveSummarySectionContainer'
-        Key Insights:
-          $ref: '#/components/schemas/KeyInsightsSectionContainer'
-        Overview:
-          $ref: '#/components/schemas/OverviewSectionContainer'
-        Trends and innovations:
-          $ref: '#/components/schemas/TrendsSectionContainer'
-        Select transactions:
-          $ref: '#/components/schemas/SelectTransactionsSectionContainer'
-        Recent strategic moves:
-          $ref: '#/components/schemas/RecentStrategicMovesSectionContainer'
-        Competitive landscape:
-          $ref: '#/components/schemas/CompetitiveLandscapeSectionContainer'
-
-    ExecutiveSummarySectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Executive Summary:
-          type: object
-          additionalProperties: true
-          properties:
-            summary:
-              $ref: '#/components/schemas/SourcedSummaryBlock'
-
-    KeyInsightsSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        key_insights:
-          type: array
-          items:
-            $ref: '#/components/schemas/KeyInsightItem'
-
-    OverviewSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Overview:
-          type: object
-          additionalProperties: true
-          properties:
-            industry_overview_details:
-              $ref: '#/components/schemas/SourcedSummaryBlock'
-
-    TrendsSectionContainer:
-      type: object
-      additionalProperties: true
-      properties:
-        Key trends and innovations:
-          type: object
-          additionalProperties: true
-          properties:
-            trend_and_innovations:
-              $ref: '#/components/schemas/SourcedSummaryBlock'
-
-    SelectTransactionsSectionContainer:
-      type: object
-      additionalProperties: true
-      description: |
-        Select transactions including fundraising, key investors, M&A activities,
-        and IPO exits. The doc provides extensive nested examples but not a fully
-        formal contract, so this section remains permissive.
-
-    RecentStrategicMovesSectionContainer:
-      type: object
-      additionalProperties: true
-      description: |
-        Recent company initiatives, partnerships, news, and trend charts.
-
-    CompetitiveLandscapeSectionContainer:
-      type: object
-      additionalProperties: true
-      description: |
-        Competitive landscape including key peers, archetypes, and other players.
-
-    SourcedSummaryBlock:
-      type: object
-      additionalProperties: true
-      properties:
-        source:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-        summary:
-          type: string
-          nullable: true
-
-    KeyInsightItem:
-      type: object
-      additionalProperties: false
-      properties:
-        insight:
-          $ref: '#/components/schemas/TitledParagraphWithSources'
-        commentary:
-          type: array
-          items:
-            $ref: '#/components/schemas/ParagraphWithSources'
-
-    TitledParagraphWithSources:
-      type: object
-      additionalProperties: false
-      properties:
-        title:
-          type: string
-          nullable: true
-        paragraph:
-          type: string
-          nullable: true
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-
-    ParagraphWithSources:
-      type: object
-      additionalProperties: false
-      properties:
-        paragraph:
-          type: string
-          nullable: true
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-
-    SourceReference:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          oneOf:
-            - type: integer
-            - type: string
-          nullable: true
-        title:
-          type: string
-          nullable: true
-        url:
-          type: string
-          nullable: true
-        publisher:
-          type: string
-          nullable: true
-        date:
-          type: string
-          nullable: true
-
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          additionalProperties: false
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: string
-              example: bad_request
-            message:
-              type: string
-              example: Invalid request payload.
-            details:
-              type: array
-              items:
-                $ref: '#/components/schemas/ErrorDetail'
-
-    ErrorDetail:
-      type: object
-      additionalProperties: true
-      properties:
-        field:
-          type: string
-          example: industry
-        message:
-          type: string
-          example: Industry is required.

@@ -1,462 +1,115 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
-  title: Wokelo Industry Deep Intelligence API
-  version: 1.0.0
-  description: |
-    On-demand custom intelligence on any industry.
-
-    This API generates comprehensive industry analysis covering market sizing,
-    quantitative insights, innovation trends, transaction activity, partnerships,
-    tier-1 intelligence, case studies, and regulatory environment.
-
+  title: Industry Deep Intelligence
+  description: The Industry Insights API generates structured insights for a given
+    industry topic (e.g., *"Warehouse automation"*). Optionally, you can refine the
+    output by specifying sections, keywords, geography, a custom industry definition,
+    and sample companies. Returns a `request_id` as a response.
+  version: 2.0.0
+  license:
+    name: Proprietary
 servers:
-  - url: https://api.wokelo.ai
-
-security:
-  - bearerAuth: []
-
-tags:
-  - name: Industry Deep Intelligence
-    description: AI-synthesized industry intelligence and analysis.
-
+- url: https://api.wokelo.ai
 paths:
   /api/enterprise/industry/enrich/:
     post:
       tags:
-        - Industry Deep Intelligence
-      operationId: getIndustryDeepIntelligence
-      summary: Generate deep intelligence for an industry topic
-      description: |
-        Returns AI-synthesized industry intelligence for a specific topic across
-        one or more requested sections.
-
-        Typical use cases include:
-        - market sizing and growth analysis
-        - trend and innovation mapping
-        - M&A and fundraising activity tracking
-        - IPO transaction tracking
-        - partnership landscape analysis
-        - tier-1 curated intelligence synthesis
-        - case study generation
-        - regulatory environment review
-
-        Use `topic` to define the industry, and optional `parameters` to refine
-        the scope with keywords, geography, custom definition, and sample companies.
+      - Enrichment
+      summary: Industry Deep Intelilgence
+      description: 'Source docs: industry-deep-intelligence.md'
+      operationId: post_api_enterprise_industry_enrich
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Unique identifier for the request posted. Use this
+                      with the `/api/wkl-api/request/status/` endpoint to check the
+                      status
+                description: '[FROM OFFICIAL DOCS] Response schema from industry-deep-intelligence.md.'
+                example: &id001
+                  request_id: c574254f-137d-40d5-84f1-ac8fa38b8aa7
+              example: *id001
+        '202':
+          description: Industry Insights- 202
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  status:
+                    type: string
+                required:
+                - request_id
+                - status
+              example:
+                request_id: c574254f-137d-40d5-84f1-ac8fa38b8aa7
+                status: PENDING
+      x-source-variants:
+      - group_path: Enrichment
+        request_name: Industry Deep Intelilgence
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IndustryDeepIntelligenceRequest'
-            example:
-              topic: Enterprise SaaS security
-              sections:
-                - market_size
-                - trends_and_innovations
-                - transactions_mna
-              parameters:
-                keywords:
-                  - zero trust
-                  - SIEM
-                geography:
-                  - USA
-                definition: B2B software focused on enterprise cybersecurity
-                sample_companies:
-                  - crowdstrike
-                  - sentinel
-      responses:
-        '200':
-          description: Industry deep intelligence generated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IndustryDeepIntelligenceResponse'
-              example:
-                request_id: 68555bdd-a11e-45df-97ab-a0cc6e6408a1
-                status: COMPLETED
-                result:
-                  IP enrichment:
-                    market_size:
-                      charts:
-                        market_size_chart:
-                          title: Market Size Range
-                          projection_year: 2034
-                          period_start_year: 2024
-                          period_end_year: 2034
-                          data:
-                            - publisher: Artificial Intelligence in Drug Discovery Market
-                              company: Reports and Data
-                              currency: USD
-                              cagr: "17.5"
-                              end_year: 2034
-                              start_year: 2024
-                              start_value:
-                                value: 2.5
-                                multiplier: 1000000000
-                              end_value:
-                                value: 12.5
-                                multiplier: 1000000000
-                              estimated_value:
-                                value: 12.5
-                                multiplier: 1000000000
-                          source: Wokelo generated chart, extracted ranges from publishers, projections calculated based on estimated growth rates
-                          note: CAGR and projections calculated based on market size ranges
-                          url: https://files.test.wokelo.ai/notebook/example/assets/example/market_size_chart.png
-                    trends_and_innovations:
-                      trend_and_innovations:
-                        source:
-                          - id: 1
-                            title: Yahoo AI in Life Sciences Market
-                            url: https://finance.yahoo.com/news/example
-                            publisher: ""
-                            date: ""
-                        summary: AI is transforming drug discovery through virtual screening, predictive modeling, and de novo drug design.
-                meta:
-                  report_id: 1009016
-                  title: AI in drug discovery - API Insights
-                  user: saish.kapadi@wokelo.ai
-                  dt_createdon: '2026-04-08 18:47:45'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: bad_request
-                  message: Invalid request payload.
-                  details:
-                    - field: sections
-                      message: At least one supported section must be provided.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: unauthorized
-                  message: Missing or invalid bearer token.
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: rate_limited
-                  message: Too many requests. Please retry later.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: internal_server_error
-                  message: An unexpected error occurred.
-
+              type: object
+              properties:
+                topic:
+                  type: string
+                  description: The industry topic to generate insights for (e.g. `"Enterprise
+                    SaaS security"`)
+                sections:
+                  type: array
+                  items:
+                    type: string
+                  description: 'Sections to include in the report. Supported values:
+                    `market_size`, `quant_insights`, `trends_and_innovations`, `transactions_mna`,
+                    `transactions_fundraising`, `transactions_ipo`, `partnerships`,
+                    `tier1_intelligence`, `case_studies`, `industry_regulations`'
+                parameters:
+                  type: object
+                  properties:
+                    keywords:
+                      type: array
+                      items:
+                        type: string
+                      description: Keywords to focus the analysis on (e.g. `"zero
+                        trust"`, `"SIEM"`)
+                    geography:
+                      type: array
+                      items:
+                        type: string
+                      description: Geographic scope for the report. It should be a
+                        comma separated list of ISO country codes. (Eg.. `["USA",
+                        "GBR"]`)
+                    definition:
+                      type: string
+                      description: A custom definition of the industry to guide the
+                        report generation
+                    sample_companies:
+                      type: array
+                      items:
+                        type: string
+                      description: Permalinks of representative companies in the industry
+              description: '[FROM OFFICIAL DOCS] Request schema from industry-deep-intelligence.md.'
+              required:
+              - topic
+      security:
+      - bearerAuth: []
+tags:
+- name: Enrichment
+  description: Company and industry enrichment capabilities.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Bearer token sent in the Authorization header.
-
-  schemas:
-    IndustryDeepIntelligenceRequest:
-      type: object
-      additionalProperties: false
-      required:
-        - topic
-        - sections
-      properties:
-        topic:
-          type: string
-          description: Industry topic to analyze.
-          example: Enterprise SaaS security
-        sections:
-          type: array
-          description: List of industry intelligence sections to generate.
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/IndustrySection'
-          example:
-            - market_size
-            - trends_and_innovations
-        parameters:
-          $ref: '#/components/schemas/IndustryParameters'
-
-    IndustryParameters:
-      type: object
-      additionalProperties: false
-      properties:
-        keywords:
-          type: array
-          description: Focus keywords to narrow the analysis.
-          items:
-            type: string
-          example:
-            - zero trust
-            - SIEM
-        geography:
-          type: array
-          description: |
-            Geographic scope as 3-letter ISO country codes.
-          items:
-            type: string
-            minLength: 3
-            maxLength: 3
-          example:
-            - USA
-            - GBR
-        definition:
-          type: string
-          description: Custom definition of the industry to guide the analysis.
-          example: B2B software focused on enterprise cybersecurity
-        sample_companies:
-          type: array
-          description: Example companies used to anchor the analysis.
-          items:
-            type: string
-          example:
-            - crowdstrike
-            - sentinel
-
-    IndustrySection:
-      type: string
-      enum:
-        - market_size
-        - quant_insights
-        - trends_and_innovations
-        - transactions_mna
-        - transactions_fundraising
-        - transactions_ipo
-        - partnerships
-        - tier1_intelligence
-        - case_studies
-        - industry_regulations
-      description: Supported industry deep intelligence section values.
-
-    IndustryDeepIntelligenceResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - request_id
-        - status
-        - result
-      properties:
-        request_id:
-          type: string
-          description: Unique request identifier.
-          example: 68555bdd-a11e-45df-97ab-a0cc6e6408a1
-        status:
-          type: string
-          description: Processing status of the request.
-          example: COMPLETED
-        result:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/IndustryEnrichmentResult'
-          description: Container for generated industry intelligence output.
-
-    IndustryEnrichmentResult:
-      type: object
-      additionalProperties: true
-      properties:
-        market_size:
-          $ref: '#/components/schemas/MarketSizeSection'
-        quant_insights:
-          type: object
-          additionalProperties: true
-          description: Quantitative growth, adoption, and benchmark insights.
-        trends_and_innovations:
-          $ref: '#/components/schemas/TrendsAndInnovationsSection'
-        transactions_mna:
-          type: object
-          additionalProperties: true
-          description: M&A transaction intelligence.
-        transactions_fundraising:
-          type: object
-          additionalProperties: true
-          description: Fundraising and investor activity intelligence.
-        transactions_ipo:
-          type: object
-          additionalProperties: true
-          description: IPO transaction intelligence.
-        partnerships:
-          type: object
-          additionalProperties: true
-          description: Partnership landscape intelligence.
-        tier1_intelligence:
-          type: object
-          additionalProperties: true
-          description: Curated tier-1 intelligence from strategy and finance publishers.
-        case_studies:
-          type: object
-          additionalProperties: true
-          description: Company case studies and strategy timelines.
-        industry_regulations:
-          type: object
-          additionalProperties: true
-          description: Regulatory environment and compliance requirements.
-
-    MarketSizeSection:
-      type: object
-      additionalProperties: false
-      properties:
-        charts:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/MarketSizeChart'
-          description: Chart objects keyed by chart name.
-
-    MarketSizeChart:
-      type: object
-      additionalProperties: false
-      properties:
-        title:
-          type: string
-          nullable: true
-        projection_year:
-          type: integer
-          nullable: true
-        period_start_year:
-          type: integer
-          nullable: true
-        period_end_year:
-          type: integer
-          nullable: true
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/MarketSizeDataPoint'
-        source:
-          type: string
-          nullable: true
-        note:
-          type: string
-          nullable: true
-        url:
-          type: string
-          nullable: true
-          format: uri
-
-    MarketSizeDataPoint:
-      type: object
-      additionalProperties: false
-      properties:
-        publisher:
-          type: string
-          nullable: true
-        company:
-          type: string
-          nullable: true
-        currency:
-          type: string
-          nullable: true
-        cagr:
-          type: string
-          nullable: true
-        end_year:
-          type: integer
-          nullable: true
-        start_year:
-          type: integer
-          nullable: true
-        start_value:
-          $ref: '#/components/schemas/NumericValueWithMultiplier'
-        end_value:
-          $ref: '#/components/schemas/NumericValueWithMultiplier'
-        estimated_value:
-          $ref: '#/components/schemas/NumericValueWithMultiplier'
-
-    NumericValueWithMultiplier:
-      type: object
-      additionalProperties: false
-      properties:
-        value:
-          type: number
-          nullable: true
-        multiplier:
-          type: number
-          nullable: true
-
-    TrendsAndInnovationsSection:
-      type: object
-      additionalProperties: false
-      properties:
-        trend_and_innovations:
-          $ref: '#/components/schemas/SourcedNarrative'
-
-    SourcedNarrative:
-      type: object
-      additionalProperties: false
-      properties:
-        source:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceReference'
-        summary:
-          type: string
-          nullable: true
-
-    SourceReference:
-      type: object
-      additionalProperties: false
-      properties:
-        id:
-          type: integer
-          nullable: true
-        title:
-          type: string
-          nullable: true
-        url:
-          type: string
-          nullable: true
-        publisher:
-          type: string
-          nullable: true
-        date:
-          type: string
-          nullable: true
-
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          additionalProperties: false
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: string
-              example: bad_request
-            message:
-              type: string
-              example: Invalid request payload.
-            details:
-              type: array
-              items:
-                $ref: '#/components/schemas/ErrorDetail'
-
-    ErrorDetail:
-      type: object
-      additionalProperties: true
-      properties:
-        field:
-          type: string
-          example: sections
-        message:
-          type: string
-          example: At least one supported section must be provided.

@@ -1,0 +1,117 @@
+openapi: 3.0.3
+info:
+  title: Upload File
+  description: Upload your files to Wokelo to supplement research reports with proprietary
+    data. Each uploaded file receives a unique identifier that you can reference in
+    the `custom_files` parameter when creating reports.
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/assets/upload/:
+    post:
+      tags:
+      - Supporting APIs
+      summary: Upload file
+      description: 'Source docs: upload-file.md'
+      operationId: post_api_assets_upload
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Overall upload status (success or error)
+                  success:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fileName:
+                          type: string
+                          description: "Wokelo's unique file identifier\u2014use this\
+                            \ in the `custom_files` parameter when creating reports"
+                        originalName:
+                          type: string
+                          description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
+                            \ Original uploaded filename returned for each successful\
+                            \ file."
+                        mimeType:
+                          type: string
+                          description: Detected file type/format
+                        uuid:
+                          type: string
+                          description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
+                            \ Caller-provided UUID echoed back for each successful\
+                            \ file when supplied."
+                    description: Array containing information on successfully uploaded
+                      files
+                  fails:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        reason:
+                          type: string
+                          description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
+                            \ Reason given for each failed upload item when present."
+                    description: Array containing information about failed uploads
+                      (empty on success)
+                description: '[FROM OFFICIAL DOCS] Response schema from upload-file.md.'
+                example: &id001
+                  status: success
+                  success:
+                  - fileName: file_116e55ec-041d-4c1e-897c-3adef1576a09
+                    originalName: lemonade.pdf
+                    mimeType: pdf
+                    uuid: a7f4b9e2c3
+                  - fileName: file_e30c7d3f-8bed-46b2-ae9c-eebc879323cc
+                    originalName: lemonade_diligence.pdf
+                    mimeType: pdf
+                    uuid: k3m8n5p1q6
+                  fails: []
+              example: *id001
+      x-source-variants:
+      - group_path: Supporting APIs
+        request_name: Upload file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Array of files to be uploaded
+                fileUUID:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  description: Your own UUIDs to track files. Must match the length
+                    and order of the `files` array. These UUIDs will be returned in
+                    the response alongside Wokelo's `fileName` identifiers.
+              description: '[FROM OFFICIAL DOCS] Multipart upload payload.'
+              required:
+              - files
+      security:
+      - bearerAuth: []
+tags:
+- name: Supporting APIs
+  description: Supporting endpoints for uploads, status, downloads, and configuration.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

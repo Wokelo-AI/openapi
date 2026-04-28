@@ -1,14 +1,10 @@
 """
-Merge the 12 Wokelo OpenAPI source YAMLs into one unified spec.
+Historical helper for experimenting with merges across the standalone source files.
 
-Strategy:
-- Unify info/servers/security/tags at the top
-- For path collisions (same path + method from multiple sources):
-    build a single merged operation with a oneOf requestBody/response
-- Deduplicate schemas:
-    - if content identical across files: keep once (silent)
-    - if content differs: rename later copies with a short tag-prefix
-- Preserve every example, description, and schema faithfully
+The authoritative release artifact in this repository is `openapi.yaml`, and the
+standalone capability specs live under `sources/`. This script is not part of CI
+or the release workflow and may not reproduce the discriminator-based merged
+operations in the canonical spec exactly.
 """
 import yaml
 import json

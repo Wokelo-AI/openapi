@@ -1,0 +1,103 @@
+openapi: 3.0.3
+info:
+  title: Login
+  description: Obtain a JSON Web Token (JWT) for subsequent API authentication
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /auth/token/:
+    post:
+      tags:
+      - Authentication
+      summary: Login
+      description: 'Source docs: authentication.md'
+      operationId: post_auth_token
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT for authenticated API access
+                  expires_in:
+                    type: integer
+                    description: Token validity duration in seconds
+                  token_type:
+                    type: string
+                    description: Type of authentication token
+                  scope:
+                    type: string
+                    description: Authorization scope of the token
+                  refresh_token:
+                    type: string
+                    description: Token used to obtain a new access token
+                description: '[FROM OFFICIAL DOCS] Response schema from authentication.md.'
+                example: &id001
+                  access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  expires_in: 2628288
+                  token_type: Bearer
+                  scope: read write
+                  refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+              example: *id001
+        '401':
+          description: Login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+              example:
+                error: invalid_client
+      x-source-variants:
+      - group_path: Authentication
+        request_name: Login
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                client_id:
+                  type: string
+                  description: Client identifier
+                client_secret:
+                  type: string
+                  description: Client secret
+                username:
+                  type: string
+                  description: Username
+                password:
+                  type: string
+                  description: Password
+                grant_type:
+                  type: string
+                  description: Grant type
+              description: '[FROM OFFICIAL DOCS] Multipart login form.'
+              required:
+              - client_id
+              - client_secret
+              - username
+              - password
+              - grant_type
+      security: []
+tags:
+- name: Authentication
+  description: Token issuance and authentication entry points.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

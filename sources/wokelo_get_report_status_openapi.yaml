@@ -1,0 +1,102 @@
+openapi: 3.0.3
+info:
+  title: Get Report Status
+  description: Retrieves the current status of a previously triggered report using
+    its unique ID
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/assets/get_notebook_status/:
+    get:
+      tags:
+      - Supporting APIs
+      summary: Get Report Status
+      description: 'Source docs: get-report-status.md'
+      operationId: get_api_assets_get_notebook_status
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  report_id:
+                    type: integer
+                  status:
+                    type: string
+                  title:
+                    type: string
+                required:
+                - report_id
+                - status
+                - title
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example
+                  in get-report-status.md.'
+              example:
+                report_id: 98564
+                status: Delayed
+                title: One Signal
+        '400':
+          description: Notebooks Status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+              example:
+                message: No data found for the given report_id.
+        '401':
+          description: Notebooks Status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                required:
+                - detail
+              example:
+                detail: Authentication credentials were not provided.
+        '403':
+          description: Notebooks Status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+              example:
+                message: You are not authorized to access this report.
+      x-source-variants:
+      - group_path: Supporting APIs
+        request_name: Get Report Status
+      parameters:
+      - name: report_id
+        in: query
+        required: true
+        schema:
+          type: integer
+        description: The id returned in response to the start report request
+      security:
+      - bearerAuth: []
+tags:
+- name: Supporting APIs
+  description: Supporting endpoints for uploads, status, downloads, and configuration.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

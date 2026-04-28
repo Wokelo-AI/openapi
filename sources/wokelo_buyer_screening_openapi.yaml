@@ -1,470 +1,104 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
-  title: Wokelo Buyer Screening API
-  version: 1.0.0
-  description: |
-    Scored buyers for a defined target company.
-
-    This API returns a ranked and scored list of potential buyers for a specified
-    target company. Results can be refined using strategic criteria such as buyer type,
-    company type, geography, and a detailed query.
-
+  title: Buyer Screening
+  description: The Buyer Screening API generates a long list of potential buyers for
+    a given target company, enriched with structured data. Optionally, you can refine
+    the output by specifying buyer type, company type, geography, and a detailed query
+    to narrow the strategic criteria. Returns a request\_id as a response.
+  version: 2.0.0
+  license:
+    name: Proprietary
 servers:
-  - url: https://api.wokelo.ai
-
-security:
-  - bearerAuth: []
-
-tags:
-  - name: Buyer Screening
-    description: Scored buyer discovery for a specified target company.
-
+- url: https://api.wokelo.ai
 paths:
   /api/enterprise/buyer-screening/enrich/:
     post:
       tags:
-        - Buyer Screening
-      operationId: screenBuyers
-      summary: Generate scored buyers for a target company
-      description: |
-        Returns a ranked list of potential buyers for a specified target company.
-
-        Use `company` to identify the target company, and `parameters` to refine
-        the buyer search using a descriptive query, buyer type, company type,
-        and geographic scope.
-
-        The response includes firmographic and financial information for candidate buyers,
-        along with ranking metrics such as overall score, deal feasibility,
-        product synergy, deal precedent, and synergy potential where available.
+      - Discovery
+      summary: Buyer Screening
+      description: 'Source docs: buyer-screening.md'
+      operationId: post_api_enterprise_buyer-screening_enrich
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Unique identifier for the request posted. Use this
+                      with the `/api/enterprise/request/status/` endpoint to check
+                      the status
+                description: '[FROM OFFICIAL DOCS] Response schema from buyer-screening.md.'
+                example: &id001
+                  request_id: 278412f8-87ca-47a9-9d1c-4a62a687eaf6
+              example: *id001
+        '202':
+          description: Company Grid Buyer Screening-202
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  status:
+                    type: string
+                required:
+                - request_id
+                - status
+              example:
+                request_id: 278412f8-87ca-47a9-9d1c-4a62a687eaf6
+                status: PENDING
+      x-source-variants:
+      - group_path: Discovery
+        request_name: Buyer Screening
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BuyerScreeningRequest'
-            example:
-              company: acme-security
-              parameters:
-                detailed_query: Looking for strategic acquirers in enterprise software
-                buyer_type:
-                  - strategic
-                company_type: public
-                geography:
-                  - USA
-      responses:
-        '200':
-          description: Buyer screening completed successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BuyerScreeningResponse'
-              example:
-                request_id: c685171e-ce46-474b-b0de-f17123b3085a
-                status: COMPLETED
-                result:
-                  - Permalink: wright-express
-                    Name: Wex
-                    Website: wexinc.com
-                    HQ City: Portland
-                    HQ Country: United States
-                    HQ Continent: North America
-                    Founded: "1983"
-                    Type: Public
-                    Operating Status: IPO
-                    Buyer Type: Strategic
-                    Product Category: Financial technology solutions
-                    Core Offering: WEX provides financial technology solutions for payment processing, employee benefits, fleet management, and corporate payments.
-                    Product Catalog: Fuel Cards, Business Payments Solutions, Employee Benefits Platforms
-                    Employees (Crunchbase): 5001-10000
-                    Employees (LinkedIn): 4981
-                    Funding Stage: ""
-                    Total Funding: ""
-                    Last Funding Date: ""
-                    Key Investors:
-                      - Warburg Pincus
-                    Revenue: 2660800000.0
-                    Ticker: NYSE:WEX
-                    EBITDA: 874400000.0
-                    Net Income: 304100000.0
-                    EBITDA Margin (%): 32.8622
-                    Net Income Margin (%): 11.4288
-                    EPS Diluted: 8.47
-                    ROA (%): 3.0387
-                    Unlevered FCF: 1249487500.0
-                    D/E: 398.6958
-                    Market Cap: 5158944522.0
-                    Enterprise Value: 4842144522.0
-                    EV/Revenue (LTM): 1.819808
-                    EV/EBITDA (LTM): 5.537677
-                    P/E (LTM): 17.752066
-                    Acquisitions: Payzer (2023), Benefitexpress (2021)
-                    Investments: ""
-                    Overall Score: 9.0
-                    Overall Score Rationale: Strong strategic fit with product adjacency and proven M&A capability.
-                    Commentary: WEX's business payments suite and acquisition track record position it as a strong strategic buyer.
-                    Deal Feasibility Score: 8.0
-                    Deal Feasibility Rationale: Revenue and EBITDA profile provide capacity for a transaction of this size.
-                    Product Synergy Score: 9.0
-                    Product Synergy Rationale: Target extends existing business payments and spend management workflows.
-                    Deal Precedent Score: 9.0
-                    Deal Precedent Rationale: Prior acquisitions in payments and benefits demonstrate relevant precedent.
-                    Synergy Potential Score: 8.0
-                    Synergy Potential Rationale: Cross-sell and workflow integration opportunities are strong.
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: bad_request
-                  message: Invalid request payload.
-                  details:
-                    - field: company
-                      message: Company is required.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: unauthorized
-                  message: Missing or invalid bearer token.
-        '429':
-          description: Rate limit exceeded
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: rate_limited
-                  message: Too many requests. Please retry later.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error:
-                  code: internal_server_error
-                  message: An unexpected error occurred.
-
+              type: object
+              properties:
+                company:
+                  type: string
+                  description: 'Permalink of the target company or its complete URL
+                    Example: `"acme-solar"` OR `https://www.acmesolar.in/`'
+                parameters:
+                  type: object
+                  properties:
+                    detailed_query:
+                      type: string
+                      description: A descriptive query to refine the buyer search
+                        scope and strategic criteria
+                    buyer_type:
+                      type: array
+                      items: {}
+                      description: 'Type of buyer to target. Accepted values: `"strategic"`,
+                        `"financial"`'
+                    company_type:
+                      type: string
+                      description: 'Type of company to include. Accepted values: `"private"`,
+                        `"public"`, `"all"`'
+                    geography:
+                      type: array
+                      items:
+                        type: string
+                      description: Geographic scope. It should be a comma separated
+                        list of ISO country codes. (Eg.. `["USA", "GBR"]`)
+              description: '[FROM OFFICIAL DOCS] Request schema from buyer-screening.md.'
+              required:
+              - company
+      security:
+      - bearerAuth: []
+tags:
+- name: Discovery
+  description: Discovery workflows such as market maps and screening.
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Bearer token sent in the Authorization header.
-
-  schemas:
-    BuyerScreeningRequest:
-      type: object
-      additionalProperties: false
-      required:
-        - company
-      properties:
-        company:
-          type: string
-          description: Permalink or URL of the target company.
-          example: brex
-        parameters:
-          $ref: '#/components/schemas/BuyerScreeningParameters'
-
-    BuyerScreeningParameters:
-      type: object
-      additionalProperties: false
-      properties:
-        detailed_query:
-          type: string
-          description: A descriptive query to refine the buyer search scope and strategic criteria.
-          example: Looking for companies in spend management, corporate cards, and CFO workflow software with mid-market and enterprise distribution
-        buyer_type:
-          description: |
-            Type of buyer to target. The documentation shows this inconsistently
-            as either a single string or an array, so both forms are allowed here.
-          oneOf:
-            - type: string
-              enum:
-                - strategic
-                - financial
-            - type: array
-              items:
-                type: string
-                enum:
-                  - strategic
-                  - financial
-          example: strategic
-        company_type:
-          type: string
-          description: Type of company to include.
-          enum:
-            - private
-            - public
-            - all
-          example: public
-        geography:
-          type: array
-          description: Geographic scope. Docs describe ISO country codes, though an example also uses full country names.
-          items:
-            type: string
-          example:
-            - USA
-
-    BuyerScreeningResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - request_id
-        - status
-        - result
-      properties:
-        request_id:
-          type: string
-          description: Unique request identifier.
-          example: c685171e-ce46-474b-b0de-f17123b3085a
-        status:
-          type: string
-          description: Processing status.
-          example: COMPLETED
-        result:
-          type: array
-          description: Ranked list of scored buyer candidates.
-          items:
-            $ref: '#/components/schemas/BuyerCandidate'
-
-    BuyerCandidate:
-      type: object
-      additionalProperties: true
-      properties:
-        Permalink:
-          type: string
-          nullable: true
-        Name:
-          type: string
-          nullable: true
-        Website:
-          type: string
-          nullable: true
-        HQ City:
-          type: string
-          nullable: true
-        HQ Country:
-          type: string
-          nullable: true
-        HQ Continent:
-          type: string
-          nullable: true
-        Founded:
-          type: string
-          nullable: true
-        Type:
-          type: string
-          nullable: true
-        Operating Status:
-          type: string
-          nullable: true
-        Buyer Type:
-          type: string
-          nullable: true
-        Product Category:
-          type: string
-          nullable: true
-        Core Offering:
-          type: string
-          nullable: true
-        Product Catalog:
-          type: string
-          nullable: true
-        Employees (Crunchbase):
-          oneOf:
-            - type: string
-            - type: integer
-          nullable: true
-        Employees (LinkedIn):
-          oneOf:
-            - type: integer
-            - type: string
-          nullable: true
-        Funding Stage:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Total Funding:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Last Funding Date:
-          type: string
-          nullable: true
-        Key Investors:
-          oneOf:
-            - type: array
-              items:
-                type: string
-            - type: string
-          nullable: true
-        Revenue:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Ticker:
-          type: string
-          nullable: true
-        EBITDA:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Net Income:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        EBITDA Margin (%):
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Net Income Margin (%):
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        EPS Diluted:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        ROA (%):
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Unlevered FCF:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        D/E:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Market Cap:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Enterprise Value:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        EV/Revenue (LTM):
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        EV/EBITDA (LTM):
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        P/E (LTM):
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Acquisitions:
-          type: string
-          nullable: true
-        Investments:
-          type: string
-          nullable: true
-        Overall Score:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Overall Score Rationale:
-          type: string
-          nullable: true
-        Commentary:
-          type: string
-          nullable: true
-        Deal Feasibility Score:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Deal Feasibility Rationale:
-          type: string
-          nullable: true
-        Product Synergy Score:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Product Synergy Rationale:
-          type: string
-          nullable: true
-        Deal Precedent Score:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Deal Precedent Rationale:
-          type: string
-          nullable: true
-        Synergy Potential Score:
-          oneOf:
-            - type: string
-            - type: number
-          nullable: true
-        Synergy Potential Rationale:
-          type: string
-          nullable: true
-
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          additionalProperties: false
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: string
-              example: bad_request
-            message:
-              type: string
-              example: Invalid request payload.
-            details:
-              type: array
-              items:
-                $ref: '#/components/schemas/ErrorDetail'
-
-    ErrorDetail:
-      type: object
-      additionalProperties: true
-      properties:
-        field:
-          type: string
-          example: company
-        message:
-          type: string
-          example: Company is required.

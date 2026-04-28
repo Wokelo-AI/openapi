@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: Request Result
+  description: Retrieves the result of a previously submitted API request.
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/enterprise/request/result/:
+    get:
+      tags:
+      - Supporting APIs
+      summary: Request Result
+      description: 'Source docs: request-result.md'
+      operationId: get_api_enterprise_request_result
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Request ID of the initiated request
+                  status:
+                    type: string
+                    description: Status of the request
+                  result:
+                    type: array
+                    items: {}
+                    description: Result depending on the request
+                description: '[FROM OFFICIAL DOCS] Response schema from request-result.md.'
+                example: &id001
+                  request_id: d7a78d10-663a-493f-9b79-be1e6094f3bb
+                  status: COMPLETED
+                  result:
+                  - tesla-motors:
+                      firmographics:
+                        name: Tesla
+                        website: https://www.tesla.com
+                        location: Austin, United States
+                        founded: 2003
+                        type: public
+                        operating_status: IPO
+                        ticker: NASDAQ:TSLA
+              example: *id001
+      x-source-variants:
+      - group_path: Supporting APIs
+        request_name: Request Result
+      parameters:
+      - name: request_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: 'The unique identifier of the async request whose status is being
+          checked. Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
+      security:
+      - bearerAuth: []
+tags:
+- name: Supporting APIs
+  description: Supporting endpoints for uploads, status, downloads, and configuration.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

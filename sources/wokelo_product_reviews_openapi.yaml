@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+  title: Product Reviews
+  description: Retrieves paginated product reviews for a specified company, supporting
+    configurable result limits and offsets for efficient data navigation. Returns
+    a structured list of product reviews.
+  version: 2.0.0
+  license:
+    name: Proprietary
+servers:
+- url: https://api.wokelo.ai
+paths:
+  /api/enterprise/company/product-reviews/:
+    get:
+      tags:
+      - Enrichment
+      summary: Product Reviews
+      description: 'Source docs: product-reviews.md'
+      operationId: get_api_enterprise_company_product-reviews
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      company:
+                        type: string
+                      product_name:
+                        type: string
+                      rating:
+                        type: number
+                      star_distribution:
+                        type: object
+                        properties:
+                          '1':
+                            type: integer
+                          '2':
+                            type: integer
+                          '3':
+                            type: integer
+                          '4':
+                            type: integer
+                          '5':
+                            type: integer
+                        required:
+                        - '1'
+                        - '2'
+                        - '3'
+                        - '4'
+                        - '5'
+                      reviews:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            review_id:
+                              type: integer
+                            review_title:
+                              type: string
+                          required:
+                          - review_id
+                          - review_title
+                    required:
+                    - company
+                    - product_name
+                    - rating
+                    - star_distribution
+                    - reviews
+                required:
+                - status
+                - data
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example
+                  in product-reviews.md.'
+              example:
+                status: success
+                data:
+                  company: salesforce
+                  product_name: Slack
+                  rating: 4.5
+                  star_distribution:
+                    '1': 128
+                    '2': 270
+                    '3': 1239
+                    '4': 7083
+                    '5': 25056
+                  reviews:
+                  - review_id: 10674077
+                    review_title: Easy to use enterprise communication platform
+      x-source-variants:
+      - group_path: Enrichment
+        request_name: Product Reviews
+      parameters:
+      - name: company
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Permalink of the company whose product reviews need to be fetched
+          E.g. `"salesforce"`
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Maximum number of product reviews to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Number of records to skip before starting to return results
+      security:
+      - bearerAuth: []
+tags:
+- name: Enrichment
+  description: Company and industry enrichment capabilities.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
