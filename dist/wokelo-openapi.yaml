@@ -2521,6 +2521,29 @@ paths:
                   firmographics: '#/components/schemas/CompanyInstantEnrichmentRequest'
                   products_and_services: '#/components/schemas/CompanyDeepIntelligenceRequest'
               description: '[FROM OFFICIAL DOCS] Company enrichment union request body. Variant selection is based on the documented `sections` vocabulary.'
+            examples:
+              company_deep_intelligence:
+                value:
+                  companies:
+                    - tesla-motors
+                    - stripe
+                  sections:
+                    - products_and_services
+                    - product_launches
+                  parameters:
+                    custom_fields:
+                      - field_name: AI Readiness
+                        type: text
+                        prompt: Rate this company's AI readiness on a scale of 1-10 with reasoning
+              company_instant_enrichment:
+                value:
+                  companies:
+                    - tesla-motors
+                    - stripe
+                  sections:
+                    - firmographics
+                    - products
+                    - funding
       security:
         - bearerAuth: []
       x-codeSamples:
