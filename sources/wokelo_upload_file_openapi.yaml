@@ -1,9 +1,7 @@
 openapi: 3.0.3
 info:
   title: Upload File
-  description: Upload your files to Wokelo to supplement research reports with proprietary
-    data. Each uploaded file receives a unique identifier that you can reference in
-    the `custom_files` parameter when creating reports.
+  description: Upload your files to Wokelo to supplement research reports with proprietary data. Each uploaded file receives a unique identifier that you can reference in the `custom_files` parameter when creating reports.
   version: 2.0.0
   license:
     name: Proprietary
@@ -15,7 +13,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Upload file
-      description: 'Source docs: upload-file.md'
+      description: Upload your files to Wokelo to supplement research reports with proprietary data. Each uploaded file receives a unique identifier that you can reference in the `custom_files` parameter when creating reports.
       operationId: post_api_assets_upload
       responses:
         '200':
@@ -35,23 +33,17 @@ paths:
                       properties:
                         fileName:
                           type: string
-                          description: "Wokelo's unique file identifier\u2014use this\
-                            \ in the `custom_files` parameter when creating reports"
+                          description: Wokelo's unique file identifier—use this in the `custom_files` parameter when creating reports
                         originalName:
                           type: string
-                          description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                            \ Original uploaded filename returned for each successful\
-                            \ file."
+                          description: '[FROM EXAMPLE — not in formal docs schema] Original uploaded filename returned for each successful file.'
                         mimeType:
                           type: string
                           description: Detected file type/format
                         uuid:
                           type: string
-                          description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                            \ Caller-provided UUID echoed back for each successful\
-                            \ file when supplied."
-                    description: Array containing information on successfully uploaded
-                      files
+                          description: '[FROM EXAMPLE — not in formal docs schema] Caller-provided UUID echoed back for each successful file when supplied.'
+                    description: Array containing information on successfully uploaded files
                   fails:
                     type: array
                     items:
@@ -59,10 +51,8 @@ paths:
                       properties:
                         reason:
                           type: string
-                          description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                            \ Reason given for each failed upload item when present."
-                    description: Array containing information about failed uploads
-                      (empty on success)
+                          description: '[FROM EXAMPLE — not in formal docs schema] Reason given for each failed upload item when present.'
+                    description: Array containing information about failed uploads (empty on success)
                 description: '[FROM OFFICIAL DOCS] Response schema from upload-file.md.'
                 example: &id001
                   status: success
@@ -77,9 +67,8 @@ paths:
                     uuid: k3m8n5p1q6
                   fails: []
               example: *id001
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Upload file
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -98,9 +87,7 @@ paths:
                   items:
                     type: string
                     format: uuid
-                  description: Your own UUIDs to track files. Must match the length
-                    and order of the `files` array. These UUIDs will be returned in
-                    the response alongside Wokelo's `fileName` identifiers.
+                  description: Your own UUIDs to track files. Must match the length and order of the `files` array. These UUIDs will be returned in the response alongside Wokelo's `fileName` identifiers.
               description: '[FROM OFFICIAL DOCS] Multipart upload payload.'
               required:
               - files
@@ -115,3 +102,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

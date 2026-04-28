@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
   title: Notebook Configuration
-  description: Retrieves and returns the settings you originally configured while
-    initiating the report.
+  description: Retrieves and returns the settings you originally configured while initiating the report.
   version: 2.0.0
   license:
     name: Proprietary
@@ -14,14 +13,19 @@ paths:
       tags:
       - Supporting APIs
       summary: Notebook Configuration
-      description: 'Source docs: notebook-configuration.md'
+      description: Retrieves and returns the settings you originally configured while initiating the report.
       operationId: post_api_wkl_notebook_configuration
       responses:
         '200':
-          description: Successful response
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Notebook Configuration
+          description: Notebook configuration returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                description: Notebook configuration object. The docs describe this as the original workflow configuration and do not formalize the shape.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -31,8 +35,7 @@ paths:
               properties:
                 notebook_id:
                   type: integer
-                  description: Report ID of the notebook for which the configuration
-                    is to be retrieved
+                  description: Report ID of the notebook for which the configuration is to be retrieved
               description: '[FROM OFFICIAL DOCS] Request schema from notebook-configuration.md.'
               required:
               - notebook_id
@@ -47,3 +50,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

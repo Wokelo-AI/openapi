@@ -1,9 +1,7 @@
 openapi: 3.0.3
 info:
   title: '[Legacy] Fetch News Report'
-  description: This endpoint retrieves the news items from an existing news report
-    run via the Get News Report endpoint `/api/news/start/` news. It returns the news
-    items as a JSON
+  description: This endpoint retrieves the news items from an existing news report run via the Get News Report endpoint `/api/news/start/` news. It returns the news items as a JSON
   version: 2.0.0
   license:
     name: Proprietary
@@ -15,7 +13,7 @@ paths:
       tags:
       - Monitoring
       summary: '[Legacy] Fetch News Report'
-      description: 'Source docs: legacy-fetch-news-report.md'
+      description: This endpoint retrieves the news items from an existing news report run via the Get News Report endpoint `/api/news/start/` news. It returns the news items as a JSON
       operationId: post_api_news_fetch
       responses:
         '200':
@@ -48,13 +46,11 @@ paths:
                 required:
                 - report_id
                 - data
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in legacy-fetch-news-report.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in legacy-fetch-news-report.md.'
               example:
                 report_id: 72053
                 data:
-                - ai_summary: Wokelo has announced a minority equity investment from
-                    KPMG LLP, marking a significant step in their growth strategy.
+                - ai_summary: Wokelo has announced a minority equity investment from KPMG LLP, marking a significant step in their growth strategy.
                   type: Investments
                   url: https://kpmg.com/us/en/media/news/kpmg-wokelo-investment-2024.html
                   title: Wokelo Announces Minority Equity Investment from KPMG LLP
@@ -71,9 +67,8 @@ paths:
                 - error
               example:
                 error: Report not found.
-      x-source-variants:
-      - group_path: Monitoring
-        request_name: '[Legacy] Fetch News Report'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -83,12 +78,10 @@ paths:
               properties:
                 report_id:
                   type: integer
-                  description: Report ID of the news report from which the news is
-                    to be retrieved
+                  description: Report ID of the news report from which the news is to be retrieved
                 page:
                   type: integer
-                  description: 'Page number from which the news is to be returned
-                    in the response. Default: 1'
+                  description: 'Page number from which the news is to be returned in the response. Default: 1'
                 page_size:
                   type: integer
                   description: 'Number of news items per page. Default: 500'
@@ -106,3 +99,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
   title: Download Report
-  description: Downloads the generated report in the required format such as docx,
-    pdf, and json. The format is passed in the request body.
+  description: Downloads the generated report in the required format such as docx, pdf, and json. The format is passed in the request body.
   version: 2.0.0
   license:
     name: Proprietary
@@ -14,7 +13,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Download Report
-      description: 'Source docs: download-report.md'
+      description: Downloads the generated report in the required format such as docx, pdf, and json. The format is passed in the request body.
       operationId: post_api_assets_download_report
       responses:
         '200':
@@ -62,22 +61,19 @@ paths:
                     - Executive Summary
                 required:
                 - Executive Summary
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in download-report.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in download-report.md.'
               example:
                 Executive Summary:
                   Executive Summary:
                     summary:
                       source:
                       - id: 1
-                        title: openPR.com L4 Self-driving Vehicle Market Current Status
-                          and Future Prospects till 2033
+                        title: openPR.com L4 Self-driving Vehicle Market Current Status and Future Prospects till 2033
                         url: https://www.openpr.com/news/4132700/l4-self-driving-vehicle-market-current-status-and-future
                         publisher: ''
                         date: ''
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Download Report
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -106,3 +102,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

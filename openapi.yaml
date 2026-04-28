@@ -1,18 +1,7 @@
 openapi: 3.0.3
 info:
   title: Wokelo API
-  description: |-
-    Wokelo's API suite is purpose-built for developers building dealmaking AI infrastructure.
-    It delivers structured, processed intelligence at the quality standard investment and
-    advisory workflows demand.
-
-    This 2.0.0 release aligns the canonical OpenAPI with the current official Wokelo docs,
-    Postman collection, and the 26 standalone capability specifications stored under `sources/`.
-
-    - Entities resolved across a proprietary database of 20M+ public and private companies.
-    - News signals deduplicated across 1,000+ curated sources.
-    - Every output is agent-native, source-traced, and ready to plug directly into your models,
-      agents, and workflows without additional processing.
+  description: "Wokelo's API suite is purpose-built for developers building dealmaking AI infrastructure.\nIt delivers structured, processed intelligence at the quality standard investment and\nadvisory workflows demand.\n\nThis 2.0.0 release aligns the canonical OpenAPI with the current official Wokelo docs,\nPostman collection, and the 26 standalone capability specifications stored under `sources/`.\n\n- Entities resolved across a proprietary database of 20M+ public and private companies.\n- News signals deduplicated across 1,000+ curated sources.\n- Every output is agent-native, source-traced, and ready to plug directly into your models,\n  agents, and workflows without additional processing."
   version: 2.0.0
   contact:
     name: Wokelo
@@ -42,7 +31,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Get Report Status
-      description: 'Source docs: get-report-status.md'
+      description: Retrieves the current status of a previously triggered report using its unique ID
       operationId: get_api_assets_get_notebook_status
       responses:
         '200':
@@ -62,8 +51,7 @@ paths:
                 - report_id
                 - status
                 - title
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in get-report-status.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in get-report-status.md.'
               example:
                 report_id: 98564
                 status: Delayed
@@ -107,9 +95,6 @@ paths:
                 - message
               example:
                 message: You are not authorized to access this report.
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Get Report Status
       parameters:
       - name: report_id
         in: query
@@ -124,7 +109,7 @@ paths:
       tags:
       - Enrichment
       summary: Company Earnings Transcripts
-      description: 'Source docs: earnings-transcripts.md'
+      description: Fetch earnings call transcripts for a public company. Supports year-range filtering.
       operationId: get_api_enterprise_company_earnings-calls
       responses:
         '200':
@@ -244,8 +229,7 @@ paths:
                 - count
                 - from_year
                 - to_year
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in earnings-transcripts.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in earnings-transcripts.md.'
               example:
                 status: success
                 data:
@@ -282,36 +266,19 @@ paths:
                       transcript_person_id: 253177
                     transcript:
                     - name: Martin Viecha
-                      speech: "Good afternoon, everyone, and welcome to Tesla's Fourth\
-                        \ Quarter 2023 Q&A Webcast. My name is Martin Viecha, VP of\
-                        \ Investor Relations, and I'm joined today by Elon Musk, Vaibhav\
-                        \ Taneja, and a number of other executives. Our Q4 results\
-                        \ were announced at about 3:00 p.m. Central Time in the update\
-                        \ deck we published at the same link as this webcast.\r\n\
-                        During this call, we will discuss our business outlook and\
-                        \ make forward-looking statements. These comments are based\
-                        \ on our predictions and expectations... [truncated]"
+                      speech: "Good afternoon, everyone, and welcome to Tesla's Fourth Quarter 2023 Q&A Webcast. My name is Martin Viecha, VP of Investor Relations, and I'm joined today by Elon Musk, Vaibhav Taneja, and a number of other executives. Our Q4 results were announced at about 3:00 p.m. Central Time in the update deck we published at the same link as this webcast.\r\nDuring this call, we will discuss our business outlook and make forward-looking statements. These comments are based on our predictions and expectations... [truncated]"
                       session: Presenter Speech
                       person_id: 370659
                       person_company: null
                       component_order: 0
                     - name: Elon Musk
-                      speech: Thank you. So the Tesla team did an incredible job in
-                        2023. We achieved record production and deliveries of [ about
-                        ] 1.8 million vehicles, in line with our official guidance.
-                        And in Q4, we're producing vehicles at an annualized run rate
-                        of almost 2 million cars a year. This is really a phenomenal
-                        achievement. Looking at just the Fremont factory alone, we
-                        made 560,000 cars. This is a record. In fact, it's the highest
-                        output of automotive plant in North America. And people are
-                        often surprised tha... [truncated]
+                      speech: Thank you. So the Tesla team did an incredible job in 2023. We achieved record production and deliveries of [ about ] 1.8 million vehicles, in line with our official guidance. And in Q4, we're producing vehicles at an annualized run rate of almost 2 million cars a year. This is really a phenomenal achievement. Looking at just the Fremont factory alone, we made 560,000 cars. This is a record. In fact, it's the highest output of automotive plant in North America. And people are often surprised tha... [truncated]
                       session: Presenter Speech
                       person_id: 175883
                       person_company: null
                       component_order: 1
                     - name: Martin Viecha
-                      speech: Thank you. And our CFO, Vaibhav, has opening remarks
-                        as well.
+                      speech: Thank you. And our CFO, Vaibhav, has opening remarks as well.
                       session: Presenter Speech
                       person_id: 370659
                       person_company: null
@@ -339,8 +306,7 @@ paths:
                     - name: Drew Baglino
                       role: Executives
                       pro_id: 621069668
-                      job_title: Former Senior Vice President of Powertrain & Energy
-                        Engineering
+                      job_title: Former Senior Vice President of Powertrain & Energy Engineering
                       description: Executives
                       company_name: Tesla, Inc.
                       transcript_person_id: 393478
@@ -353,36 +319,19 @@ paths:
                       transcript_person_id: 175883
                     transcript:
                     - name: Martin Viecha
-                      speech: Good afternoon, everyone and welcome to Tesla's Third
-                        Quarter 2023 Q&A Webcast. My name is Martin Viecha, VP of
-                        Investor Relations, and I'm joined today by Elon Musk, Vaibhav
-                        Taneja and a number of other executives. Our Q3 results were
-                        announced at about 3:00 p.m. Central Time in the update that
-                        we published at the same link as this webcast. During this
-                        call, we will discuss our business outlook and make forward-looking
-                        statements. These comments are based on our predictions and
-                        expectations as ... [truncated]
+                      speech: Good afternoon, everyone and welcome to Tesla's Third Quarter 2023 Q&A Webcast. My name is Martin Viecha, VP of Investor Relations, and I'm joined today by Elon Musk, Vaibhav Taneja and a number of other executives. Our Q3 results were announced at about 3:00 p.m. Central Time in the update that we published at the same link as this webcast. During this call, we will discuss our business outlook and make forward-looking statements. These comments are based on our predictions and expectations as ... [truncated]
                       session: Presenter Speech
                       person_id: 370659
                       person_company: null
                       component_order: 0
                     - name: Elon Musk
-                      speech: Thanks, Martin. So just a Q3 recap. Our last quarter
-                        was impacted by down time for global factory upgrades that
-                        will help us reduce cost per vehicle as well as increase production.
-                        We remain focused on 3 main objectives which is the cost reduction
-                        of our products, investments in artificial intelligence, and
-                        other growth projects like Optimus. And continued free cash
-                        flow generation. Regarding vehicle cost, our team was able
-                        to reduce the cost per vehicle further in Q3 despite headwinds
-                        from fact... [truncated]
+                      speech: Thanks, Martin. So just a Q3 recap. Our last quarter was impacted by down time for global factory upgrades that will help us reduce cost per vehicle as well as increase production. We remain focused on 3 main objectives which is the cost reduction of our products, investments in artificial intelligence, and other growth projects like Optimus. And continued free cash flow generation. Regarding vehicle cost, our team was able to reduce the cost per vehicle further in Q3 despite headwinds from fact... [truncated]
                       session: Presenter Speech
                       person_id: 175883
                       person_company: null
                       component_order: 1
                     - name: Martin Viecha
-                      speech: Thank you very much, Elon. And our CFO, Vaibhav, had
-                        some opening remarks as well.
+                      speech: Thank you very much, Elon. And our CFO, Vaibhav, had some opening remarks as well.
                       session: Presenter Speech
                       person_id: 370659
                       person_company: null
@@ -403,8 +352,7 @@ paths:
                     - name: Colin Rusch
                       role: Analysts
                       pro_id: 311020585
-                      job_title: MD & Senior Analyst and Head of Sustainable Growth
-                        & Resource Optimization
+                      job_title: MD & Senior Analyst and Head of Sustainable Growth & Resource Optimization
                       description: Analysts
                       company_name: Oppenheimer & Co. Inc., Research Division
                       transcript_person_id: 310676
@@ -418,43 +366,25 @@ paths:
                     - name: Drew Baglino
                       role: Executives
                       pro_id: 621069668
-                      job_title: Former Senior Vice President of Powertrain & Energy
-                        Engineering
+                      job_title: Former Senior Vice President of Powertrain & Energy Engineering
                       description: Executives
                       company_name: Tesla, Inc.
                       transcript_person_id: 393478
                     transcript:
                     - name: Martin Viecha
-                      speech: "Good afternoon, everyone, and welcome to Tesla's Second\
-                        \ Quarter 2023 Q&A Webcast. My name is Martin Viecha, I'm\
-                        \ VP of Investor Relations, and I'm joined today by Elon Musk,\
-                        \ Zachary Kirkhorn and a number of other executives. \r\n\
-                        Our Q2 results were announced at about 3 p.m. Central Time\
-                        \ in the update deck we published at the same link as this\
-                        \ webcast. During this call, we will discuss our business\
-                        \ outlook and make forward-looking statements. These comments\
-                        \ are based on our predictions and expectati... [truncated]"
+                      speech: "Good afternoon, everyone, and welcome to Tesla's Second Quarter 2023 Q&A Webcast. My name is Martin Viecha, I'm VP of Investor Relations, and I'm joined today by Elon Musk, Zachary Kirkhorn and a number of other executives. \r\nOur Q2 results were announced at about 3 p.m. Central Time in the update deck we published at the same link as this webcast. During this call, we will discuss our business outlook and make forward-looking statements. These comments are based on our predictions and expectati... [truncated]"
                       session: Presenter Speech
                       person_id: 370659
                       person_company: null
                       component_order: 0
                     - name: Elon Musk
-                      speech: "Thank you, Martin. So just a Q2 recap. In Q2, we achieved\
-                        \ record vehicle production and deliveries and record revenue\
-                        \ of about $25 billion in a single quarter. And Model Y became\
-                        \ the best-selling vehicle of any kind globally in Q1, surpassing\
-                        \ the likes of Corolla and Gulf. So it was the #1 vehicle\
-                        \ of any kind, including vehicles that are sold at a far lower\
-                        \ price. This is, I think, an incredible achievement by the\
-                        \ Tesla team, and just a huge thank you to our customers for\
-                        \ their support. \r\nSo thi... [truncated]"
+                      speech: "Thank you, Martin. So just a Q2 recap. In Q2, we achieved record vehicle production and deliveries and record revenue of about $25 billion in a single quarter. And Model Y became the best-selling vehicle of any kind globally in Q1, surpassing the likes of Corolla and Gulf. So it was the #1 vehicle of any kind, including vehicles that are sold at a far lower price. This is, I think, an incredible achievement by the Tesla team, and just a huge thank you to our customers for their support. \r\nSo thi... [truncated]"
                       session: Presenter Speech
                       person_id: 175883
                       person_company: null
                       component_order: 1
                     - name: Martin Viecha
-                      speech: Thank you very much, Elon. And I think Zach has some
-                        opening remarks as well.
+                      speech: Thank you very much, Elon. And I think Zach has some opening remarks as well.
                       session: Presenter Speech
                       person_id: 370659
                       person_company: null
@@ -465,9 +395,8 @@ paths:
                 count: 12
                 from_year: 2021
                 to_year: 2023
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Company Earnings Transcripts
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: company
         in: query
@@ -494,7 +423,7 @@ paths:
       tags:
       - Enrichment
       summary: Employee Reviews
-      description: 'Source docs: employee-reviews.md'
+      description: Retrieves paginated employee reviews for a specified company, supporting configurable result limits and offsets for efficient data navigation. Returns a structured list of product reviews.
       operationId: get_api_enterprise_company_employee-reviews
       responses:
         '200':
@@ -548,8 +477,7 @@ paths:
                 required:
                 - status
                 - data
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in employee-reviews.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in employee-reviews.md.'
               example:
                 status: success
                 data:
@@ -564,17 +492,15 @@ paths:
                     diversity_and_inclusion_rating: 4.2
                     senior_management_rating: 3.6
                     work_life_balance_rating: 3.9
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Employee Reviews
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: company
         in: query
         required: true
         schema:
           type: string
-        description: Permalink of the company whose employee reviews need to be fetched
-          E.g. `"salesforce"`
+        description: Permalink of the company whose employee reviews need to be fetched E.g. `"salesforce"`
       - name: limit
         in: query
         required: false
@@ -594,7 +520,7 @@ paths:
       tags:
       - Enrichment
       summary: Company Filings
-      description: 'Source docs: company-filings.md'
+      description: Fetch SEC filings for a public company. Supports filtering by form type (10-K, 10-Q, 8-K, etc.) and year range.
       operationId: get_api_enterprise_company_filings
       responses:
         '200':
@@ -651,8 +577,7 @@ paths:
                 - from_year
                 - to_year
                 - form
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in company-filings.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in company-filings.md.'
               example:
                 status: success
                 data:
@@ -663,27 +588,20 @@ paths:
                   acceptedDate: '2023-01-31 02:29:15'
                   reportUrl: https://www.sec.gov/Archives/edgar/data/1318605/000095017023001409/tsla-20221231.htm
                   filingUrl: https://www.sec.gov/Archives/edgar/data/1318605/000095017023001409/0000950170-23-001409-index.html
-                  filingData: <html xmlns="http://www.w3.org/1999/xhtml" xmlns:xbrldi="http://xbrl.org/2006/xbrldi"
-                    xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:xbrli="http://www.xbrl.org/2003/instance"
-                    xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink"
-                    xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:nonnumeric="http://www.xbrl.org/dtr/type/non-numeric"
-                    xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2015-02-26"
-                    xmlns:ixt-sec="http://www.sec.gov/inlineXBRL/transformati... [truncated]
+                  filingData: <html xmlns="http://www.w3.org/1999/xhtml" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:nonnumeric="http://www.xbrl.org/dtr/type/non-numeric" xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2015-02-26" xmlns:ixt-sec="http://www.sec.gov/inlineXBRL/transformati... [truncated]
                 count: 1
                 from_year: 2023
                 to_year: 2023
                 form: 10-K
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Company Filings
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: company
         in: query
         required: true
         schema:
           type: string
-        description: Permalink/ URL of the company whose filings need to be fetched
-          E.g. `"salesforce"`
+        description: Permalink/ URL of the company whose filings need to be fetched E.g. `"salesforce"`
       - name: form
         in: query
         required: false
@@ -709,7 +627,7 @@ paths:
       tags:
       - Monitoring
       summary: Company News Monitoring
-      description: 'Source docs: company-news-monitoring.md'
+      description: The Monitoring API fetches the latest news articles for a given company, enriched with AI-generated summaries, categories and publisher details. Optionally, you can refine the output by specifying date range, publisher list, blacklisted publishers, article limit, and news categories. Results are returned in the API response.
       operationId: get_api_enterprise_company_news
       responses:
         '200':
@@ -733,15 +651,10 @@ paths:
                 example: &id001
                   status: success
                   data:
-                  - ai_summary: 'Nordea Investment Management AB reduced its stake
-                      in Tesla, Inc. by 8.4% in the fourth quarter, according to its
-                      SEC filing. Several institutional investors increased their
-                      holdings, and Tesla reported quarterly earnings with a net margin
-                      of 4%, revenue of $24.90 billion, and an EPS of $0.50. '
+                  - ai_summary: 'Nordea Investment Management AB reduced its stake in Tesla, Inc. by 8.4% in the fourth quarter, according to its SEC filing. Several institutional investors increased their holdings, and Tesla reported quarterly earnings with a net margin of 4%, revenue of $24.90 billion, and an EPS of $0.50. '
                     type: Secondary Transactions
                     url: https://www.defenseworld.net/2026/03/23/nordea-investment-management-ab-lowers-position-in-tesla-inc-tsla.html
-                    title: Nordea Investment Management AB Lowers Position in Tesla,
-                      Inc. $TSLA
+                    title: Nordea Investment Management AB Lowers Position in Tesla, Inc. $TSLA
                     company_name: Tesla
                     publisher: defenseworld
                     published_date: '2026-03-23 10:52:44'
@@ -759,9 +672,8 @@ paths:
                     newsworthiness_impact: Medium
                   count: 4
               example: *id001
-      x-source-variants:
-      - group_path: Monitoring
-        request_name: Company News Monitoring
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: blacklisted
         in: query
@@ -774,29 +686,25 @@ paths:
         required: false
         schema:
           type: string
-        description: Comma-separated list of news categories to filter by. [View](https://wkemails.blob.core.windows.net/clients/%28%27808dda00-141d-4952-b44c-c50bd41c2ce3%27%2C%29/news_category_names.csv)
-          complete list of all the supported news categories.
+        description: Comma-separated list of news categories to filter by. [View](https://wkemails.blob.core.windows.net/clients/%28%27808dda00-141d-4952-b44c-c50bd41c2ce3%27%2C%29/news_category_names.csv) complete list of all the supported news categories.
       - name: company
         in: query
         required: true
         schema:
           type: string
-        description: Company permalink or a valid company URL for which news articles
-          need to be fetched (e.g., `tesla` or `https://www.tesla.com/`)
+        description: Company permalink or a valid company URL for which news articles need to be fetched (e.g., `tesla` or `https://www.tesla.com/`)
       - name: end_date
         in: query
         required: false
         schema:
           type: string
-        description: End date for the timeframe to consider when fetching news (e.g.,
-          `2024-12-31`)
+        description: End date for the timeframe to consider when fetching news (e.g., `2024-12-31`)
       - name: limit
         in: query
         required: false
         schema:
           type: integer
-        description: Maximum number of news articles to return Default = 100 Max value=
-          1000
+        description: Maximum number of news articles to return Default = 100 Max value= 1000
       - name: offset
         in: query
         required: false
@@ -808,15 +716,13 @@ paths:
         required: false
         schema:
           type: string
-        description: Comma-separated list of publisher domains whose articles will
-          be included.
+        description: Comma-separated list of publisher domains whose articles will be included.
       - name: start_date
         in: query
         required: false
         schema:
           type: string
-        description: Start date for the timeframe to consider when fetching news (e.g.,
-          `2024-01-01`)
+        description: Start date for the timeframe to consider when fetching news (e.g., `2024-01-01`)
       security:
       - bearerAuth: []
   /api/enterprise/company/product-reviews/:
@@ -824,7 +730,7 @@ paths:
       tags:
       - Enrichment
       summary: Product Reviews
-      description: 'Source docs: product-reviews.md'
+      description: Retrieves paginated product reviews for a specified company, supporting configurable result limits and offsets for efficient data navigation. Returns a structured list of product reviews.
       operationId: get_api_enterprise_company_product-reviews
       responses:
         '200':
@@ -885,8 +791,7 @@ paths:
                 required:
                 - status
                 - data
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in product-reviews.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in product-reviews.md.'
               example:
                 status: success
                 data:
@@ -902,17 +807,15 @@ paths:
                   reviews:
                   - review_id: 10674077
                     review_title: Easy to use enterprise communication platform
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Product Reviews
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: company
         in: query
         required: true
         schema:
           type: string
-        description: Permalink of the company whose product reviews need to be fetched
-          E.g. `"salesforce"`
+        description: Permalink of the company whose product reviews need to be fetched E.g. `"salesforce"`
       - name: limit
         in: query
         required: false
@@ -932,7 +835,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Company Search
-      description: 'Source docs: company-search.md'
+      description: Search for companies using name, website or ticker. It returns a list of companies with their permalink and other attributes.
       operationId: get_api_enterprise_company_search
       responses:
         '200':
@@ -988,8 +891,7 @@ paths:
                           description: Company domain name.
                         last_funding_round:
                           type: string
-                          description: Most recent funding round (e.g., `Seed`, `Pre
-                            Seed` etc)
+                          description: Most recent funding round (e.g., `Seed`, `Pre Seed` etc)
                     description: List of matching company objects.
                   count:
                     type: integer
@@ -1000,8 +902,7 @@ paths:
                   data:
                   - name: Wokelo AI
                     permalink: wokelo-ai
-                    short_description: Wokelo builds purpose-built AI agents for dealmaking
-                      and consulting.
+                    short_description: Wokelo builds purpose-built AI agents for dealmaking and consulting.
                     founded_year: '2023'
                     ipo_status: private
                     hq: Seattle, United States
@@ -1014,17 +915,15 @@ paths:
                     last_funding_round: Seed
                   count: 10
               example: *id002
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Company Search
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: query
         in: query
         required: true
         schema:
           type: string
-        description: 'The search query string (e.g., company name, website or ticker).
-          Examples: Tesla OR `https://tesla.com` OR TSLA'
+        description: 'The search query string (e.g., company name, website or ticker). Examples: Tesla OR `https://tesla.com` OR TSLA'
       - name: search_by
         in: query
         required: false
@@ -1036,9 +935,7 @@ paths:
         required: false
         schema:
           type: string
-        description: 'Filter by company type. Supported values: `private`, `public`,
-          `all` Note: Use `all` to return all types. (This is the default value is
-          nothing is mentioned)'
+        description: 'Filter by company type. Supported values: `private`, `public`, `all` Note: Use `all` to return all types. (This is the default value is nothing is mentioned)'
       security:
       - bearerAuth: []
   /api/enterprise/request/result/:
@@ -1046,7 +943,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Request Result
-      description: 'Source docs: request-result.md'
+      description: Retrieves the result of a previously submitted API request.
       operationId: get_api_enterprise_request_result
       responses:
         '200':
@@ -1081,17 +978,15 @@ paths:
                         operating_status: IPO
                         ticker: NASDAQ:TSLA
               example: *id003
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Request Result
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: request_id
         in: query
         required: true
         schema:
           type: string
-        description: 'The unique identifier of the async request whose status is being
-          checked. Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
+        description: 'The unique identifier of the async request whose status is being checked. Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
       security:
       - bearerAuth: []
   /api/enterprise/request/status/:
@@ -1099,7 +994,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Request Status
-      description: 'Source docs: request-status.md'
+      description: Retrieves the current status of a previously submitted API request.
       operationId: get_api_enterprise_request_status
       responses:
         '200':
@@ -1125,25 +1020,22 @@ paths:
                 - request_type
                 - created_at
                 - updated_at
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in request-status.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in request-status.md.'
               example:
                 request_id: b1f10ebf-a251-4e2d-b867-8482ac701987
                 status: COMPLETED
                 request_type: target_screening
                 created_at: '2026-03-25T07:24:40.333168Z'
                 updated_at: '2026-03-25T07:30:41.503082Z'
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Request Status
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: request_id
         in: query
         required: true
         schema:
           type: string
-        description: 'The unique identifier of the request whose status is being checked.
-          Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
+        description: 'The unique identifier of the request whose status is being checked. Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
       security:
       - bearerAuth: []
   /api/assets/download_report/:
@@ -1151,7 +1043,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Download Report
-      description: 'Source docs: download-report.md'
+      description: Downloads the generated report in the required format such as docx, pdf, and json. The format is passed in the request body.
       operationId: post_api_assets_download_report
       responses:
         '200':
@@ -1199,22 +1091,19 @@ paths:
                     - Executive Summary
                 required:
                 - Executive Summary
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in download-report.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in download-report.md.'
               example:
                 Executive Summary:
                   Executive Summary:
                     summary:
                       source:
                       - id: 1
-                        title: openPR.com L4 Self-driving Vehicle Market Current Status
-                          and Future Prospects till 2033
+                        title: openPR.com L4 Self-driving Vehicle Market Current Status and Future Prospects till 2033
                         url: https://www.openpr.com/news/4132700/l4-self-driving-vehicle-market-current-status-and-future
                         publisher: ''
                         date: ''
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Download Report
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1239,7 +1128,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Upload file
-      description: 'Source docs: upload-file.md'
+      description: Upload your files to Wokelo to supplement research reports with proprietary data. Each uploaded file receives a unique identifier that you can reference in the `custom_files` parameter when creating reports.
       operationId: post_api_assets_upload
       responses:
         '200':
@@ -1259,23 +1148,17 @@ paths:
                       properties:
                         fileName:
                           type: string
-                          description: "Wokelo's unique file identifier\u2014use this\
-                            \ in the `custom_files` parameter when creating reports"
+                          description: Wokelo's unique file identifier—use this in the `custom_files` parameter when creating reports
                         originalName:
                           type: string
-                          description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                            \ Original uploaded filename returned for each successful\
-                            \ file."
+                          description: '[FROM EXAMPLE — not in formal docs schema] Original uploaded filename returned for each successful file.'
                         mimeType:
                           type: string
                           description: Detected file type/format
                         uuid:
                           type: string
-                          description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                            \ Caller-provided UUID echoed back for each successful\
-                            \ file when supplied."
-                    description: Array containing information on successfully uploaded
-                      files
+                          description: '[FROM EXAMPLE — not in formal docs schema] Caller-provided UUID echoed back for each successful file when supplied.'
+                    description: Array containing information on successfully uploaded files
                   fails:
                     type: array
                     items:
@@ -1283,10 +1166,8 @@ paths:
                       properties:
                         reason:
                           type: string
-                          description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                            \ Reason given for each failed upload item when present."
-                    description: Array containing information about failed uploads
-                      (empty on success)
+                          description: '[FROM EXAMPLE — not in formal docs schema] Reason given for each failed upload item when present.'
+                    description: Array containing information about failed uploads (empty on success)
                 description: '[FROM OFFICIAL DOCS] Response schema from upload-file.md.'
                 example: &id004
                   status: success
@@ -1301,9 +1182,8 @@ paths:
                     uuid: k3m8n5p1q6
                   fails: []
               example: *id004
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Upload file
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1322,9 +1202,7 @@ paths:
                   items:
                     type: string
                     format: uuid
-                  description: Your own UUIDs to track files. Must match the length
-                    and order of the `files` array. These UUIDs will be returned in
-                    the response alongside Wokelo's `fileName` identifiers.
+                  description: Your own UUIDs to track files. Must match the length and order of the `files` array. These UUIDs will be returned in the response alongside Wokelo's `fileName` identifiers.
               description: '[FROM OFFICIAL DOCS] Multipart upload payload.'
               required:
               - files
@@ -1342,7 +1220,7 @@ paths:
       tags:
       - Discovery
       summary: Buyer Screening
-      description: 'Source docs: buyer-screening.md'
+      description: The Buyer Screening API generates a long list of potential buyers for a given target company, enriched with structured data. Optionally, you can refine the output by specifying buyer type, company type, geography, and a detailed query to narrow the strategic criteria. Returns a request\_id as a response.
       operationId: post_api_enterprise_buyer-screening_enrich
       responses:
         '200':
@@ -1354,9 +1232,7 @@ paths:
                 properties:
                   request_id:
                     type: string
-                    description: Unique identifier for the request posted. Use this
-                      with the `/api/enterprise/request/status/` endpoint to check
-                      the status
+                    description: Unique identifier for the request posted. Use this with the `/api/enterprise/request/status/` endpoint to check the status
                 description: '[FROM OFFICIAL DOCS] Response schema from buyer-screening.md.'
                 example: &id005
                   request_id: 278412f8-87ca-47a9-9d1c-4a62a687eaf6
@@ -1378,9 +1254,8 @@ paths:
               example:
                 request_id: 278412f8-87ca-47a9-9d1c-4a62a687eaf6
                 status: PENDING
-      x-source-variants:
-      - group_path: Discovery
-        request_name: Buyer Screening
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1390,30 +1265,25 @@ paths:
               properties:
                 company:
                   type: string
-                  description: 'Permalink of the target company or its complete URL
-                    Example: `"acme-solar"` OR `https://www.acmesolar.in/`'
+                  description: 'Permalink of the target company or its complete URL Example: `"acme-solar"` OR `https://www.acmesolar.in/`'
                 parameters:
                   type: object
                   properties:
                     detailed_query:
                       type: string
-                      description: A descriptive query to refine the buyer search
-                        scope and strategic criteria
+                      description: A descriptive query to refine the buyer search scope and strategic criteria
                     buyer_type:
                       type: array
                       items: {}
-                      description: 'Type of buyer to target. Accepted values: `"strategic"`,
-                        `"financial"`'
+                      description: 'Type of buyer to target. Accepted values: `"strategic"`, `"financial"`'
                     company_type:
                       type: string
-                      description: 'Type of company to include. Accepted values: `"private"`,
-                        `"public"`, `"all"`'
+                      description: 'Type of company to include. Accepted values: `"private"`, `"public"`, `"all"`'
                     geography:
                       type: array
                       items:
                         type: string
-                      description: Geographic scope. It should be a comma separated
-                        list of ISO country codes. (Eg.. `["USA", "GBR"]`)
+                      description: Geographic scope. It should be a comma separated list of ISO country codes. (Eg.. `["USA", "GBR"]`)
               description: '[FROM OFFICIAL DOCS] Request schema from buyer-screening.md.'
               required:
               - company
@@ -1424,9 +1294,7 @@ paths:
       tags:
       - Enrichment
       summary: Enrich a company profile (instant or deep).
-      description: 'Merged operation for the two documented company enrichment variants.
-        Use the documented `sections` vocabulary to select the variant family. Source
-        docs: company-deep-intelligence.md, company-instant-enrichment.md'
+      description: Enrich one or more companies through Wokelo's shared company enrichment endpoint. This operation supports the Company Instant Enrichment and Company Deep Intelligence request variants using a discriminator-based request body.
       operationId: post_api_enterprise_company_enrich
       responses:
         '200':
@@ -1438,12 +1306,10 @@ paths:
                 properties:
                   request_id:
                     type: string
-                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                      \ Request identifier returned when the enrichment job is accepted."
+                    description: '[FROM EXAMPLE — not in formal docs schema] Request identifier returned when the enrichment job is accepted.'
                   status:
                     type: string
-                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                      \ Async processing status returned with the request identifier."
+                    description: '[FROM EXAMPLE — not in formal docs schema] Async processing status returned with the request identifier.'
                 description: '[FROM OFFICIAL DOCS] Response schema from company-deep-intelligence.md.'
                 example: &id006
                   request_id: 3c945250-a3e8-4673-b342-2ceb03af5b02
@@ -1486,11 +1352,8 @@ paths:
                 error: Invalid companies not found in database
                 invalid:
                 - Tesla
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Company Instant Enrichment
-      - group_path: Enrichment
-        request_name: Company Deep Intelligence
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1504,16 +1367,15 @@ paths:
                 mapping:
                   firmographics: '#/components/schemas/CompanyInstantEnrichmentRequest'
                   products_and_services: '#/components/schemas/CompanyDeepIntelligenceRequest'
-              description: '[FROM OFFICIAL DOCS] Company enrichment union request
-                body. Variant selection is based on the documented `sections` vocabulary.'
+              description: '[FROM OFFICIAL DOCS] Company enrichment union request body. Variant selection is based on the documented `sections` vocabulary.'
       security:
       - bearerAuth: []
   /api/enterprise/industry/enrich/:
     post:
       tags:
       - Enrichment
-      summary: Industry Deep Intelilgence
-      description: 'Source docs: industry-deep-intelligence.md'
+      summary: Industry Deep Intelligence
+      description: The Industry Insights API generates structured insights for a given industry topic (e.g., *"Warehouse automation"*). Optionally, you can refine the output by specifying sections, keywords, geography, a custom industry definition, and sample companies. Returns a `request_id` as a response.
       operationId: post_api_enterprise_industry_enrich
       responses:
         '200':
@@ -1525,9 +1387,7 @@ paths:
                 properties:
                   request_id:
                     type: string
-                    description: Unique identifier for the request posted. Use this
-                      with the `/api/wkl-api/request/status/` endpoint to check the
-                      status
+                    description: Unique identifier for the request posted. Use this with the `/api/wkl-api/request/status/` endpoint to check the status
                 description: '[FROM OFFICIAL DOCS] Response schema from industry-deep-intelligence.md.'
                 example: &id007
                   request_id: c574254f-137d-40d5-84f1-ac8fa38b8aa7
@@ -1549,9 +1409,8 @@ paths:
               example:
                 request_id: c574254f-137d-40d5-84f1-ac8fa38b8aa7
                 status: PENDING
-      x-source-variants:
-      - group_path: Enrichment
-        request_name: Industry Deep Intelilgence
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1561,16 +1420,12 @@ paths:
               properties:
                 topic:
                   type: string
-                  description: The industry topic to generate insights for (e.g. `"Enterprise
-                    SaaS security"`)
+                  description: The industry topic to generate insights for (e.g. `"Enterprise SaaS security"`)
                 sections:
                   type: array
                   items:
                     type: string
-                  description: 'Sections to include in the report. Supported values:
-                    `market_size`, `quant_insights`, `trends_and_innovations`, `transactions_mna`,
-                    `transactions_fundraising`, `transactions_ipo`, `partnerships`,
-                    `tier1_intelligence`, `case_studies`, `industry_regulations`'
+                  description: 'Sections to include in the report. Supported values: `market_size`, `quant_insights`, `trends_and_innovations`, `transactions_mna`, `transactions_fundraising`, `transactions_ipo`, `partnerships`, `tier1_intelligence`, `case_studies`, `industry_regulations`'
                 parameters:
                   type: object
                   properties:
@@ -1578,19 +1433,15 @@ paths:
                       type: array
                       items:
                         type: string
-                      description: Keywords to focus the analysis on (e.g. `"zero
-                        trust"`, `"SIEM"`)
+                      description: Keywords to focus the analysis on (e.g. `"zero trust"`, `"SIEM"`)
                     geography:
                       type: array
                       items:
                         type: string
-                      description: Geographic scope for the report. It should be a
-                        comma separated list of ISO country codes. (Eg.. `["USA",
-                        "GBR"]`)
+                      description: Geographic scope for the report. It should be a comma separated list of ISO country codes. (Eg.. `["USA", "GBR"]`)
                     definition:
                       type: string
-                      description: A custom definition of the industry to guide the
-                        report generation
+                      description: A custom definition of the industry to guide the report generation
                     sample_companies:
                       type: array
                       items:
@@ -1606,7 +1457,7 @@ paths:
       tags:
       - Discovery
       summary: Market Map
-      description: 'Source docs: market-map.md'
+      description: The Market Map API generates a long list of companies operating in a given market (e.g., *"AI-powered CRM software"*), enriched with structured data. Optionally, you can refine the output by specifying keywords, sample companies, geography, company type, employee count, funding stage, and more. Returns request\_id as a response.
       operationId: post_api_enterprise_market-map_enrich
       responses:
         '200':
@@ -1618,9 +1469,7 @@ paths:
                 properties:
                   request_id:
                     type: string
-                    description: Unique identifier for the request posted. Use this
-                      with the `/api/enterprise/request/status/` endpoint to check
-                      the status
+                    description: Unique identifier for the request posted. Use this with the `/api/enterprise/request/status/` endpoint to check the status
                 description: '[FROM OFFICIAL DOCS] Response schema from market-map.md.'
                 example: &id008
                   request_id: ed2ce223-3bd2-4a08-855f-79751bf1bd92
@@ -1642,9 +1491,8 @@ paths:
               example:
                 request_id: ed2ce223-3bd2-4a08-855f-79751bf1bd92
                 status: PENDING
-      x-source-variants:
-      - group_path: Discovery
-        request_name: Market Map
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1654,15 +1502,13 @@ paths:
               properties:
                 topic:
                   type: string
-                  description: The market or product category to map (e.g. `"AI-powered
-                    CRM software"`)
+                  description: The market or product category to map (e.g. `"AI-powered CRM software"`)
                 parameters:
                   type: object
                   properties:
                     detailed_query:
                       type: string
-                      description: A more descriptive query to refine the market map
-                        scope
+                      description: A more descriptive query to refine the market map scope
                     keywords:
                       type: array
                       items:
@@ -1672,57 +1518,41 @@ paths:
                       type: array
                       items:
                         type: string
-                      description: Permalinks of representative companies or their
-                        complete URLs to anchor the market map.
+                      description: Permalinks of representative companies or their complete URLs to anchor the market map.
                     geography:
                       type: array
                       items:
                         type: string
-                      description: Geographic scope. It should be a comma separated
-                        list of ISO country codes. (Eg.. `["USA", "GBR"]`)
+                      description: Geographic scope. It should be a comma separated list of ISO country codes. (Eg.. `["USA", "GBR"]`)
                     company_type:
                       type: string
-                      description: 'Type of company to include. Accepted values: `"private"`,
-                        `"public"`, `"all"`'
+                      description: 'Type of company to include. Accepted values: `"private"`, `"public"`, `"all"`'
                     employee_count:
                       type: array
                       items:
                         type: string
-                      description: 'Filter by employee headcount range. Pass an empty
-                        array to include all headcounts. Supporting array values:
-                        `1-10`, `11-50`, `51-100`, `101-250`, `251-500`, `501-1000`,
-                        `1001-5000`, `5001-10000`, `10000+`'
+                      description: 'Filter by employee headcount range. Pass an empty array to include all headcounts. Supporting array values: `1-10`, `11-50`, `51-100`, `101-250`, `251-500`, `501-1000`, `1001-5000`, `5001-10000`, `10000+`'
                     founded_year:
                       type: object
                       properties: {}
-                      description: Filter by company founding year. Accepts `from`
-                        and/or `to` integer values
+                      description: Filter by company founding year. Accepts `from` and/or `to` integer values
                     funding_stage:
                       type: array
                       items:
                         type: string
-                      description: 'Filter by funding stage (e.g. `"Series A"`, `"Series
-                        B"`). Pass an empty array to include all stages. Supporting
-                        array values: `Non-Equity Assistance`, `Angel round`, `Pre-seed`,
-                        `Seed`, `Series A`, `Series B`, `Series C`, `Series D`, `Series
-                        E`, `Series F`, `Series G`, `Series H`, `Series I`, `Series
-                        J`, `Corporate-Funded`, `Debt-Funded`, `Private equity round`,
-                        `Others`'
+                      description: 'Filter by funding stage (e.g. `"Series A"`, `"Series B"`). Pass an empty array to include all stages. Supporting array values: `Non-Equity Assistance`, `Angel round`, `Pre-seed`, `Seed`, `Series A`, `Series B`, `Series C`, `Series D`, `Series E`, `Series F`, `Series G`, `Series H`, `Series I`, `Series J`, `Corporate-Funded`, `Debt-Funded`, `Private equity round`, `Others`'
                     total_funding:
                       type: object
                       properties: {}
-                      description: Filter by total funding amount raised. Accepts
-                        `from` and/or `to` values
+                      description: Filter by total funding amount raised. Accepts `from` and/or `to` values
                     last_funding_round:
                       type: object
                       properties: {}
-                      description: Filter by last funding round details. Accepts `from`
-                        and/or `to` values
+                      description: Filter by last funding round details. Accepts `from` and/or `to` values
                     revenue:
                       type: object
                       properties: {}
-                      description: Filter by annual revenue. Accepts `from` and/or
-                        `to` values
+                      description: Filter by annual revenue. Accepts `from` and/or `to` values
                     ebitda:
                       type: object
                       properties: {}
@@ -1730,13 +1560,11 @@ paths:
                     net_income:
                       type: object
                       properties: {}
-                      description: Filter by net income. Accepts `from` and/or `to`
-                        values
+                      description: Filter by net income. Accepts `from` and/or `to` values
                     ev_ebitda:
                       type: object
                       properties: {}
-                      description: Filter by EV/EBITDA multiple. Accepts `from` and/or
-                        `to` values
+                      description: Filter by EV/EBITDA multiple. Accepts `from` and/or `to` values
               description: '[FROM OFFICIAL DOCS] Request schema from market-map.md.'
               required:
               - topic
@@ -1747,21 +1575,19 @@ paths:
       tags:
       - Supporting APIs
       summary: Request Cancel
-      description: 'Source docs: request-cancel.md'
+      description: Cancels a request already submitted.
       operationId: post_api_enterprise_request_cancel
       responses:
         '200':
-          description: Successful response
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Request Cancel
-      parameters:
-      - name: request_id
-        in: query
-        required: true
-        schema:
-          type: string
-        description: The unique identifier of request which needs to be cancelled
+          description: Successful cancellation acknowledgement
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                description: Cancellation acknowledgement payload. The exact success body is not formally documented.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1773,8 +1599,7 @@ paths:
                   type: string
               required:
               - request_id
-              description: "[DERIVED FROM EXAMPLE \u2014 not authoritative] Request\
-                \ schema from Postman raw body."
+              description: '[DERIVED FROM EXAMPLE — not authoritative] Request schema from Postman raw body.'
       security:
       - bearerAuth: []
   /api/enterprise/target-screening/enrich/:
@@ -1782,7 +1607,7 @@ paths:
       tags:
       - Discovery
       summary: Target Screening
-      description: 'Source docs: target-screening.md'
+      description: The Target Screening API generates a long list of potential acquisition targets for a given acquirer, enriched with structured data. Optionally, you can refine the output by specifying keywords, sample companies, geography, company type, employee count, funding stage, and a detailed query to narrow the search scope. Returns a request\_id as a reponse.
       operationId: post_api_enterprise_target-screening_enrich
       responses:
         '200':
@@ -1794,9 +1619,7 @@ paths:
                 properties:
                   request_id:
                     type: string
-                    description: Unique identifier for the request posted. Use this
-                      with the `/api/enterprise/request/status/` endpoint to check
-                      the status
+                    description: Unique identifier for the request posted. Use this with the `/api/enterprise/request/status/` endpoint to check the status
                 description: '[FROM OFFICIAL DOCS] Response schema from target-screening.md.'
                 example: &id009
                   request_id: 8583f59e-0412-4f1e-81e5-13cc70349cb6
@@ -1818,9 +1641,8 @@ paths:
               example:
                 request_id: 8583f59e-0412-4f1e-81e5-13cc70349cb6
                 status: PENDING
-      x-source-variants:
-      - group_path: Discovery
-        request_name: Target Screening
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1830,75 +1652,56 @@ paths:
               properties:
                 topic:
                   type: string
-                  description: Industry/ product domain. Default will be the product
-                    category of the acquiring company.
+                  description: Industry/ product domain. Default will be the product category of the acquiring company.
                 company:
                   type: string
-                  description: Permalink of the acquiring company or complete URL
-                    (e.g. `"microsoft"` OR `"https://www.microsoft.com/"`)
+                  description: Permalink of the acquiring company or complete URL (e.g. `"microsoft"` OR `"https://www.microsoft.com/"`)
                 parameters:
                   type: object
                   properties:
                     detailed_query:
                       type: string
-                      description: A descriptive query to refine the target search
-                        scope.
+                      description: A descriptive query to refine the target search scope.
                     keywords:
                       type: array
                       items:
                         type: string
-                      description: Keywords used to identify and filter relevant target
-                        companies
+                      description: Keywords used to identify and filter relevant target companies
                     sample_companies:
                       type: array
                       items:
                         type: string
-                      description: Permalinks of representative companies to anchor
-                        the target search
+                      description: Permalinks of representative companies to anchor the target search
                     geography:
                       type: array
                       items:
                         type: string
-                      description: Geographic scope. It should be a comma separated
-                        list of ISO country codes. (Eg.. `["USA", "GBR"]`)
+                      description: Geographic scope. It should be a comma separated list of ISO country codes. (Eg.. `["USA", "GBR"]`)
                     company_type:
                       type: string
-                      description: 'Type of company to include. Accepted values: `"private"`,
-                        `"public"`, `"all"`'
+                      description: 'Type of company to include. Accepted values: `"private"`, `"public"`, `"all"`'
                     employee_count:
                       type: array
                       items:
                         type: string
-                      description: 'Filter by employee headcount range. Pass an empty
-                        array to include all headcounts. Supporting array values:
-                        `1-10`, `11-50`, `51-100`, `101-250`, `251-500`, `501-1000`,
-                        `1001-5000`, `5001-10000`, `10000+`'
+                      description: 'Filter by employee headcount range. Pass an empty array to include all headcounts. Supporting array values: `1-10`, `11-50`, `51-100`, `101-250`, `251-500`, `501-1000`, `1001-5000`, `5001-10000`, `10000+`'
                     founded_year:
                       type: object
                       properties: {}
-                      description: Filter by company founding year. Accepts `from`
-                        and/or `to` integer values
+                      description: Filter by company founding year. Accepts `from` and/or `to` integer values
                     funding_stage:
                       type: array
                       items:
                         type: string
-                      description: 'Filter by funding stage (e.g. `"Series B"`, `"Series
-                        C"`). Pass an empty array to include all stages. Supporting
-                        array values: `Non-Equity Assistance`, `Angel round`, `Pre-seed`,
-                        `Seed`, `Series A`, `Series B`, `Series C`, `Series D`, `Series
-                        E`, `Series F`, `Series G`, `Series H`, `Series I`, `Series
-                        J`, `Corporate-Funded`, `Debt-Funded`, `Private equity round`,
-                        `Others`'
+                      description: 'Filter by funding stage (e.g. `"Series B"`, `"Series C"`). Pass an empty array to include all stages. Supporting array values: `Non-Equity Assistance`, `Angel round`, `Pre-seed`, `Seed`, `Series A`, `Series B`, `Series C`, `Series D`, `Series E`, `Series F`, `Series G`, `Series H`, `Series I`, `Series J`, `Corporate-Funded`, `Debt-Funded`, `Private equity round`, `Others`'
                     total_funding:
                       type: object
                       properties: {}
-                      description: Filter by total funding amount raised (in USD).
-                        Accepts `from` and/or `to` values
+                      description: Filter by total funding amount raised (in USD). Accepts `from` and/or `to` values
                     revenue:
                       type: object
                       properties: {}
-                      description: Filter by annual revenue (in USD). Accepts `from`
-                        and/or `to` values
+                      description: Filter by annual revenue (in USD). Accepts `from` and/or `to` values
               description: '[FROM OFFICIAL DOCS] Request schema from target-screening.md.'
               required:
               - company
@@ -1909,7 +1712,7 @@ paths:
       tags:
       - Monitoring
       summary: '[Legacy] Fetch News Report'
-      description: 'Source docs: legacy-fetch-news-report.md'
+      description: This endpoint retrieves the news items from an existing news report run via the Get News Report endpoint `/api/news/start/` news. It returns the news items as a JSON
       operationId: post_api_news_fetch
       responses:
         '200':
@@ -1942,13 +1745,11 @@ paths:
                 required:
                 - report_id
                 - data
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in legacy-fetch-news-report.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in legacy-fetch-news-report.md.'
               example:
                 report_id: 72053
                 data:
-                - ai_summary: Wokelo has announced a minority equity investment from
-                    KPMG LLP, marking a significant step in their growth strategy.
+                - ai_summary: Wokelo has announced a minority equity investment from KPMG LLP, marking a significant step in their growth strategy.
                   type: Investments
                   url: https://kpmg.com/us/en/media/news/kpmg-wokelo-investment-2024.html
                   title: Wokelo Announces Minority Equity Investment from KPMG LLP
@@ -1965,9 +1766,8 @@ paths:
                 - error
               example:
                 error: Report not found.
-      x-source-variants:
-      - group_path: Monitoring
-        request_name: '[Legacy] Fetch News Report'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -1977,12 +1777,10 @@ paths:
               properties:
                 report_id:
                   type: integer
-                  description: Report ID of the news report from which the news is
-                    to be retrieved
+                  description: Report ID of the news report from which the news is to be retrieved
                 page:
                   type: integer
-                  description: 'Page number from which the news is to be returned
-                    in the response. Default: 1'
+                  description: 'Page number from which the news is to be returned in the response. Default: 1'
                 page_size:
                   type: integer
                   description: 'Number of news items per page. Default: 500'
@@ -1996,7 +1794,7 @@ paths:
       tags:
       - Monitoring
       summary: '[Legacy] Initiate News Report'
-      description: 'Source docs: legacy-initiate-news-report.md'
+      description: This endpoint initiates news report on a company
       operationId: post_api_news_start
       responses:
         '200':
@@ -2010,8 +1808,7 @@ paths:
                     type: integer
                 required:
                 - report_id
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in legacy-initiate-news-report.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in legacy-initiate-news-report.md.'
               example:
                 report_id: 2000156
         '404':
@@ -2027,9 +1824,8 @@ paths:
                 - message
               example:
                 message: Invalid payload. permalink or website required.
-      x-source-variants:
-      - group_path: Monitoring
-        request_name: '[Legacy] Initiate News Report'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -2050,12 +1846,10 @@ paths:
                   description: 'Number of news items to retrieve (Default: 1000)'
                 start_date:
                   type: string
-                  description: 'Date from which news will be retrieved. * Default:
-                    2 years * Format: `YYYY-MM-DD`'
+                  description: 'Date from which news will be retrieved. * Default: 2 years * Format: `YYYY-MM-DD`'
                 end_date:
                   type: string
-                  description: 'Date till which news will be retrieved. * Default:
-                    current date * Format: `YYYY-MM-DD`'
+                  description: 'Date till which news will be retrieved. * Default: current date * Format: `YYYY-MM-DD`'
                 website:
                   type: string
                   description: Website of the target company
@@ -2073,14 +1867,19 @@ paths:
       tags:
       - Supporting APIs
       summary: Notebook Configuration
-      description: 'Source docs: notebook-configuration.md'
+      description: Retrieves and returns the settings you originally configured while initiating the report.
       operationId: post_api_wkl_notebook_configuration
       responses:
         '200':
-          description: Successful response
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Notebook Configuration
+          description: Notebook configuration returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                description: Notebook configuration object. The docs describe this as the original workflow configuration and do not formalize the shape.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -2090,8 +1889,7 @@ paths:
               properties:
                 notebook_id:
                   type: integer
-                  description: Report ID of the notebook for which the configuration
-                    is to be retrieved
+                  description: Report ID of the notebook for which the configuration is to be retrieved
               description: '[FROM OFFICIAL DOCS] Request schema from notebook-configuration.md.'
               required:
               - notebook_id
@@ -2101,11 +1899,8 @@ paths:
     post:
       tags:
       - Workflow Automation
-      summary: Start a workflow (Company Research, Industry Research, Peer Comparison,
-        or Custom).
-      description: 'Merged operation for the four documented workflow-start variants.
-        Use the `workflow` field to select the variant. Source docs: company-research.md,
-        custom-workflows.md, industry-research.md, peer-comparison.md'
+      summary: Start a workflow (Company Research, Industry Research, Peer Comparison, or Custom).
+      description: Start a workflow-driven report through Wokelo's workflow manager. This shared endpoint supports Company Research (`company_primer`), Industry Research (`industry_primer`), Peer Comparison (`player_comparison`), and Custom Workflows (dashboard-configured workflow IDs). The request body is modeled as a discriminator-based union across those variants.
       operationId: post_api_workflow_manager_start
       responses:
         '200':
@@ -2117,14 +1912,13 @@ paths:
                 properties:
                   report_id:
                     type: integer
-                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                      \ Report identifier returned when the workflow request succeeds."
+                    description: '[FROM EXAMPLE — not in formal docs schema] Report identifier returned when the workflow request succeeds.'
                 description: '[FROM OFFICIAL DOCS] Response schema from company-research.md.'
                 example: &id010
                   report_id: 123345
               example: *id010
         '400':
-          description: Company primer
+          description: Bad request
           content:
             application/json:
               schema:
@@ -2136,15 +1930,8 @@ paths:
                 - message
               example:
                 message: Invalid payload. search query is required.
-      x-source-variants:
-      - group_path: Workflow Automation
-        request_name: Company Research
-      - group_path: Workflow Automation
-        request_name: Industry Research
-      - group_path: Workflow Automation
-        request_name: Peer comparison
-      - group_path: Workflow Automation
-        request_name: Custom Workflows
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -2170,7 +1957,7 @@ paths:
       tags:
       - Authentication
       summary: Login
-      description: 'Source docs: authentication.md'
+      description: Obtain a JSON Web Token (JWT) for subsequent API authentication
       operationId: post_auth_token
       responses:
         '200':
@@ -2216,9 +2003,6 @@ paths:
                 - error
               example:
                 error: invalid_client
-      x-source-variants:
-      - group_path: Authentication
-        request_name: Login
       requestBody:
         required: true
         content:
@@ -2265,8 +2049,7 @@ components:
           type: array
           items:
             type: string
-          description: List of permalinks/ URLs of the companies to enrich E.g. `"tesla-motors"`,
-            `"stripe"` OR `"https://tesla.com"`
+          description: List of permalinks/ URLs of the companies to enrich E.g. `"tesla-motors"`, `"stripe"` OR `"https://tesla.com"`
         sections:
           type: array
           items:
@@ -2281,10 +2064,7 @@ components:
             - acquisitions
             - investments
             - website_traffic
-          description: 'Sections of data to include in the enrichment. Supported values:
-            `firmographics`, `products`, `headcount`, `funding`, `public_company_financials`,
-            `uk_private_company_financials`, `acquisitions`, `investments`, `website_traffic`
-            Default: all'
+          description: 'Sections of data to include in the enrichment. Supported values: `firmographics`, `products`, `headcount`, `funding`, `public_company_financials`, `uk_private_company_financials`, `acquisitions`, `investments`, `website_traffic` Default: all'
           minItems: 1
         parameters:
           type: object
@@ -2296,19 +2076,15 @@ components:
                 properties:
                   field_name:
                     type: string
-                    description: Name of the custom field. Required if `custom_fields`
-                      is used.
+                    description: Name of the custom field. Required if `custom_fields` is used.
                   type:
                     type: string
-                    description: 'Data type of the field (e.g. `text`). Supported
-                      values: `text`. Required if `custom_fields` is used.'
+                    description: 'Data type of the field (e.g. `text`). Supported values: `text`. Required if `custom_fields` is used.'
                   prompt:
                     type: string
-                    description: Prompt used to generate the custom field value. Required
-                      if `custom_fields` is used.
+                    description: Prompt used to generate the custom field value. Required if `custom_fields` is used.
               description: List of custom fields to compute for each company
-      description: '[FROM OFFICIAL DOCS] Instant Enrichment variant using the instant-enrichment
-        `sections` vocabulary.'
+      description: '[FROM OFFICIAL DOCS] Instant Enrichment variant using the instant-enrichment `sections` vocabulary.'
       required:
       - companies
       - sections
@@ -2327,8 +2103,7 @@ components:
           type: array
           items:
             type: string
-          description: List of permalinks/ URLs of the companies (e.g. `"tesla-motors"`,
-            `"stripe"` OR `"https://tesla.com"`)
+          description: List of permalinks/ URLs of the companies (e.g. `"tesla-motors"`, `"stripe"` OR `"https://tesla.com"`)
         sections:
           type: array
           items:
@@ -2343,10 +2118,7 @@ components:
             - management_profiles
             - employee_sentiment
             - product_sentiment
-          description: 'Sections of data to include in the output. Supported values:
-            `products_and_services`, `product_launches`, `strategic_initiatives`,
-            `partnerships`, `business_model`, `key_customers`, `management_profiles`,
-            `employee_sentiment`, `product_sentiment`'
+          description: 'Sections of data to include in the output. Supported values: `products_and_services`, `product_launches`, `strategic_initiatives`, `partnerships`, `business_model`, `key_customers`, `management_profiles`, `employee_sentiment`, `product_sentiment`'
           minItems: 1
         parameters:
           type: object
@@ -2358,19 +2130,15 @@ components:
                 properties:
                   field_name:
                     type: string
-                    description: Name of the custom field. Required if `custom_fields`
-                      is used.
+                    description: Name of the custom field. Required if `custom_fields` is used.
                   type:
                     type: string
-                    description: 'Data type of the field (e.g. `text`). Supported
-                      Value: `text`. Required if `custom_fields` is used.'
+                    description: 'Data type of the field (e.g. `text`). Supported Value: `text`. Required if `custom_fields` is used.'
                   prompt:
                     type: string
-                    description: Prompt used to generate the custom field value. Required
-                      if `custom_fields` is used.
+                    description: Prompt used to generate the custom field value. Required if `custom_fields` is used.
               description: List of custom fields to compute for each company
-      description: '[FROM OFFICIAL DOCS] Deep Intelligence variant using the deep-intelligence
-        `sections` vocabulary.'
+      description: '[FROM OFFICIAL DOCS] Deep Intelligence variant using the deep-intelligence `sections` vocabulary.'
       required:
       - companies
       - sections
@@ -2391,12 +2159,10 @@ components:
       properties:
         industry:
           type: string
-          description: Company's industry. If not provided, Wokelo will auto-detect
-            the industry
+          description: Company's industry. If not provided, Wokelo will auto-detect the industry
         permalink:
           type: string
-          description: Crunchbase permalink of the company. Provide either this
-            or `website`.
+          description: Crunchbase permalink of the company. Provide either this or `website`.
         website:
           type: string
           description: Website of the company. Provide either this or `permalink`.
@@ -2413,8 +2179,7 @@ components:
           items:
             type: object
             properties: {}
-          description: Files to include in the report. Use `fileName` values from
-            the file upload response
+          description: Files to include in the report. Use `fileName` values from the file upload response
       description: '[FROM OFFICIAL DOCS] Company Research variant with workflow=`company_primer`.'
       required:
       - workflow
@@ -2441,8 +2206,7 @@ components:
           items:
             type: object
             properties: {}
-          description: Files to include in the report. Use fileName values from the
-            file upload response
+          description: Files to include in the report. Use fileName values from the file upload response
       description: '[FROM OFFICIAL DOCS] Industry Research variant with workflow=`industry_primer`.'
       required:
       - industry
@@ -2485,33 +2249,48 @@ components:
           description: Name with which the workbook will be saved
         workflow:
           type: string
-          description: Your workflow ID from the dashboard URL (e.g., `comp_research_f312g`
-            from *app.wokelo.ai/dashboard/workflows/comp\_research\_f312g/*)User-defined
-            custom workflow ID from the dashboard URL.
+          description: Your workflow ID from the dashboard URL (e.g., `comp_research_f312g` from *app.wokelo.ai/dashboard/workflows/comp\_research\_f312g/*)User-defined custom workflow ID from the dashboard URL.
           pattern: ^(?!company_primer$|industry_primer$|player_comparison$).+
         permalink:
           type: string
-          description: Crunchbase permalink of the company. Required for company-based
-            workflows.
+          description: Crunchbase permalink of the company. Required for company-based workflows.
         website:
           type: string
           description: Website of the company. Required for company-based workflows.
         industry_research_topic:
           type: string
-          description: "`For company workflows`: Company's industry (optional\u2014\
-            leaves blank to use Wokelo's auto-detected industry) `For industry workflows`:\
-            \ Industry to analyze (required)"
+          description: '`For company workflows`: Company''s industry (optional—leaves blank to use Wokelo''s auto-detected industry) `For industry workflows`: Industry to analyze (required)'
         custom_files:
           type: array
           items:
             type: object
             properties: {}
-          description: "Files to include in the report\u2014use `fileName` values\
-            \ from the upload response"
-      description: '[FROM OFFICIAL DOCS] Custom Workflow variant using a dashboard
-        workflow ID such as `industry_custom_fc44748`.'
+          description: Files to include in the report—use `fileName` values from the upload response
+      description: '[FROM OFFICIAL DOCS] Custom Workflow variant using a dashboard workflow ID such as `industry_custom_fc44748`.'
       required:
       - workflow
       example:
         workflow: industry_custom_fc44748
         industry_research_topic: Electric vehicles
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

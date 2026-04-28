@@ -1,10 +1,7 @@
 openapi: 3.0.3
 info:
   title: Peer Comparison
-  description: Generates a comprehensive comparison of up to 5 companies. The report
-    analyzes multiple dimensions including company fundamentals and firmographics,
-    product offerings and business models, employee reviews and satisfaction, hiring
-    trends and workforce data, and online presence and market visibility.
+  description: Generates a comprehensive comparison of up to 5 companies. The report analyzes multiple dimensions including company fundamentals and firmographics, product offerings and business models, employee reviews and satisfaction, hiring trends and workforce data, and online presence and market visibility.
   version: 2.0.0
   license:
     name: Proprietary
@@ -16,10 +13,7 @@ paths:
       tags:
       - Workflow Automation
       summary: Peer Comparison
-      description: Generates a comprehensive comparison of up to 5 companies. The
-        report analyzes multiple dimensions including company fundamentals and firmographics,
-        product offerings and business models, employee reviews and satisfaction,
-        hiring trends and workforce data, and online presence and market visibility.
+      description: Generates a comprehensive comparison of up to 5 companies. The report analyzes multiple dimensions including company fundamentals and firmographics, product offerings and business models, employee reviews and satisfaction, hiring trends and workforce data, and online presence and market visibility.
       operationId: post_workflow_manager_peer_comparison
       responses:
         '200':
@@ -31,14 +25,13 @@ paths:
                 properties:
                   report_id:
                     type: integer
-                    description: "[FROM EXAMPLE \u2014 not in formal docs schema]\
-                      \ Report identifier returned when the workflow request succeeds."
+                    description: '[FROM EXAMPLE — not in formal docs schema] Report identifier returned when the workflow request succeeds.'
                 description: '[FROM OFFICIAL DOCS] Response schema from company-research.md.'
                 example: &id001
                   report_id: 123345
               example: *id001
         '400':
-          description: Company primer
+          description: Bad request
           content:
             application/json:
               schema:
@@ -50,15 +43,8 @@ paths:
                 - message
               example:
                 message: Invalid payload. search query is required.
-      x-source-variants:
-      - group_path: Workflow Automation
-        request_name: Company Research
-      - group_path: Workflow Automation
-        request_name: Industry Research
-      - group_path: Workflow Automation
-        request_name: Peer comparison
-      - group_path: Workflow Automation
-        request_name: Custom Workflows
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -104,8 +90,30 @@ components:
         - stripe.com
         - paypal.com
         workbook_name: Test report
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

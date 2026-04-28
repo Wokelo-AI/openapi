@@ -1,11 +1,7 @@
 openapi: 3.0.3
 info:
   title: Company News Monitoring
-  description: The Monitoring API fetches the latest news articles for a given company,
-    enriched with AI-generated summaries, categories and publisher details. Optionally,
-    you can refine the output by specifying date range, publisher list, blacklisted
-    publishers, article limit, and news categories. Results are returned in the API
-    response.
+  description: The Monitoring API fetches the latest news articles for a given company, enriched with AI-generated summaries, categories and publisher details. Optionally, you can refine the output by specifying date range, publisher list, blacklisted publishers, article limit, and news categories. Results are returned in the API response.
   version: 2.0.0
   license:
     name: Proprietary
@@ -17,7 +13,7 @@ paths:
       tags:
       - Monitoring
       summary: Company News Monitoring
-      description: 'Source docs: company-news-monitoring.md'
+      description: The Monitoring API fetches the latest news articles for a given company, enriched with AI-generated summaries, categories and publisher details. Optionally, you can refine the output by specifying date range, publisher list, blacklisted publishers, article limit, and news categories. Results are returned in the API response.
       operationId: get_api_enterprise_company_news
       responses:
         '200':
@@ -41,15 +37,10 @@ paths:
                 example: &id001
                   status: success
                   data:
-                  - ai_summary: 'Nordea Investment Management AB reduced its stake
-                      in Tesla, Inc. by 8.4% in the fourth quarter, according to its
-                      SEC filing. Several institutional investors increased their
-                      holdings, and Tesla reported quarterly earnings with a net margin
-                      of 4%, revenue of $24.90 billion, and an EPS of $0.50. '
+                  - ai_summary: 'Nordea Investment Management AB reduced its stake in Tesla, Inc. by 8.4% in the fourth quarter, according to its SEC filing. Several institutional investors increased their holdings, and Tesla reported quarterly earnings with a net margin of 4%, revenue of $24.90 billion, and an EPS of $0.50. '
                     type: Secondary Transactions
                     url: https://www.defenseworld.net/2026/03/23/nordea-investment-management-ab-lowers-position-in-tesla-inc-tsla.html
-                    title: Nordea Investment Management AB Lowers Position in Tesla,
-                      Inc. $TSLA
+                    title: Nordea Investment Management AB Lowers Position in Tesla, Inc. $TSLA
                     company_name: Tesla
                     publisher: defenseworld
                     published_date: '2026-03-23 10:52:44'
@@ -67,9 +58,8 @@ paths:
                     newsworthiness_impact: Medium
                   count: 4
               example: *id001
-      x-source-variants:
-      - group_path: Monitoring
-        request_name: Company News Monitoring
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: blacklisted
         in: query
@@ -82,29 +72,25 @@ paths:
         required: false
         schema:
           type: string
-        description: Comma-separated list of news categories to filter by. [View](https://wkemails.blob.core.windows.net/clients/%28%27808dda00-141d-4952-b44c-c50bd41c2ce3%27%2C%29/news_category_names.csv)
-          complete list of all the supported news categories.
+        description: Comma-separated list of news categories to filter by. [View](https://wkemails.blob.core.windows.net/clients/%28%27808dda00-141d-4952-b44c-c50bd41c2ce3%27%2C%29/news_category_names.csv) complete list of all the supported news categories.
       - name: company
         in: query
         required: true
         schema:
           type: string
-        description: Company permalink or a valid company URL for which news articles
-          need to be fetched (e.g., `tesla` or `https://www.tesla.com/`)
+        description: Company permalink or a valid company URL for which news articles need to be fetched (e.g., `tesla` or `https://www.tesla.com/`)
       - name: end_date
         in: query
         required: false
         schema:
           type: string
-        description: End date for the timeframe to consider when fetching news (e.g.,
-          `2024-12-31`)
+        description: End date for the timeframe to consider when fetching news (e.g., `2024-12-31`)
       - name: limit
         in: query
         required: false
         schema:
           type: integer
-        description: Maximum number of news articles to return Default = 100 Max value=
-          1000
+        description: Maximum number of news articles to return Default = 100 Max value= 1000
       - name: offset
         in: query
         required: false
@@ -116,15 +102,13 @@ paths:
         required: false
         schema:
           type: string
-        description: Comma-separated list of publisher domains whose articles will
-          be included.
+        description: Comma-separated list of publisher domains whose articles will be included.
       - name: start_date
         in: query
         required: false
         schema:
           type: string
-        description: Start date for the timeframe to consider when fetching news (e.g.,
-          `2024-01-01`)
+        description: Start date for the timeframe to consider when fetching news (e.g., `2024-01-01`)
       security:
       - bearerAuth: []
 tags:
@@ -136,3 +120,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

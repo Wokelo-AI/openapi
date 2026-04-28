@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
   title: Get Report Status
-  description: Retrieves the current status of a previously triggered report using
-    its unique ID
+  description: Retrieves the current status of a previously triggered report using its unique ID
   version: 2.0.0
   license:
     name: Proprietary
@@ -14,7 +13,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Get Report Status
-      description: 'Source docs: get-report-status.md'
+      description: Retrieves the current status of a previously triggered report using its unique ID
       operationId: get_api_assets_get_notebook_status
       responses:
         '200':
@@ -34,8 +33,7 @@ paths:
                 - report_id
                 - status
                 - title
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in get-report-status.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in get-report-status.md.'
               example:
                 report_id: 98564
                 status: Delayed
@@ -79,9 +77,6 @@ paths:
                 - message
               example:
                 message: You are not authorized to access this report.
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Get Report Status
       parameters:
       - name: report_id
         in: query
@@ -100,3 +95,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

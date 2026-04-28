@@ -13,7 +13,7 @@ paths:
       tags:
       - Supporting APIs
       summary: Request Result
-      description: 'Source docs: request-result.md'
+      description: Retrieves the result of a previously submitted API request.
       operationId: get_api_enterprise_request_result
       responses:
         '200':
@@ -48,17 +48,15 @@ paths:
                         operating_status: IPO
                         ticker: NASDAQ:TSLA
               example: *id001
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Request Result
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       parameters:
       - name: request_id
         in: query
         required: true
         schema:
           type: string
-        description: 'The unique identifier of the async request whose status is being
-          checked. Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
+        description: 'The unique identifier of the async request whose status is being checked. Example: `11db67b6-8345-4837-950f-87bbd8d7dcbe`'
       security:
       - bearerAuth: []
 tags:
@@ -70,3 +68,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

@@ -13,21 +13,19 @@ paths:
       tags:
       - Supporting APIs
       summary: Request Cancel
-      description: 'Source docs: request-cancel.md'
+      description: Cancels a request already submitted.
       operationId: post_api_enterprise_request_cancel
       responses:
         '200':
-          description: Successful response
-      x-source-variants:
-      - group_path: Supporting APIs
-        request_name: Request Cancel
-      parameters:
-      - name: request_id
-        in: query
-        required: true
-        schema:
-          type: string
-        description: The unique identifier of request which needs to be cancelled
+          description: Successful cancellation acknowledgement
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                description: Cancellation acknowledgement payload. The exact success body is not formally documented.
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -39,8 +37,7 @@ paths:
                   type: string
               required:
               - request_id
-              description: "[DERIVED FROM EXAMPLE \u2014 not authoritative] Request\
-                \ schema from Postman raw body."
+              description: '[DERIVED FROM EXAMPLE — not authoritative] Request schema from Postman raw body.'
       security:
       - bearerAuth: []
 tags:
@@ -52,3 +49,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.

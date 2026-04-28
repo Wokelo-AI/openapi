@@ -13,7 +13,7 @@ paths:
       tags:
       - Monitoring
       summary: '[Legacy] Initiate News Report'
-      description: 'Source docs: legacy-initiate-news-report.md'
+      description: This endpoint initiates news report on a company
       operationId: post_api_news_start
       responses:
         '200':
@@ -27,8 +27,7 @@ paths:
                     type: integer
                 required:
                 - report_id
-                description: '[FROM OFFICIAL DOCS] Response schema derived from example
-                  in legacy-initiate-news-report.md.'
+                description: '[FROM OFFICIAL DOCS] Response schema derived from example in legacy-initiate-news-report.md.'
               example:
                 report_id: 2000156
         '404':
@@ -44,9 +43,8 @@ paths:
                 - message
               example:
                 message: Invalid payload. permalink or website required.
-      x-source-variants:
-      - group_path: Monitoring
-        request_name: '[Legacy] Initiate News Report'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
       requestBody:
         required: true
         content:
@@ -67,12 +65,10 @@ paths:
                   description: 'Number of news items to retrieve (Default: 1000)'
                 start_date:
                   type: string
-                  description: 'Date from which news will be retrieved. * Default:
-                    2 years * Format: `YYYY-MM-DD`'
+                  description: 'Date from which news will be retrieved. * Default: 2 years * Format: `YYYY-MM-DD`'
                 end_date:
                   type: string
-                  description: 'Date till which news will be retrieved. * Default:
-                    current date * Format: `YYYY-MM-DD`'
+                  description: 'Date till which news will be retrieved. * Default: current date * Format: `YYYY-MM-DD`'
                 website:
                   type: string
                   description: Website of the target company
@@ -94,3 +90,26 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    CommonUnauthorizedError:
+      type: object
+      description: Generic authentication error returned when the request is missing a valid bearer token.
+      properties:
+        detail:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      additionalProperties: true
+      example:
+        detail: Authentication credentials were not provided.
+  responses:
+    UnauthorizedError:
+      description: Unauthorized. Include a valid bearer token from `/auth/token/`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommonUnauthorizedError'
+          example:
+            detail: Authentication credentials were not provided.
